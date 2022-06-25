@@ -54,7 +54,7 @@ export const Footer: React.FC = () => {
         Footer
       </h2>
       <div className="max-w-md mx-auto py-12 px-4 sm:max-w-lg sm:pt-8 sm:px-6 lg:max-w-7xl lg:pt-8 lg:pb-8 lg:px-8">
-        <div className="flex flex-row items-center justify-between">
+        <div className="flex flex-row items-center justify-start gap-20">
           <div className="xl:col-span-1">
             <img className="h-14" src="/logo-white.svg" alt="Company name" />
             <p className="text-gray-400 text-base mt-4">Tu lugar para jugar al fútbol en Miami.</p>

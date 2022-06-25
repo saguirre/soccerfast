@@ -44,7 +44,7 @@ export const Landing: React.FC = () => {
                 Miami. Somos expertos en organizaciones de torneos amateur, con más de 10 años de presencia en el rubro.{" "}
                 <br />
                 <br />
-                Explora nuestro sitio para encontrar más información acerca de los actuales Torneos, los equipos, fotos
+                Explora nuestro sitio para encontrar más información acerca de los actuales torneos, los equipos, fotos
                 y más!
               </p>
               <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">

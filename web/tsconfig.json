@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": "./",
+    "paths": {
+      "@layouts/*": ["./layouts"],
+      "@layouts": ["./layouts/index.ts"],
+      "@components/*": ["./common/components"],
+      "@components": ["./common/components/index.ts"],
+      "@enums/*": ["./common/enums"],
+      "@enums": ["./common/enums/index.ts"],
+      "@models/*": ["./common/models"],
+      "@models": ["./common/models/index.ts"],
+      "@utils/*": ["./common/utils"],
+      "@utils": ["./common/utils/index.ts"],
+      "@hooks/*": ["./common/hooks"],
+      "@hooks": ["./common/hooks/index.ts"],
+      "@services/*": ["./common/services"],
+      "@services": ["./common/services/index.ts"],
+      "@shared-props/*": ["./common/props"],
+      "@shared-props": ["./common/props/index.ts"],
+      "@contexts/*": ["./common/contexts"],
+      "@contexts": ["./common/contexts/index.ts"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}

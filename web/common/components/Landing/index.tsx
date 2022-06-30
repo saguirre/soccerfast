@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const Landing: React.FC = () => {
   return (
     <div className="relative bg-white overflow-hidden">
@@ -71,9 +73,11 @@ export const Landing: React.FC = () => {
                 </form>
                 <p className="mt-3 text-sm text-gray-500">
                   Nos interesa mucho tu privacidad. Lee más acerca de nuestra
-                  <a href="#" className="font-medium ml-1.5 text-black underline">
-                    Política de Seguridad
-                  </a>
+                  <Link href="/privacy-policy">
+                    <span className="font-medium ml-1.5 text-black underline hover:cursor-pointer hover:text-slate-600">
+                      Política de Privacidad
+                    </span>
+                  </Link>
                   .
                 </p>
               </div>

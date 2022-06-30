@@ -15,30 +15,31 @@ import {
 } from "@heroicons/react/outline";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { classNames } from "@utils";
 
 const tournaments = [
   {
     name: "Torneo SoccerFast",
     description: "Explora nuestro principal torneo, así como su fixture y tabla de posiciones.",
-    href: "/torneos/soccerfast",
+    href: "/tournaments/soccerfast",
     icon: ClipboardListIcon,
   },
   {
     name: "Semifinales",
     description: "Información acerca de las semifinales. Quién pasará a la final?",
-    href: "/torneos/semifinales",
+    href: "/tournaments/semifinales",
     icon: SwitchVerticalIcon,
   },
   {
     name: "Finales",
     description: "Mira qué equipos son los mejores y cuándo se enfrentan.",
-    href: "/torneos/finales",
+    href: "/tournaments/finales",
     icon: LightningBoltIcon,
   },
   {
     name: "Copa de Campeones",
     description: "Toda la información acerca de la prestigiosa Copa de Campeones.",
-    href: "/torneos/copa-de-campeones",
+    href: "/tournaments/copa-de-campeones",
     icon: StarIcon,
   },
   {
@@ -63,10 +64,6 @@ const teams = [
   { name: "Rio de la Plata F.C.", imageUrl: "/escudo-rio-de-la-plata.png", href: "#" },
   { name: "Furiosos F.C.", imageUrl: "/escudo-furiosos.png", href: "#" },
 ];
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export const Header: React.FC = () => {
   const router = useRouter();
@@ -120,7 +117,7 @@ export const Header: React.FC = () => {
                     leaveTo="opacity-0 translate-y-1"
                   >
                     <Popover.Panel className="absolute z-10 -ml-4 mt-3 transform w-screen max-w-md lg:max-w-3xl">
-                      <div className="rounded-lg shadow-lg ring-1 max-h-80 ring-black ring-opacity-5 overflow-y-scroll overflow-x-hidden">
+                      <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-y-scroll overflow-x-hidden">
                         <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8 lg:grid-cols-2">
                           {tournaments.map((item) => (
                             <div
@@ -187,7 +184,7 @@ export const Header: React.FC = () => {
                     leaveTo="opacity-0 translate-y-1"
                   >
                     <Popover.Panel className="absolute z-10 left-1/2 transform -translate-x-1/2 mt-3 px-2 w-screen max-w-xs sm:px-0">
-                      <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
+                      <div className="rounded-lg shadow-lg ring-1 max-h-96 ring-black ring-opacity-5 overflow-y-scroll overflow-x-hidden">
                         <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-6 sm:p-8">
                           {teams.map((team) => (
                             <a
@@ -206,27 +203,26 @@ export const Header: React.FC = () => {
                 </>
               )}
             </Popover>
-            <Link href="/galeria" className="text-base font-medium text-gray-500 hover:text-gray-900">
+            <Link href="/gallery" className="text-base font-medium text-gray-500 hover:text-gray-900">
               Galería
             </Link>
 
-            <Link href="/reglamento" className="text-base font-medium text-gray-500 hover:text-gray-900">
+            <Link href="/rules" className="text-base font-medium text-gray-500 hover:text-gray-900">
               Reglamento
             </Link>
-            <Link href="#" className="text-base font-medium text-gray-500 hover:text-gray-900">
+            <Link href="/contact" className="text-base font-medium text-gray-500 hover:text-gray-900">
               Contacto
             </Link>
           </Popover.Group>
           <div className="flex items-center md:ml-12">
-            <a href="#" className="text-base font-medium text-gray-600 hover:text-gray-900">
+            <Link href="/signup" className="text-base font-medium text-gray-600 hover:text-gray-900">
               Registrarme
-            </a>
-            <a
-              href="#"
-              className="ml-8 inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-sky-500 hover:bg-sky-600"
-            >
-              Ingresar
-            </a>
+            </Link>
+            <Link href="/signin">
+              <button className="ml-8 inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-sky-500 hover:bg-sky-600">
+                Ingresar
+              </button>
+            </Link>
           </div>
         </div>
       </div>

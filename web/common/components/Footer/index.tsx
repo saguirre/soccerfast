@@ -1,3 +1,5 @@
+import { MailIcon, PhoneIcon } from "@heroicons/react/solid";
+
 /* This example requires Tailwind CSS v2.0+ */
 const navigation = {
   main: [
@@ -68,17 +70,26 @@ export const Footer: React.FC = () => {
             </div>
           </div>
           <div>
-            <h3 className="text-sm leading-6 font-medium uppercase pr-12 text-gray-200">Contacto</h3>
-            <dl className="mt-2 text-sm text-gray-400">
-              <div>
-                <dt className="sr-only">Email</dt>
-                <dd>urucalv13@gmail.com</dd>
-              </div>
-              <div className="mt-1">
-                <dt className="sr-only">Teléfonos</dt>
-                <dd>+1 (754) 231-5401</dd>
-                <dd>+1 (786) 306-8818</dd>
-              </div>
+            <h3 className="text-sm leading-6 font-medium uppercase text-gray-200">Contacto</h3>
+            <dl className="mt-2 space-y-1.5">
+              <dt>
+                <span className="sr-only">Phone number</span>
+              </dt>
+              <dd className="flex text-base text-sky-50 items-center">
+                <PhoneIcon className="flex-shrink-0 w-5 h-5 text-slate-400" aria-hidden="true" />
+                <span className="ml-2">+1 (754) 231-5401</span>
+              </dd>
+              <dd className="flex text-base text-sky-50 items-center">
+                <PhoneIcon className="flex-shrink-0 w-5 h-5 text-slate-400" aria-hidden="true" />
+                <span className="ml-2">+1 (786) 306-8818</span>
+              </dd>
+              <dt>
+                <span className="sr-only">Email</span>
+              </dt>
+              <dd className="flex text-base text-sky-50 items-center">
+                <MailIcon className="flex-shrink-0 w-5 h-5 text-slate-400" aria-hidden="true" />
+                <span className="ml-2">urucalv13@gmail.com</span>
+              </dd>
             </dl>
           </div>
         </div>

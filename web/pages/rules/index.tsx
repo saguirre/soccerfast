@@ -3,6 +3,8 @@ import { NextPage } from "next";
 import { AnnotationIcon, ChevronDownIcon, GlobeAltIcon, LightningBoltIcon, ScaleIcon } from "@heroicons/react/outline";
 import { Disclosure } from "@headlessui/react";
 
+import { DotsDivider } from "@components";
+
 const articles = [
   {
     name: "Artículo 1",
@@ -106,6 +108,7 @@ const Reglamento: NextPage = () => {
             <span className="text-semibold text-sky-500">SoccerFast</span> 2022. Aquí puede encontrar todos los pasos a
             seguir para poder participar de los torneos sin inconvenientes.
           </p>
+          <DotsDivider />
         </div>
 
         <div className="mt-10">

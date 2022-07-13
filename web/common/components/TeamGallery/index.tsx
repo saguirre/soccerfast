@@ -41,7 +41,7 @@ export const TeamGallery: React.FC = () => {
         <li key={image.source} className="relative">
           <div
             onClick={() => goToImageGallery(image.href)}
-            className="group aspect-w-11 aspect-h-13 rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-sky-500 overflow-hidden"
+            className="group aspect-w-11 aspect-h-13 rounded-lg hover:border-slate-400 border border-slate-200 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100 focus-within:ring-sky-500 overflow-hidden"
           >
             <img
               src={image.source}

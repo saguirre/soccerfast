@@ -8,3 +8,8 @@ export * from "./Landing";
 export * from "./LoadingWrapper";
 export * from "./PositionsTable";
 export * from "./Title";
+export * from "./Buttons/CancelButton";
+export * from "./Buttons/ConfirmButton";
+export * from "./Modals/Base";
+export * from "./Modals/Base/ModalTitle";
+export * from "./Modals/Base/ModalBackground";

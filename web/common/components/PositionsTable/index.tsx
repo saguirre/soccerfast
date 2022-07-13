@@ -4,12 +4,17 @@ interface PositionsTableProps {
 
 export const PositionsTable: React.FC<PositionsTableProps> = ({ teams }) => {
   return (
-    <div className="w-full">
-      <div className="mt-6 flex flex-col justify-justify-center items-start w-full pl-24">
-        <h1 className="text-xl font-semibold text-slate-900">Tabla de posiciones</h1>
-        <p className="mt-2 text-sm text-gray-700">Visualiza las posiciones y puntos hasta la fecha.</p>
+    <div className="w-full px-24">
+      <div className="flex flex-row justify-between items-center">
+        <div className="mt-6 flex flex-col justify-justify-center items-start w-full">
+          <h1 className="text-xl font-semibold text-slate-900">Tabla de posiciones</h1>
+          <p className="mt-2 text-sm text-gray-700">Visualiza las posiciones y puntos hasta la fecha.</p>
+        </div>
+        <button className="w-48 h-10 bg-sky-500 hover:bg-sky-600 focus:ring-4 focus:outline-none focus:ring-sky-300 rounded-lg py-1 px-2">
+          <span className="text-white">Agregar Equipo</span>
+        </button>
       </div>
-      <div className="mt-4 px-24 flex w-full flex-col">
+      <div className="mt-4  flex w-full flex-col">
         <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
@@ -40,6 +45,9 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ teams }) => {
                     </th>
                     <th scope="col" className="px-4 py-3.5 text-center text-sm font-semibold text-gray-900">
                       PTS
+                    </th>
+                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                      <span className="sr-only">Edit</span>
                     </th>
                   </tr>
                 </thead>
@@ -77,6 +85,11 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ teams }) => {
                         {team.goalsDown}
                       </td>
                       <td className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500">{team.points}</td>
+                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                          Editar<span className="sr-only">Edit</span>
+                        </a>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

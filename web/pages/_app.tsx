@@ -5,7 +5,8 @@ import { useRouter } from "next/router";
 
 import { LoadingWrapper } from "@components";
 import { AdminLayout, PublicLayout, UserLayout } from "@layouts";
-import { AuthContext } from "@contexts";
+import { AppContext, AuthContext } from "@contexts";
+import { TournamentsService } from "@services";
 
 function SoccerFast({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -13,6 +14,7 @@ function SoccerFast({ Component, pageProps }: AppProps) {
   const [userToken, setUserToken] = useState("");
   const authContextProps = { userToken, setUserToken };
   const [userIsAdmin, setUserIsAdmin] = useState(false);
+  const tournamentsService = new TournamentsService();
   useEffect(() => {
     if (router.isReady) {
       setTimeout(() => {
@@ -28,21 +30,23 @@ function SoccerFast({ Component, pageProps }: AppProps) {
   return (
     <LoadingWrapper loading={loading}>
       <AuthContext.Provider value={authContextProps}>
-        {userToken ? (
-          userIsAdmin ? (
-            <AdminLayout>
-              <Component {...pageProps} />
-            </AdminLayout>
+        <AppContext.Provider value={{ tournamentsService }}>
+          {userToken ? (
+            userIsAdmin ? (
+              <AdminLayout>
+                <Component {...pageProps} />
+              </AdminLayout>
+            ) : (
+              <UserLayout>
+                <Component {...pageProps} />
+              </UserLayout>
+            )
           ) : (
-            <UserLayout>
+            <PublicLayout>
               <Component {...pageProps} />
-            </UserLayout>
-          )
-        ) : (
-          <PublicLayout>
-            <Component {...pageProps} />
-          </PublicLayout>
-        )}
+            </PublicLayout>
+          )}
+        </AppContext.Provider>
       </AuthContext.Provider>
     </LoadingWrapper>
   );

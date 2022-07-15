@@ -1,0 +1,153 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  password          String
+  name              String
+  phone             String?
+  avatar            String?
+  birthday          DateTime?
+  preferredLanguage String?   @default("en")
+  post              Team[]
+}
+
+model Team {
+  id                  Int                     @id @default(autoincrement())
+  name                String
+  description         String?
+  logo                String?
+  active              Boolean?                @default(false)
+  owner               User?                   @relation(fields: [ownerId], references: [id])
+  ownerId             Int?
+  Tournament          Tournament?             @relation(fields: [tournamentId], references: [id])
+  tournamentId        Int?
+  TournamentTeamScore Tournament_Team_Score[]
+  TeamPicture         Team_Picture[]
+}
+
+model Team_Picture {
+  id          Int     @id @default(autoincrement())
+  url         String?
+  base64Image String
+  team        Team    @relation(fields: [teamId], references: [id])
+  teamId      Int
+}
+
+model Tournament {
+  id                  Int                     @id @default(autoincrement())
+  name                String
+  description         String?
+  logo                String?
+  active              Boolean?                @default(false)
+  teams               Team[]
+  TournamentTeamScore Tournament_Team_Score[]
+}
+
+model Tournament_Team_Score {
+  id            Int        @id @default(autoincrement())
+  team          Team       @relation(fields: [teamId], references: [id])
+  teamId        Int
+  tournament    Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId  Int
+  matchesPlayed Int        @default(0)
+  matchesWon    Int        @default(0)
+  matchesTied   Int        @default(0)
+  matchesLost   Int        @default(0)
+  goalsAhead    Int        @default(0)
+  goalsAgainst  Int        @default(0)
+  points        Int        @default(0)
+}
+
+model Rule {
+  id            Int      @id @default(autoincrement())
+  articleNumber Int
+  name          String
+  clauses       Clause[]
+}
+
+model Clause {
+  id             Int     @id @default(autoincrement())
+  title          String
+  additionalInfo String?
+  rule           Rule    @relation(fields: [ruleId], references: [id])
+  ruleId         Int
+}
+
+model Contact_Info {
+  id             Int                    @id @default(autoincrement())
+  companyName    String
+  companyPhrase  String
+  companyLogo    String
+  companyLogoUrl String?
+  phones         Contact_Phone[]
+  emails         Contact_Email[]
+  socialMedias   Contact_Social_Media[]
+}
+
+model Contact_Social_Media {
+  id            Int           @id @default(autoincrement())
+  logo          String
+  name          String
+  url           String
+  ContactInfo   Contact_Info? @relation(fields: [contactInfoId], references: [id])
+  contactInfoId Int?
+}
+
+model Contact_Phone {
+  id            Int          @id @default(autoincrement())
+  number        String
+  contactInfo   Contact_Info @relation(fields: [contactInfoId], references: [id])
+  contactInfoId Int
+}
+
+model Contact_Email {
+  id            Int          @id @default(autoincrement())
+  email         String
+  contactInfo   Contact_Info @relation(fields: [contactInfoId], references: [id])
+  contactInfoId Int
+}
+
+model Announcement {
+  id                 Int               @id @default(autoincrement())
+  message            String
+  announcementType   Announcement_Type @relation(fields: [announcementTypeId], references: [id])
+  announcementTypeId Int
+}
+
+model Announcement_Type {
+  id           Int            @id @default(autoincrement())
+  type         String
+  Announcement Announcement[]
+}
+
+model Notification {
+  id                  Int                @id @default(autoincrement())
+  message             String
+  notificationType    Notification_Type  @relation(fields: [notificationTypeId], references: [id])
+  notificationRoute   Notification_Route @relation(fields: [notificationRouteId], references: [id])
+  notificationTypeId  Int
+  notificationRouteId Int
+}
+
+model Notification_Type {
+  id           Int            @id @default(autoincrement())
+  type         String
+  Notification Notification[]
+}
+
+model Notification_Route {
+  id           Int            @id @default(autoincrement())
+  route        String
+  Notification Notification[]
+}

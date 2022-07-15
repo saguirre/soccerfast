@@ -1,17 +1,28 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { TournamentsModule } from './tournaments/tournaments.module';
-import { TeamsModule } from './teams/teams.module';
-import { RulesModule } from './rules/rules.module';
+import { UserModule } from './user/user.module';
+import { TournamentModule } from './tournament/tournament.module';
+import { TeamModule } from './team/team.module';
+import { RuleModule } from './rule/rule.module';
 import { ContactModule } from './contact/contact.module';
 import { AuthModule } from './auth/auth.module';
-import { NotificationsModule } from './notifications/notifications.module';
+import { NotificationModule } from './notification/notification.module';
+import { UserService } from './user/user.service';
+import { PostService } from './post.service';
+import { PrismaService } from './prisma.service';
 
 @Module({
-  imports: [UsersModule, TournamentsModule, TeamsModule, RulesModule, ContactModule, AuthModule, NotificationsModule],
+  imports: [
+    UserModule,
+    TournamentModule,
+    TeamModule,
+    RuleModule,
+    ContactModule,
+    AuthModule,
+    NotificationModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, UserService, PostService, PrismaService],
 })
 export class AppModule {}

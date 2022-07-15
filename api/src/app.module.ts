@@ -9,7 +9,6 @@ import { ContactModule } from './contact/contact.module';
 import { AuthModule } from './auth/auth.module';
 import { NotificationModule } from './notification/notification.module';
 import { UserService } from './user/user.service';
-import { PostService } from './post.service';
 import { PrismaService } from './prisma.service';
 
 @Module({
@@ -23,6 +22,6 @@ import { PrismaService } from './prisma.service';
     NotificationModule,
   ],
   controllers: [AppController],
-  providers: [AppService, UserService, PostService, PrismaService],
+  providers: [AppService, UserService, PrismaService],
 })
 export class AppModule {}

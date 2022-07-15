@@ -48,6 +48,15 @@ export class UserService {
     });
   }
 
+  async inactivateUser(
+    where: Prisma.UserWhereUniqueInput,
+    data: Prisma.UserUpdateInput,
+  ): Promise<User> {
+    return this.prisma.user.update({
+      where,
+      data,
+    });
+  }
   async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
     return this.prisma.user.delete({
       where,

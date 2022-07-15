@@ -18,6 +18,16 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
+      "@enums": ["src/enums/index.ts"],
+      "@dtos": ["src/dtos/index.ts"],
+      "@models": ["src/models/index.ts"],
+      "@user": ["src/user/index.ts"],
+      "@tournament": ["src/tournament/index.ts"],
+      "@auth": ["src/auth/index.ts"],
+      "@team": ["src/team/index.ts"],
+      "@rule": ["src/rule/index.ts"],
+      "@notification": ["src/notification/index.ts"],
+      "@contact": ["src/contact/index.ts"]
     }
   }
 }

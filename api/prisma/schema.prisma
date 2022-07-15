@@ -17,9 +17,11 @@ model User {
   name              String
   phone             String?
   avatar            String?
+  type              String
+  active            Boolean?  @default(true)
   birthday          DateTime?
   preferredLanguage String?   @default("en")
-  post              Team[]
+  teams             Team[]
 }
 
 model Team {
@@ -27,13 +29,13 @@ model Team {
   name                String
   description         String?
   logo                String?
-  active              Boolean?                @default(false)
+  active              Boolean?                @default(true)
   owner               User?                   @relation(fields: [ownerId], references: [id])
   ownerId             Int?
-  Tournament          Tournament?             @relation(fields: [tournamentId], references: [id])
+  tournament          Tournament?             @relation(fields: [tournamentId], references: [id])
   tournamentId        Int?
-  TournamentTeamScore Tournament_Team_Score[]
-  TeamPicture         Team_Picture[]
+  tournamentTeamScore Tournament_Team_Score[]
+  teamPicture         Team_Picture[]
 }
 
 model Team_Picture {
@@ -51,7 +53,7 @@ model Tournament {
   logo                String?
   active              Boolean?                @default(false)
   teams               Team[]
-  TournamentTeamScore Tournament_Team_Score[]
+  tournamentTeamScore Tournament_Team_Score[]
 }
 
 model Tournament_Team_Score {
@@ -100,7 +102,7 @@ model Contact_Social_Media {
   logo          String
   name          String
   url           String
-  ContactInfo   Contact_Info? @relation(fields: [contactInfoId], references: [id])
+  contactInfo   Contact_Info? @relation(fields: [contactInfoId], references: [id])
   contactInfoId Int?
 }
 
@@ -128,7 +130,7 @@ model Announcement {
 model Announcement_Type {
   id           Int            @id @default(autoincrement())
   type         String
-  Announcement Announcement[]
+  announcement Announcement[]
 }
 
 model Notification {
@@ -143,11 +145,11 @@ model Notification {
 model Notification_Type {
   id           Int            @id @default(autoincrement())
   type         String
-  Notification Notification[]
+  notification Notification[]
 }
 
 model Notification_Route {
   id           Int            @id @default(autoincrement())
   route        String
-  Notification Notification[]
+  notification Notification[]
 }

@@ -10,7 +10,7 @@ declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  app.setGlobalPrefix('api/v1');
   const config = new DocumentBuilder()
     .setTitle('SoccerFast API')
     .setDescription('The SoccerFast API')

@@ -19,7 +19,9 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
   async getUserById(@Param('id') id: string): Promise<User> {
-    return this.userService.user({ id: Number(id) });
+    const user = await this.userService.user({ id: Number(id) });
+    delete user.password;
+    return user;
   }
 
   @UseGuards(JwtAuthGuard)

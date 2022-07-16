@@ -1,8 +1,8 @@
-import { Fragment, useContext } from "react";
-import Image from "next/image";
+import { Fragment, useContext, useState } from 'react';
+import Image from 'next/image';
 
-import { Menu, Popover, Transition } from "@headlessui/react";
-import { ChevronDownIcon, LogoutIcon, UserIcon } from "@heroicons/react/solid";
+import { Menu, Popover, Transition } from '@headlessui/react';
+import { ChevronDownIcon, UserIcon } from '@heroicons/react/solid';
 import {
   ClipboardListIcon,
   ViewGridIcon,
@@ -12,84 +12,95 @@ import {
   BadgeCheckIcon,
   LightningBoltIcon,
   SwitchVerticalIcon,
-} from "@heroicons/react/outline";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { classNames } from "@utils";
-import { AuthContext } from "contexts/auth.context";
+} from '@heroicons/react/outline';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { classNames } from '@utils';
+import { AuthContext, UserContext } from '@contexts';
+import { User } from '@models';
+import { useEffect } from 'react';
 
 const userNavigation = [
-  { name: "Perfil", href: "/profile" },
-  { name: "Salir", href: "/" },
+  { name: 'Perfil', href: '/profile' },
+  { name: 'Salir', href: '/' },
 ];
 
 const tournaments = [
   {
-    name: "Torneo SoccerFast",
-    description: "Explora nuestro principal torneo, así como su fixture y tabla de posiciones.",
-    href: "/tournaments/soccerfast",
+    name: 'Torneo SoccerFast',
+    description: 'Explora nuestro principal torneo, así como su fixture y tabla de posiciones.',
+    href: '/tournaments/soccerfast',
     icon: ClipboardListIcon,
   },
   {
-    name: "Semifinales",
-    description: "Información acerca de las semifinales. Quién pasará a la final?",
-    href: "/tournaments/semifinales",
+    name: 'Semifinales',
+    description: 'Información acerca de las semifinales. Quién pasará a la final?',
+    href: '/tournaments/semifinales',
     icon: SwitchVerticalIcon,
   },
   {
-    name: "Finales",
-    description: "Mira qué equipos son los mejores y cuándo se enfrentan.",
-    href: "/tournaments/finales",
+    name: 'Finales',
+    description: 'Mira qué equipos son los mejores y cuándo se enfrentan.',
+    href: '/tournaments/finales',
     icon: LightningBoltIcon,
   },
   {
-    name: "Copa de Campeones",
-    description: "Toda la información acerca de la prestigiosa Copa de Campeones.",
-    href: "/tournaments/copa-de-campeones",
+    name: 'Copa de Campeones',
+    description: 'Toda la información acerca de la prestigiosa Copa de Campeones.',
+    href: '/tournaments/copa-de-campeones',
     icon: StarIcon,
   },
   {
-    name: "Torneos Paralelos",
-    description: "Aquí podes encontrar toda la información de nuestros torneos alternativos.",
-    href: "/torneos/paralelos",
+    name: 'Torneos Paralelos',
+    description: 'Aquí podes encontrar toda la información de nuestros torneos alternativos.',
+    href: '/torneos/paralelos',
     icon: ViewGridIcon,
   },
   {
-    name: "Tabla FairPlay",
-    description: "Mira qué equipos son los que mejor comportamiento deportivo tienen en el campeonato.",
-    href: "#",
+    name: 'Tabla FairPlay',
+    description: 'Mira qué equipos son los que mejor comportamiento deportivo tienen en el campeonato.',
+    href: '#',
     icon: BadgeCheckIcon,
   },
 ];
 
 const teams = [
-  { name: "C.A. Cerro", imageUrl: "/escudo-cerro.png", href: "#" },
-  { name: "Monterrey F.C.", imageUrl: "/escudo-monterrey.png", href: "#" },
-  { name: "Beach City", imageUrl: "/escudo-beach-city.png", href: "#" },
-  { name: "Racing Club Miami", imageUrl: "/escudo-racing.png", href: "#" },
-  { name: "Rio de la Plata F.C.", imageUrl: "/escudo-rio-de-la-plata.png", href: "#" },
-  { name: "Furiosos F.C.", imageUrl: "/escudo-furiosos.png", href: "#" },
+  { name: 'C.A. Cerro', imageUrl: '/escudo-cerro.png', href: '#' },
+  { name: 'Monterrey F.C.', imageUrl: '/escudo-monterrey.png', href: '#' },
+  { name: 'Beach City', imageUrl: '/escudo-beach-city.png', href: '#' },
+  { name: 'Racing Club Miami', imageUrl: '/escudo-racing.png', href: '#' },
+  { name: 'Rio de la Plata F.C.', imageUrl: '/escudo-rio-de-la-plata.png', href: '#' },
+  { name: 'Furiosos F.C.', imageUrl: '/escudo-furiosos.png', href: '#' },
 ];
 
 export const PrivateHeader: React.FC = () => {
   const router = useRouter();
+  const { userService } = useContext(UserContext);
+  const [user, setUser] = useState<User | null>(null);
   const { setUserToken } = useContext(AuthContext);
   const goToTournament = (href: string) => {
     router.push(href);
   };
 
   const logout = () => {
-    localStorage.setItem("userToken", "");
-    setUserToken("");
-    router.push("/");
+    localStorage.setItem('access_token', '');
+    setUserToken('');
+    router.push('/');
   };
+
+  const getUser = async () => {
+    setUser(await userService.getUser());
+  };
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
     <Popover className="relative bg-white">
       <div className="flex justify-between items-center px-4 py-6 sm:px-6 md:justify-start md:space-x-10">
         <div>
           <a href="/" className="flex">
-            <span className="sr-only">Workflow</span>
+            <span className="sr-only">SoccerFast</span>
             <Image width={200} height={60} src="/logo-black.svg" alt="Logo" />
           </a>
         </div>
@@ -106,15 +117,15 @@ export const PrivateHeader: React.FC = () => {
                 <>
                   <Popover.Button
                     className={classNames(
-                      open ? "text-gray-500" : "text-gray-600",
-                      "group bg-white rounded-md px-2 inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                      open ? 'text-gray-500' : 'text-gray-600',
+                      'group bg-white rounded-md px-2 inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500'
                     )}
                   >
                     <span>Torneos</span>
                     <ChevronDownIcon
                       className={classNames(
-                        open ? "text-gray-400" : "text-gray-600",
-                        "ml-2 h-5 w-5 group-hover:text-gray-500"
+                        open ? 'text-gray-400' : 'text-gray-600',
+                        'ml-2 h-5 w-5 group-hover:text-gray-500'
                       )}
                       aria-hidden="true"
                     />
@@ -173,15 +184,15 @@ export const PrivateHeader: React.FC = () => {
                 <>
                   <Popover.Button
                     className={classNames(
-                      open ? "text-gray-600" : "text-gray-600",
-                      "group bg-white rounded-md px-2 inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                      open ? 'text-gray-600' : 'text-gray-600',
+                      'group bg-white rounded-md px-2 inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500'
                     )}
                   >
                     <span>Equipos</span>
                     <ChevronDownIcon
                       className={classNames(
-                        open ? "text-gray-400" : "text-gray-600",
-                        "ml-2 h-5 w-5 group-hover:text-gray-500"
+                        open ? 'text-gray-400' : 'text-gray-600',
+                        'ml-2 h-5 w-5 group-hover:text-gray-500'
                       )}
                       aria-hidden="true"
                     />
@@ -231,7 +242,7 @@ export const PrivateHeader: React.FC = () => {
             <Menu as="div" className="ml-4 relative flex-shrink-0">
               <div>
                 <Menu.Button className="flex flex-row items-center justify-between hover:ring-2 hover:ring-offset-2 hover:ring-offset-sky-500 rounded-xl hover:ring-white hover:cursor-pointer p-2">
-                  <span className="ml-2 mr-3">Santiago Aguirre</span>
+                  <span className="ml-2 mr-3">{user?.name}</span>
 
                   <span className="sr-only">Open user menu</span>
                   <div className="bg-sky-600 flex p-2 mr-3 items-center justify-center text-sm rounded-full text-white focus:outline-none ">
@@ -254,10 +265,10 @@ export const PrivateHeader: React.FC = () => {
                       <Menu.Item key={item.name}>
                         {({ active }) => (
                           <div
-                            onClick={() => item.name == "Salir" && logout()}
+                            onClick={() => item.name == 'Salir' && logout()}
                             className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block hover:cursor-pointer px-4 py-3 text-md text-gray-700"
+                              active ? 'bg-gray-100' : '',
+                              'block hover:cursor-pointer px-4 py-3 text-md text-gray-700'
                             )}
                           >
                             {item.name}
@@ -348,7 +359,7 @@ export const PrivateHeader: React.FC = () => {
                   Sign up
                 </a>
                 <p className="mt-6 text-center text-base font-medium text-gray-500">
-                  Existing customer?{" "}
+                  Existing customer?{' '}
                   <a href="#" className="text-sky-600 hover:text-sky-500">
                     Sign in
                   </a>

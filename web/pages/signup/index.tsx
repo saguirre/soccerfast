@@ -4,11 +4,12 @@ import axios from 'axios';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { classNames, emailRegex } from '@utils';
-import { SubmitButton, Title } from '@components';
+import { NotificationAlert, SubmitButton, Title } from '@components';
 import { AddUserModel } from '@models';
 import { useContext, useState } from 'react';
 import { AuthContext } from 'contexts/auth.context';
 import { useRouter } from 'next/router';
+import { useNotification } from '@hooks';
 
 interface FormValues {
   name: string;
@@ -20,6 +21,8 @@ interface FormValues {
 const SignUpPage: React.FC = () => {
   const { authService } = useContext(AuthContext);
   const [loadingRequest, setLoadingRequest] = useState(false);
+  const { createNotification, closeNotification, notification, showNotification } = useNotification();
+
   const router = useRouter();
   const {
     register,
@@ -36,9 +39,24 @@ const SignUpPage: React.FC = () => {
       password: data.password,
       type: 'Email',
     };
-    await authService.signUp(body);
+    const response = await authService.signUp(body);
     setLoadingRequest(false);
-    router.push('/signin');
+    if (!response) {
+      createNotification({
+        title: 'Error al Registrarse',
+        message: 'Ha ocurrido un error al registrarse, por favor verifica tus datos e inténtalo de nuevo.',
+        isError: true,
+      });
+      return;
+    }
+    createNotification({
+      title: 'Registro correcto!',
+      message: "Te estamos redirigiendo a la pantalla de Ingreso...",
+    });
+
+    setTimeout(() => {
+      router.push('/signin');
+    }, 2000);
   };
 
   return (
@@ -219,6 +237,11 @@ const SignUpPage: React.FC = () => {
           </div>
         </div>
       </div>
+      <NotificationAlert
+        show={showNotification}
+        notification={notification}
+        onClose={() => closeNotification()}
+      ></NotificationAlert>
     </>
   );
 };

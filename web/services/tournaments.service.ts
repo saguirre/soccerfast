@@ -2,18 +2,18 @@ import { AddTournamentModel, Tournament } from "@models/*";
 import { HttpService } from "./http-abstract.service";
 
 export interface ITournamentsService {
-  getTournaments(userToken: string): Promise<Tournament[]>;
-  addTournament(userToken: string, body: AddTournamentModel): Promise<Tournament | undefined>;
-  getTournament(userToken: string, id: number): Promise<Tournament>;
+  getTournaments(): Promise<Tournament[]>;
+  addTournament(body: AddTournamentModel): Promise<Tournament | undefined>;
+  getTournament(id: number): Promise<Tournament>;
 }
 
 export class TournamentsService extends HttpService implements ITournamentsService {
   private endpointPrefix: string = "tournaments";
 
-  getTournaments = async (userToken: string): Promise<Tournament[]> => {
+  getTournaments = async (): Promise<Tournament[]> => {
     try {
       const axiosResponse = await fetch(this.getServiceUrl(this.endpointPrefix), {
-        headers: this.getAuthHeaders(userToken),
+        headers: this.getAuthHeaders(),
       });
 
       console.log("Fetch response");
@@ -25,10 +25,10 @@ export class TournamentsService extends HttpService implements ITournamentsServi
     }
   };
 
-  addTournament = async (userToken: string, body: AddTournamentModel) => {
+  addTournament = async (body: AddTournamentModel) => {
     try {
       //   const axiosResponse = await axios.post(this.getServiceUrl(this.endpointPrefix), body, {
-      // headers: this.getAuthHeaders(userToken),
+      // headers: this.getAuthHeaders(),
       //   });
       //   return axiosResponse.data.data;
       return new Promise<Tournament>(() => {});
@@ -37,10 +37,10 @@ export class TournamentsService extends HttpService implements ITournamentsServi
     }
   };
 
-  getTournament = async (userToken: string, id: number) => {
+  getTournament = async (id: number) => {
     try {
       const axiosResponse = await fetch(this.getServiceUrl(this.endpointPrefix) + "/" + id, {
-        headers: this.getAuthHeaders(userToken),
+        headers: this.getAuthHeaders(),
       });
       console.log("getTournament response: ");
       console.log(axiosResponse.json());

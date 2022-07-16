@@ -1,10 +1,5 @@
-import { useState } from "react";
-
-export interface Notification {
-  title: string;
-  message: string;
-  isError?: boolean;
-}
+import { useState } from 'react';
+import { Notification } from '@models';
 
 export const useNotification = () => {
   const [showNotification, setShowNotification] = useState<boolean>(false);

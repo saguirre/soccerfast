@@ -16,7 +16,6 @@ async function bootstrap() {
     .setTitle('SoccerFast API')
     .setDescription('The SoccerFast API')
     .setVersion('1.0')
-    .setBasePath('/')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

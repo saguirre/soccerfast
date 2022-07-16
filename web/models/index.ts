@@ -7,3 +7,4 @@ export * from "./tournament.model";
 export * from "./user.model";
 export * from "./rule.model";
 export * from "./user-login.model";
+export * from "./notification.model";

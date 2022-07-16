@@ -2,10 +2,10 @@ import { NextPage } from 'next';
 
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { NotificationAlert, Title } from '@components';
+import { NotificationAlert, SubmitButton, Title } from '@components';
 import { classNames, emailRegex } from '@utils';
 import { useContext, useState } from 'react';
-import { AuthContext } from '@contexts';
+import { AuthContext, UserContext } from '@contexts';
 import { useRouter } from 'next/router';
 import { useNotification } from '@hooks';
 
@@ -15,9 +15,10 @@ interface FormValues {
 }
 
 const SignInPage: NextPage = () => {
-  const { setUserToken, authService } = useContext(AuthContext);
   const router = useRouter();
+
   const [loadingRequest, setLoadingRequest] = useState(false);
+  const { setUserToken, authService } = useContext(AuthContext);
   const { createNotification, closeNotification, notification, showNotification } = useNotification();
 
   const {
@@ -27,11 +28,10 @@ const SignInPage: NextPage = () => {
   } = useForm<FormValues>({ mode: 'onTouched' });
 
   const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {
-    console.log(data);
     setLoadingRequest(true);
-    const userToken = await authService.login(data);
+    const user = await authService.login(data);
     setLoadingRequest(false);
-    if (!userToken) {
+    if (!user) {
       createNotification({
         title: 'Error al Ingresar',
         message: 'Ha ocurrido un error al ingresar, por favor verifica tus datos e inténtalo de nuevo.',
@@ -41,10 +41,12 @@ const SignInPage: NextPage = () => {
     }
     createNotification({
       title: 'Ingreso correcto!',
-      message: 'Ya puedes disfrutar de SoccerFast!',
+      message: 'Te estamos redirigiendo a la pantalla de inicio...',
     });
-    setUserToken(userToken);
-    router.push('/');
+    setTimeout(() => {
+      setUserToken(user.token);
+      router.push('/');
+    }, 2000);
   };
 
   return (
@@ -116,17 +118,7 @@ const SignInPage: NextPage = () => {
               </div>
 
               <div>
-                <button
-                  type="submit"
-                  className={classNames(
-                    'w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white',
-                    !Object.entries(errors).length
-                      ? 'bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500'
-                      : 'bg-slate-300 cursor-default'
-                  )}
-                >
-                  Ingresar
-                </button>
+                <SubmitButton loading={loadingRequest} text="Ingresar" errors={errors}/>
               </div>
             </form>
 
@@ -182,12 +174,12 @@ const SignInPage: NextPage = () => {
             </div>
           </div>
         </div>
+        <NotificationAlert
+          show={showNotification}
+          notification={notification}
+          onClose={() => closeNotification()}
+        ></NotificationAlert>
       </div>
-      <NotificationAlert
-        show={showNotification}
-        notification={notification}
-        onClose={() => closeNotification()}
-      ></NotificationAlert>
     </>
   );
 };

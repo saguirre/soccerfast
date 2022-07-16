@@ -7,5 +7,6 @@ export interface User {
   avatar?: string;
   active: boolean;
   birthday?: Date;
+  token?: string;
   preferredLanguage: string;
 }

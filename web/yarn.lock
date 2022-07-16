@@ -67,6 +67,13 @@
   dependencies:
     "axios" "*"
 
+"@types/jwt-decode@^3.1.0":
+  "integrity" "sha512-tthwik7TKkou3mVnBnvVuHnHElbjtdbM63pdBCbZTirCt3WAdM73Y79mOri7+ljsS99ZVwUFZHLMxJuJnv/z1w=="
+  "resolved" "https://registry.npmjs.org/@types/jwt-decode/-/jwt-decode-3.1.0.tgz"
+  "version" "3.1.0"
+  dependencies:
+    "jwt-decode" "*"
+
 "@types/node@17.0.35":
   "integrity" "sha512-vu1SrqBjbbZ3J6vwY17jBs8Sr/BKA+/a/WtjRG+whKg1iuLFOosq872EXS0eXWILdO36DHQQeku/ZcL6hz2fpg=="
   "resolved" "https://registry.npmjs.org/@types/node/-/node-17.0.35.tgz"
@@ -382,6 +389,11 @@
   "integrity" "sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ=="
   "resolved" "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz"
   "version" "4.0.0"
+
+"jwt-decode@*", "jwt-decode@^3.1.2":
+  "integrity" "sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A=="
+  "resolved" "https://registry.npmjs.org/jwt-decode/-/jwt-decode-3.1.2.tgz"
+  "version" "3.1.2"
 
 "lilconfig@^2.0.5":
   "integrity" "sha512-xaYmXZtTHPAw5m+xLN8ab9C+3a8YmV3asNSPOATITbtwrfbwaLJj8h66H1WMIpALCkqsIzK3h7oQ+PdX+LQ9Eg=="

@@ -4,7 +4,7 @@ import { Transition } from '@headlessui/react';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/outline';
 import { XIcon } from '@heroicons/react/solid';
 
-import { Notification } from '@hooks';
+import { Notification } from '@models';
 
 interface Props {
   show: boolean;

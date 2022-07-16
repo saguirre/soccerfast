@@ -1,22 +1,22 @@
-import { AddRuleModel, Rule } from "@models";
-import { HttpService } from "./http-abstract.service";
+import { AddRuleModel, Rule } from '@models';
+import { HttpService } from './http-abstract.service';
 
 export interface IRulesService {
-  getRules(userToken: string): Promise<Rule[]>;
-  addRule(userToken: string, body: AddRuleModel): Promise<Rule | undefined>;
-  getRule(userToken: string, id: number): Promise<Rule>;
+  getRules(): Promise<Rule[]>;
+  addRule(body: AddRuleModel): Promise<Rule | undefined>;
+  getRule(id: number): Promise<Rule>;
 }
 
 export class RulesService extends HttpService implements IRulesService {
-  private endpointPrefix: string = "ules";
+  private endpointPrefix: string = 'ules';
 
-  getRules = async (RuleToken: string): Promise<Rule[]> => {
+  getRules = async (): Promise<Rule[]> => {
     try {
       const axiosResponse = await fetch(this.getServiceUrl(this.endpointPrefix), {
-        headers: this.getAuthHeaders(RuleToken),
+        headers: this.getAuthHeaders(),
       });
 
-      console.log("Fetch Rules response");
+      console.log('Fetch Rules response');
       console.log(axiosResponse.json());
       return axiosResponse.json();
     } catch (error) {
@@ -25,7 +25,7 @@ export class RulesService extends HttpService implements IRulesService {
     }
   };
 
-  addRule = async (userToken: string, body: AddRuleModel) => {
+  addRule = async (body: AddRuleModel) => {
     try {
       //   const axiosResponse = await axios.post(this.getServiceUrl(this.endpointPrefix), body, {
       // headers: this.getAuthHeaders(RuleToken),
@@ -37,12 +37,12 @@ export class RulesService extends HttpService implements IRulesService {
     }
   };
 
-  getRule = async (userToken: string, id: number) => {
+  getRule = async (id: number) => {
     try {
-      const axiosResponse = await fetch(this.getServiceUrl(this.endpointPrefix) + "/" + id, {
-        headers: this.getAuthHeaders(userToken),
+      const axiosResponse = await fetch(this.getServiceUrl(this.endpointPrefix) + '/' + id, {
+        headers: this.getAuthHeaders(),
       });
-      console.log("getRule response: ");
+      console.log('getRule response: ');
       console.log(axiosResponse.json());
       return axiosResponse.json();
     } catch (error) {

@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export interface IAuthService {
   signUp(user: AddUserModel): Promise<User | null>;
-  login(user: UserLoginModel): Promise<string | null>;
+  login(user: UserLoginModel): Promise<User | null>;
 }
 
 export class AuthService extends HttpService implements IAuthService {
@@ -20,11 +20,16 @@ export class AuthService extends HttpService implements IAuthService {
     }
   };
 
-  login = async (user: UserLoginModel): Promise<string | null> => {
+  login = async (user: UserLoginModel): Promise<User | null> => {
     try {
       const axiosResponse = await axios.post(this.getServiceUrl(`${this.endpointPrefix}/login`), user);
-      localStorage.setItem("access_token", axiosResponse.data.access_token)
-      return axiosResponse.data.access_token;
+      const responseUser = axiosResponse.data;
+      if (!responseUser) {
+        return null;
+      }
+
+      localStorage.setItem('access_token', responseUser.token);
+      return responseUser;
     } catch (error) {
       console.error(error);
       return null;

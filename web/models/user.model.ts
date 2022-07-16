@@ -8,5 +8,5 @@ export interface User {
   active: boolean;
   birthday?: Date;
   preferredLanguage: string;
-  token?: string;
+  token: string;
 }

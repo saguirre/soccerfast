@@ -1,9 +1,14 @@
-import Link from "next/link";
+import Link from 'next/link';
 
-import { SubmitHandler, useForm } from "react-hook-form";
+import axios from 'axios';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { classNames, emailRegex } from "@utils";
-import { Title } from "@components";
+import { classNames, emailRegex } from '@utils';
+import { SubmitButton, Title } from '@components';
+import { AddUserModel } from '@models';
+import { useContext, useState } from 'react';
+import { AuthContext } from 'contexts/auth.context';
+import { useRouter } from 'next/router';
 
 interface FormValues {
   name: string;
@@ -13,14 +18,28 @@ interface FormValues {
 }
 
 const SignUpPage: React.FC = () => {
+  const { authService } = useContext(AuthContext);
+  const [loadingRequest, setLoadingRequest] = useState(false);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<FormValues>({ mode: "onTouched" });
+  } = useForm<FormValues>({ mode: 'onTouched' });
 
-  const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => console.log(data);
+  const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {
+    setLoadingRequest(true);
+    const body: AddUserModel = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      type: 'Email',
+    };
+    await authService.signUp(body);
+    setLoadingRequest(false);
+    router.push('/signin');
+  };
 
   return (
     <>
@@ -37,13 +56,13 @@ const SignUpPage: React.FC = () => {
                   <input
                     id="name"
                     type="name"
-                    {...register("name", {
-                      required: "Debes ingresar tu nombre completo.",
+                    {...register('name', {
+                      required: 'Debes ingresar tu nombre completo.',
                       minLength: {
                         value: 8,
-                        message: "El nombre es demasiado corto, debe tener al menos 8 caracteres.",
+                        message: 'El nombre es demasiado corto, debe tener al menos 8 caracteres.',
                       },
-                      maxLength: { value: 50, message: "El nombre es demasiado largo." },
+                      maxLength: { value: 50, message: 'El nombre es demasiado largo.' },
                     })}
                     placeholder="Pablo Bengoechea"
                     autoComplete="name"
@@ -62,15 +81,15 @@ const SignUpPage: React.FC = () => {
                     placeholder="pablo.bengoechea@gmail.com"
                     required
                     type="email"
-                    {...register("email", {
-                      required: "Debes ingresar un email.",
+                    {...register('email', {
+                      required: 'Debes ingresar un email.',
                       pattern: {
                         value: emailRegex,
-                        message: "El formato del email es incorrecto.",
+                        message: 'El formato del email es incorrecto.',
                       },
                       maxLength: {
                         value: 50,
-                        message: "El email es demasiado largo.",
+                        message: 'El email es demasiado largo.',
                       },
                     })}
                     autoComplete="email"
@@ -88,13 +107,13 @@ const SignUpPage: React.FC = () => {
                   <input
                     id="password"
                     type="password"
-                    {...register("password", {
-                      required: "Debes ingresar una contraseña.",
+                    {...register('password', {
+                      required: 'Debes ingresar una contraseña.',
                       minLength: {
                         value: 6,
-                        message: "La contraseña debe tener al menos 6 caracteres.",
+                        message: 'La contraseña debe tener al menos 6 caracteres.',
                       },
-                      maxLength: { value: 50, message: "La contraseña es demasiado larga." },
+                      maxLength: { value: 50, message: 'La contraseña es demasiado larga.' },
                     })}
                     placeholder="Escribe tu contraseña"
                     autoComplete="current-password"
@@ -113,9 +132,9 @@ const SignUpPage: React.FC = () => {
                   <input
                     id="repeatPassword"
                     placeholder="Repite tu contraseña"
-                    {...register("repeatPassword", {
-                      required: "Debes confirmar tu contraseña.",
-                      validate: (value) => value === watch("password"),
+                    {...register('repeatPassword', {
+                      required: 'Debes confirmar tu contraseña.',
+                      validate: (value) => value === watch('password'),
                     })}
                     type="password"
                     autoComplete="current-repeatPassword"
@@ -125,7 +144,7 @@ const SignUpPage: React.FC = () => {
                   {errors.repeatPassword && (
                     <span className="text-sm text-rose-500 mt-1">{errors.repeatPassword.message}</span>
                   )}
-                  {errors.repeatPassword && errors.repeatPassword.type === "validate" && (
+                  {errors.repeatPassword && errors.repeatPassword.type === 'validate' && (
                     <span className="text-sm text-rose-500 mt-1">Las contraseñas no coinciden</span>
                   )}
                 </div>
@@ -143,17 +162,7 @@ const SignUpPage: React.FC = () => {
               </div>
 
               <div>
-                <button
-                  type="submit"
-                  className={classNames(
-                    "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white",
-                    !Object.entries(errors).length
-                      ? "bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
-                      : "bg-slate-300 cursor-default"
-                  )}
-                >
-                  Registrarme
-                </button>
+                <SubmitButton loading={loadingRequest} text="Registrarme" errors={errors} />
               </div>
             </form>
 

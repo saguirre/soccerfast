@@ -1,12 +1,13 @@
-import { NextPage } from "next";
+import { NextPage } from 'next';
 
-import { SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { Title } from "@components";
-import { classNames, emailRegex } from "@utils";
-import { useContext } from "react";
-import { AuthContext } from "@contexts";
-import { useRouter } from "next/router";
+import { NotificationAlert, Title } from '@components';
+import { classNames, emailRegex } from '@utils';
+import { useContext, useState } from 'react';
+import { AuthContext } from '@contexts';
+import { useRouter } from 'next/router';
+import { useNotification } from '@hooks';
 
 interface FormValues {
   email: string;
@@ -14,20 +15,36 @@ interface FormValues {
 }
 
 const SignInPage: NextPage = () => {
-  const { setUserToken } = useContext(AuthContext);
+  const { setUserToken, authService } = useContext(AuthContext);
   const router = useRouter();
+  const [loadingRequest, setLoadingRequest] = useState(false);
+  const { createNotification, closeNotification, notification, showNotification } = useNotification();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({ mode: "onTouched" });
+  } = useForm<FormValues>({ mode: 'onTouched' });
 
-  const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {
     console.log(data);
-    setUserToken("userToken");
-    localStorage.setItem("userToken", "userToken");
-    router.push("/");
+    setLoadingRequest(true);
+    const userToken = await authService.login(data);
+    setLoadingRequest(false);
+    if (!userToken) {
+      createNotification({
+        title: 'Error al Ingresar',
+        message: 'Ha ocurrido un error al ingresar, por favor verifica tus datos e inténtalo de nuevo.',
+        isError: true,
+      });
+      return;
+    }
+    createNotification({
+      title: 'Ingreso correcto!',
+      message: 'Ya puedes disfrutar de SoccerFast!',
+    });
+    setUserToken(userToken);
+    router.push('/');
   };
 
   return (
@@ -47,15 +64,15 @@ const SignInPage: NextPage = () => {
                     placeholder="pablo.bengoechea@gmail.com"
                     required
                     type="email"
-                    {...register("email", {
-                      required: "Debes ingresar un email.",
+                    {...register('email', {
+                      required: 'Debes ingresar un email.',
                       pattern: {
                         value: emailRegex,
-                        message: "El formato del email es incorrecto.",
+                        message: 'El formato del email es incorrecto.',
                       },
                       maxLength: {
                         value: 50,
-                        message: "El email es demasiado largo.",
+                        message: 'El email es demasiado largo.',
                       },
                     })}
                     autoComplete="email"
@@ -73,13 +90,13 @@ const SignInPage: NextPage = () => {
                   <input
                     id="password"
                     type="password"
-                    {...register("password", {
-                      required: "Debes ingresar una contraseña.",
+                    {...register('password', {
+                      required: 'Debes ingresar una contraseña.',
                       minLength: {
                         value: 6,
-                        message: "La contraseña debe tener al menos 6 caracteres.",
+                        message: 'La contraseña debe tener al menos 6 caracteres.',
                       },
-                      maxLength: { value: 50, message: "La contraseña es demasiado larga." },
+                      maxLength: { value: 50, message: 'La contraseña es demasiado larga.' },
                     })}
                     placeholder="Escribe tu contraseña"
                     autoComplete="current-password"
@@ -102,10 +119,10 @@ const SignInPage: NextPage = () => {
                 <button
                   type="submit"
                   className={classNames(
-                    "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white",
+                    'w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white',
                     !Object.entries(errors).length
-                      ? "bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
-                      : "bg-slate-300 cursor-default"
+                      ? 'bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500'
+                      : 'bg-slate-300 cursor-default'
                   )}
                 >
                   Ingresar
@@ -166,6 +183,11 @@ const SignInPage: NextPage = () => {
           </div>
         </div>
       </div>
+      <NotificationAlert
+        show={showNotification}
+        notification={notification}
+        onClose={() => closeNotification()}
+      ></NotificationAlert>
     </>
   );
 };

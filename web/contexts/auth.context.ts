@@ -1,11 +1,14 @@
-import { createContext, Dispatch, SetStateAction } from "react";
+import { createContext, Dispatch, SetStateAction } from 'react';
+import { AuthService, IAuthService } from '@services';
 
 export interface IAuthContext {
   userToken: string;
   setUserToken: Dispatch<SetStateAction<string>>;
+  authService: IAuthService;
 }
 
 export const AuthContext = createContext<IAuthContext>({
-  userToken: "",
+  userToken: '',
   setUserToken: () => {},
+  authService: new AuthService(),
 });

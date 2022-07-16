@@ -1,5 +1,12 @@
 export interface User {
-  name: string;
+  id: number;
   email: string;
-  password: string;
+  name: string;
+  type: string;
+  phone?: string;
+  avatar?: string;
+  active: boolean;
+  birthday?: Date;
+  preferredLanguage: string;
+  token?: string;
 }

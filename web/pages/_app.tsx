@@ -1,25 +1,25 @@
-import "../styles/globals.css";
-import { useEffect, useState } from "react";
-import type { AppProps } from "next/app";
-import { useRouter } from "next/router";
+import '../styles/globals.css';
+import { useEffect, useState } from 'react';
+import type { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
 
-import { LoadingWrapper } from "@components";
-import { AdminLayout, PublicLayout, UserLayout } from "@layouts";
-import { AppContext, AuthContext } from "@contexts";
-import { TournamentsService } from "@services";
+import { LoadingWrapper } from '@components';
+import { AdminLayout, PublicLayout, UserLayout } from '@layouts';
+import { AppContext, AuthContext } from '@contexts';
+import { AuthService, TournamentsService } from '@services';
 
 function SoccerFast({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [userToken, setUserToken] = useState("");
-  const authContextProps = { userToken, setUserToken };
+  const [userToken, setUserToken] = useState('');
+  const authService = new AuthService();
+  const authContextProps = { userToken, setUserToken, authService };
   const [userIsAdmin, setUserIsAdmin] = useState(false);
   const tournamentsService = new TournamentsService();
   useEffect(() => {
     if (router.isReady) {
       setTimeout(() => {
-        const token = localStorage.getItem("userToken");
-        console.log("Token on App: ", token);
+        const token = localStorage.getItem('access_token');
         setUserToken(token as string);
         setUserIsAdmin(true);
         setLoading(false);

@@ -11,12 +11,15 @@
     "@hookform/error-message": "^2.0.0",
     "@tailwindcss/aspect-ratio": "^0.4.0",
     "@tailwindcss/forms": "^0.5.2",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
     "next": "latest",
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-hook-form": "^7.33.0"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/node": "17.0.35",
     "@types/react": "18.0.9",
     "@types/react-dom": "18.0.5",

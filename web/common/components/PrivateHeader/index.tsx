@@ -250,7 +250,7 @@ export const PrivateHeader: React.FC = () => {
               >
                 <Menu.Items className="z-50 origin-top-right absolute right-6 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                   {userNavigation.map((item) => (
-                    <Link href={item.href}>
+                    <Link key={item.href} href={item.href}>
                       <Menu.Item key={item.name}>
                         {({ active }) => (
                           <div

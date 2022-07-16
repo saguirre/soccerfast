@@ -6,3 +6,4 @@ export * from "./team.model";
 export * from "./tournament.model";
 export * from "./user.model";
 export * from "./rule.model";
+export * from "./user-login.model";

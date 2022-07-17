@@ -9,15 +9,14 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
-  Logger,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { PostUser, PutUser, User } from '@dtos';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileService } from 'src/file/file.service';
+import { FileService } from '../file/file.service';
 import { readFileSync, existsSync, mkdirSync, unlinkSync } from 'fs';
-import { SpacesFolderEnum } from '@enums';
+import { SpacesFolderEnum } from '../enums';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';

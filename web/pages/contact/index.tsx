@@ -1,10 +1,13 @@
-import { NextPage } from "next";
+import { useContext, useEffect, useState } from 'react';
+import { NextPage } from 'next';
 
-import { MailIcon, PhoneIcon } from "@heroicons/react/solid";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { MailIcon, PhoneIcon } from '@heroicons/react/solid';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { Title } from "@components";
-import { emailRegex } from "@utils";
+import { LogoComponent, Title } from '@components';
+import { emailRegex } from '@utils';
+import { AppContext } from '@contexts';
+import { ContactInfo, ContactInfoEmail, ContactInfoPhone, ContactInfoSocialMedia } from '@models';
 
 interface FormValues {
   name: string;
@@ -16,13 +19,23 @@ interface FormValues {
 }
 
 const ContactPage: NextPage = () => {
+  const { contactInfoService } = useContext(AppContext);
+  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({ mode: "onTouched" });
+  } = useForm<FormValues>({ mode: 'onTouched' });
 
   const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => console.log(data);
+
+  const getContactInfo = async () => {
+    setContactInfo(await contactInfoService.getContactInfo());
+  };
+
+  useEffect(() => {
+    getContactInfo();
+  }, []);
 
   return (
     <div className="relative py-12 bg-white h-full">
@@ -146,52 +159,30 @@ const ContactPage: NextPage = () => {
                     <dt>
                       <span className="sr-only">Phone number</span>
                     </dt>
-                    <dd className="flex text-base text-sky-50">
-                      <PhoneIcon className="flex-shrink-0 w-6 h-6 text-sky-300" aria-hidden="true" />
-                      <span className="ml-2">+1 (754) 231-5401</span>
-                    </dd>
-                    <dd className="flex text-base text-sky-50">
-                      <PhoneIcon className="flex-shrink-0 w-6 h-6 text-sky-300" aria-hidden="true" />
-                      <span className="ml-2">+1 (786) 306-8818</span>
-                    </dd>
+                    {contactInfo?.phones?.map((phone: ContactInfoPhone) => (
+                      <dd key={phone.id} className="flex text-base text-sky-50">
+                        <PhoneIcon className="flex-shrink-0 w-6 h-6 text-sky-300" aria-hidden="true" />
+                        <span className="ml-2">{phone.number}</span>
+                      </dd>
+                    ))}
                     <dt>
                       <span className="sr-only">Email</span>
                     </dt>
-                    <dd className="flex text-base text-sky-50">
-                      <MailIcon className="flex-shrink-0 w-6 h-6 text-sky-300" aria-hidden="true" />
-                      <span className="ml-2">urucalv13@gmail.com</span>
-                    </dd>
+                    {contactInfo?.emails?.map((email: ContactInfoEmail) => (
+                      <dd key={email.id} className="flex text-base text-sky-50">
+                        <MailIcon className="flex-shrink-0 w-6 h-6 text-sky-300" aria-hidden="true" />
+                        <span className="ml-2">{email.email}</span>
+                      </dd>
+                    ))}
                   </dl>
-                  <ul role="list" className="mt-8 flex space-x-12">
-                    <li>
-                      <a className="text-sky-300 hover:text-sky-100" href="#">
-                        <span className="sr-only">Facebook</span>
-                        <svg className="w-7 h-7" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
-                          <path
-                            fillRule="evenodd"
-                            d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                  <div className="mt-8 flex space-x-12">
+                    {contactInfo?.socialMedias?.map((socialMedia: ContactInfoSocialMedia) => (
+                      <a key={socialMedia.name} href={socialMedia.url} className="text-sky-300 hover:text-sky-100">
+                        <span className="sr-only">{socialMedia.name}</span>
+                        <LogoComponent logo={socialMedia.logo} />
                       </a>
-                    </li>
-                    <li>
-                      <a className="text-sky-300 hover:text-sky-100" href="#">
-                        <span className="sr-only">Google</span>
-                        <svg className="w-7 h-7" aria-hidden="true" fill="currentColor" viewBox="0 0 64 64">
-                          <path d="M 32.521484 6 C 18.158484 6 6.515625 17.642 6.515625 32 C 6.515625 46.358 18.158484 58 32.521484 58 C 54.209484 58 59.098453 37.865969 57.064453 27.667969 L 51.181641 27.667969 L 49.269531 27.667969 L 32.515625 27.667969 L 32.515625 36.333984 L 49.279297 36.333984 C 47.351759 43.804816 40.588119 49.332031 32.515625 49.332031 C 22.943625 49.332031 15.181641 41.572 15.181641 32 C 15.181641 22.428 22.943625 14.667969 32.515625 14.667969 C 36.868625 14.667969 40.834906 16.283594 43.878906 18.933594 L 50.033203 12.779297 C 45.410203 8.5672969 39.266484 6 32.521484 6 z"></path>
-                        </svg>
-                      </a>
-                    </li>
-                    <li>
-                      <a className="text-sky-300 hover:text-sky-100" href="#">
-                        <span className="sr-only">Twitter</span>
-                        <svg className="w-7 h-7" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                        </svg>
-                      </a>
-                    </li>
-                  </ul>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Contact form */}
@@ -208,9 +199,9 @@ const ContactPage: NextPage = () => {
                       <div className="mt-1">
                         <input
                           type="text"
-                          {...register("name", {
-                            required: "Debes ingresar tu nombre.",
-                            maxLength: { value: 50, message: "El nombre es demasiado largo." },
+                          {...register('name', {
+                            required: 'Debes ingresar tu nombre.',
+                            maxLength: { value: 50, message: 'El nombre es demasiado largo.' },
                           })}
                           id="name"
                           placeholder="Pablo"
@@ -227,9 +218,9 @@ const ContactPage: NextPage = () => {
                       <div className="mt-1">
                         <input
                           type="text"
-                          {...register("lastName", {
-                            required: "Debes ingresar tu apellido.",
-                            maxLength: { value: 50, message: "El apellido es demasiado largo." },
+                          {...register('lastName', {
+                            required: 'Debes ingresar tu apellido.',
+                            maxLength: { value: 50, message: 'El apellido es demasiado largo.' },
                           })}
                           id="lastName"
                           placeholder="Bengoechea"
@@ -249,15 +240,15 @@ const ContactPage: NextPage = () => {
                         <input
                           id="email"
                           type="email"
-                          {...register("email", {
-                            required: "Debes ingresar un email.",
+                          {...register('email', {
+                            required: 'Debes ingresar un email.',
                             pattern: {
                               value: emailRegex,
-                              message: "El formato del email es incorrecto.",
+                              message: 'El formato del email es incorrecto.',
                             },
                             maxLength: {
                               value: 50,
-                              message: "El email es demasiado largo.",
+                              message: 'El email es demasiado largo.',
                             },
                           })}
                           placeholder="pablo.bengoechea@gmail.com"
@@ -280,10 +271,10 @@ const ContactPage: NextPage = () => {
                         <input
                           type="text"
                           id="phone"
-                          {...register("phone", {
+                          {...register('phone', {
                             maxLength: {
                               value: 13,
-                              message: "El teléfono es demasiado largo.",
+                              message: 'El teléfono es demasiado largo.',
                             },
                           })}
                           placeholder="+1 (786) 289-1891"
@@ -302,11 +293,11 @@ const ContactPage: NextPage = () => {
                         <input
                           type="text"
                           id="subject"
-                          {...register("subject", {
-                            required: "Debes ingresar un asunto.",
+                          {...register('subject', {
+                            required: 'Debes ingresar un asunto.',
                             maxLength: {
                               value: 50,
-                              message: "El asunto es demasiado largo.",
+                              message: 'El asunto es demasiado largo.',
                             },
                           })}
                           placeholder="Asunto"
@@ -327,18 +318,18 @@ const ContactPage: NextPage = () => {
                       <div className="mt-1">
                         <textarea
                           id="message"
-                          {...register("message", {
-                            required: "Debes ingresar un mensaje.",
+                          {...register('message', {
+                            required: 'Debes ingresar un mensaje.',
                             maxLength: {
                               value: 500,
-                              message: "El mensaje es demasiado largo.",
+                              message: 'El mensaje es demasiado largo.',
                             },
                           })}
                           rows={4}
                           placeholder="Mensaje"
                           className="py-3 px-4 block w-full shadow-sm text-warm-gray-900 focus:ring-sky-500 focus:border-sky-500 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
                           aria-describedby="message-max"
-                          defaultValue={""}
+                          defaultValue={''}
                         />
                         {errors.message && <span className="text-sm text-rose-500 mt-1">{errors.message.message}</span>}
                       </div>

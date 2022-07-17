@@ -14,9 +14,9 @@ import { ContactInfoService } from './contact.service';
 export class ContactInfoController {
   constructor(private readonly contactInfoService: ContactInfoService) {}
 
-  @Get('/:id')
-  async getUserById(@Param('id') id: string): Promise<ContactInfo> {
-    return this.contactInfoService.contactInfo({ id: Number(id) });
+  @Get()
+  async getUserById(): Promise<ContactInfo> {
+    return this.contactInfoService.contactInfo({ id: 1 });
   }
 
   @Post()

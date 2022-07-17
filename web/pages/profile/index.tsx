@@ -33,7 +33,7 @@ const ProfilePage: NextPage = () => {
 
   useEffect(() => {
     getUser();
-  });
+  }, []);
 
   return (
     <div className="h-full w-full bg-white flex flex-col justify-center pt-4 pb-20 sm:px-6 lg:px-8">

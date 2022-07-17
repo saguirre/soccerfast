@@ -1,37 +1,36 @@
-import Link from "next/link";
-import { useRouter } from "next/router";
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const images = [
   {
-    title: "C.A. Cerro",
-    description: "Actual campeón",
-    href: "/gallery/ca-cerro",
-    source: "/escudo-cerro.png",
+    title: 'C.A. Cerro',
+    description: 'Actual campeón',
+    href: '/gallery/ca-cerro',
+    source: '/escudo-cerro.png',
   },
   {
-    title: "Monterrey F.C.",
-    description: "",
-    href: "/gallery/monterrey-fc",
-    source: "/escudo-monterrey.png",
+    title: 'Monterrey F.C.',
+    description: '',
+    href: '/gallery/monterrey-fc',
+    source: '/escudo-monterrey.png',
   },
   {
-    title: "Beach City",
-    description: "",
-    href: "/gallery/beach-city-fc",
-    source: "/escudo-beach-city.png",
+    title: 'Beach City',
+    description: '',
+    href: '/gallery/beach-city-fc',
+    source: '/escudo-beach-city.png',
   },
   {
-    title: "Racing Club Miami",
-    description: "",
-    href: "/racing-club-miami",
-    source: "/escudo-racing.png",
+    title: 'Racing Club Miami',
+    description: '',
+    href: '/racing-club-miami',
+    source: '/escudo-racing.png',
   },
 ];
 
 export const TeamGallery: React.FC = () => {
   const router = useRouter();
   const goToImageGallery = (href: string) => {
-    console.log(href);
     router.push(href);
   };
 

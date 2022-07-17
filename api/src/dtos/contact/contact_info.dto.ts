@@ -3,5 +3,6 @@ export interface ContactInfo {
   companyName: string;
   companyPhrase: string;
   companyLogo: string;
+  copyright: string;
   companyLogoUrl?: string;
 }

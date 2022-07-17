@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { LoadingWrapper } from '@components';
 import { AdminLayout, PublicLayout, UserLayout } from '@layouts';
 import { AppContext, AuthContext, UserContext } from '@contexts';
-import { AuthService, TournamentsService, UserService } from '@services';
+import { AuthService, TeamService, ContactInfoService, RuleService, TournamentService, UserService } from '@services';
 import { User } from '@models';
 
 function SoccerFast({ Component, pageProps }: AppProps) {
@@ -19,7 +19,12 @@ function SoccerFast({ Component, pageProps }: AppProps) {
   const [userIsAdmin, setUserIsAdmin] = useState(false);
   const userService = new UserService();
   const userContextProps = { user, setUser, userService };
-  const tournamentsService = new TournamentsService();
+  const tournamentService = new TournamentService();
+  const teamService = new TeamService();
+  const ruleService = new RuleService();
+  const contactInfoService = new ContactInfoService();
+  const appContextProps = { tournamentService, teamService, ruleService, contactInfoService };
+
   useEffect(() => {
     if (router.isReady) {
       setTimeout(() => {
@@ -35,7 +40,7 @@ function SoccerFast({ Component, pageProps }: AppProps) {
     <LoadingWrapper loading={loading}>
       <AuthContext.Provider value={authContextProps}>
         <UserContext.Provider value={userContextProps}>
-          <AppContext.Provider value={{ tournamentsService }}>
+          <AppContext.Provider value={appContextProps}>
             {userToken ? (
               userIsAdmin ? (
                 <AdminLayout>

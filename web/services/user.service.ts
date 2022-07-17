@@ -13,13 +13,7 @@ export class UserService extends HttpService implements IUserService {
 
   getUsers = async (): Promise<User[]> => {
     try {
-      const axiosResponse = await fetch(this.getServiceUrl(this.endpointPrefix), {
-        headers: this.getAuthHeaders(),
-      });
-
-      console.log('Fetch Users response');
-      console.log(axiosResponse.json());
-      return axiosResponse.json();
+      return new Promise<User[]>(() => {});
     } catch (error) {
       console.error(error);
       return [];

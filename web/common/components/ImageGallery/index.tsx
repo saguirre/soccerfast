@@ -17,10 +17,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
   };
 
   const moveToNextImage = () => {
-    console.log("LLamando move next");
-    console.log("Indice en nextImage: ", currentImageIndex);
     if (currentImageIndex < images.length - 1) {
-      console.log("Entre al if en nextImage: ");
       setCurrentImageIndex((currentIndex) => {
         return (currentIndex += 1);
       });
@@ -28,10 +25,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
   };
 
   const moveToPreviousImage = () => {
-    console.log("LLamando move previous");
-    console.log("Indice en movePrevious: ", currentImageIndex);
     if (currentImageIndex > 0) {
-      console.log("Entre al if en previousImage: ");
       setCurrentImageIndex((currentIndex) => {
         return (currentIndex -= 1);
       });
@@ -39,7 +33,6 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
   };
 
   useEffect(() => {
-    console.log("Se llama esto?");
     if (currentImageIndex < images.length - 1 && currentImageIndex > 0) {
       setCurrentImage(images[currentImageIndex]);
     }

@@ -99,10 +99,12 @@ export const PrivateHeader: React.FC = () => {
     <Popover className="relative bg-white">
       <div className="flex justify-between items-center px-4 py-6 sm:px-6 md:justify-start md:space-x-10">
         <div>
-          <a href="/" className="flex">
-            <span className="sr-only">SoccerFast</span>
-            <Image width={200} height={60} src="/logo-black.svg" alt="Logo" />
-          </a>
+          <Link href="/">
+            <div className="flex">
+              <span className="sr-only">SoccerFast</span>
+              <Image width={200} height={60} src="/logo-black.svg" alt="Logo" />
+            </div>
+          </Link>
         </div>
         <div className="-mr-2 -my-2 md:hidden">
           <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-sky-500">
@@ -260,23 +262,25 @@ export const PrivateHeader: React.FC = () => {
                 leaveTo="transform opacity-0 scale-95"
               >
                 <Menu.Items className="z-50 origin-top-right absolute right-6 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  {userNavigation.map((item) => (
-                    <Link key={item.href} href={item.href}>
-                      <Menu.Item key={item.name}>
-                        {({ active }) => (
-                          <div
-                            onClick={() => item.name == 'Salir' && logout()}
-                            className={classNames(
-                              active ? 'bg-gray-100' : '',
-                              'block hover:cursor-pointer px-4 py-3 text-md text-gray-700'
-                            )}
-                          >
-                            {item.name}
-                          </div>
-                        )}
-                      </Menu.Item>
-                    </Link>
-                  ))}
+                  {userNavigation.map((item) => {
+                    return (
+                      <Link key={item.href} href={item.href}>
+                        <Menu.Item key={item.name}>
+                          {({ active }) => (
+                            <div
+                              onClick={() => item.name == 'Salir' && logout()}
+                              className={classNames(
+                                active ? 'bg-gray-100' : '',
+                                'block hover:cursor-pointer px-4 py-3 text-md text-gray-700'
+                              )}
+                            >
+                              {item.name}
+                            </div>
+                          )}
+                        </Menu.Item>
+                      </Link>
+                    );
+                  })}
                 </Menu.Items>
               </Transition>
             </Menu>

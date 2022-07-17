@@ -1,8 +1,8 @@
-import { Fragment } from "react";
-import Image from "next/image";
+import { Fragment } from 'react';
+import Image from 'next/image';
 
-import { Popover, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/solid";
+import { Popover, Transition } from '@headlessui/react';
+import { ChevronDownIcon } from '@heroicons/react/solid';
 import {
   ClipboardListIcon,
   ViewGridIcon,
@@ -12,57 +12,57 @@ import {
   BadgeCheckIcon,
   LightningBoltIcon,
   SwitchVerticalIcon,
-} from "@heroicons/react/outline";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { classNames } from "@utils";
+} from '@heroicons/react/outline';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { classNames } from '@utils';
 
 const tournaments = [
   {
-    name: "Torneo SoccerFast",
-    description: "Explora nuestro principal torneo, así como su fixture y tabla de posiciones.",
-    href: "/tournaments/soccerfast",
+    name: 'Torneo SoccerFast',
+    description: 'Explora nuestro principal torneo, así como su fixture y tabla de posiciones.',
+    href: '/tournaments/soccerfast',
     icon: ClipboardListIcon,
   },
   {
-    name: "Semifinales",
-    description: "Información acerca de las semifinales. Quién pasará a la final?",
-    href: "/tournaments/semifinales",
+    name: 'Semifinales',
+    description: 'Información acerca de las semifinales. Quién pasará a la final?',
+    href: '/tournaments/semifinales',
     icon: SwitchVerticalIcon,
   },
   {
-    name: "Finales",
-    description: "Mira qué equipos son los mejores y cuándo se enfrentan.",
-    href: "/tournaments/finales",
+    name: 'Finales',
+    description: 'Mira qué equipos son los mejores y cuándo se enfrentan.',
+    href: '/tournaments/finales',
     icon: LightningBoltIcon,
   },
   {
-    name: "Copa de Campeones",
-    description: "Toda la información acerca de la prestigiosa Copa de Campeones.",
-    href: "/tournaments/copa-de-campeones",
+    name: 'Copa de Campeones',
+    description: 'Toda la información acerca de la prestigiosa Copa de Campeones.',
+    href: '/tournaments/copa-de-campeones',
     icon: StarIcon,
   },
   {
-    name: "Torneos Paralelos",
-    description: "Aquí podes encontrar toda la información de nuestros torneos alternativos.",
-    href: "/torneos/paralelos",
+    name: 'Torneos Paralelos',
+    description: 'Aquí podes encontrar toda la información de nuestros torneos alternativos.',
+    href: '/torneos/paralelos',
     icon: ViewGridIcon,
   },
   {
-    name: "Tabla FairPlay",
-    description: "Mira qué equipos son los que mejor comportamiento deportivo tienen en el campeonato.",
-    href: "#",
+    name: 'Tabla FairPlay',
+    description: 'Mira qué equipos son los que mejor comportamiento deportivo tienen en el campeonato.',
+    href: '#',
     icon: BadgeCheckIcon,
   },
 ];
 
 const teams = [
-  { name: "C.A. Cerro", imageUrl: "/escudo-cerro.png", href: "#" },
-  { name: "Monterrey F.C.", imageUrl: "/escudo-monterrey.png", href: "#" },
-  { name: "Beach City", imageUrl: "/escudo-beach-city.png", href: "#" },
-  { name: "Racing Club Miami", imageUrl: "/escudo-racing.png", href: "#" },
-  { name: "Rio de la Plata F.C.", imageUrl: "/escudo-rio-de-la-plata.png", href: "#" },
-  { name: "Furiosos F.C.", imageUrl: "/escudo-furiosos.png", href: "#" },
+  { name: 'C.A. Cerro', imageUrl: '/escudo-cerro.png', href: '#' },
+  { name: 'Monterrey F.C.', imageUrl: '/escudo-monterrey.png', href: '#' },
+  { name: 'Beach City', imageUrl: '/escudo-beach-city.png', href: '#' },
+  { name: 'Racing Club Miami', imageUrl: '/escudo-racing.png', href: '#' },
+  { name: 'Rio de la Plata F.C.', imageUrl: '/escudo-rio-de-la-plata.png', href: '#' },
+  { name: 'Furiosos F.C.', imageUrl: '/escudo-furiosos.png', href: '#' },
 ];
 
 export const Header: React.FC = () => {
@@ -75,10 +75,12 @@ export const Header: React.FC = () => {
     <Popover className="relative bg-white">
       <div className="flex justify-between items-center px-4 py-6 sm:px-6 md:justify-start md:space-x-10">
         <div>
-          <a href="/" className="flex">
-            <span className="sr-only">Workflow</span>
-            <Image width={200} height={60} src="/logo-black.svg" alt="Logo" />
-          </a>
+          <Link href="/">
+            <div className="flex">
+              <span className="sr-only">Workflow</span>
+              <Image width={200} height={60} src="/logo-black.svg" alt="Logo" />
+            </div>
+          </Link>
         </div>
         <div className="-mr-2 -my-2 md:hidden">
           <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-sky-500">
@@ -93,15 +95,15 @@ export const Header: React.FC = () => {
                 <>
                   <Popover.Button
                     className={classNames(
-                      open ? "text-gray-500" : "text-gray-600",
-                      "group bg-white rounded-md px-2 inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                      open ? 'text-gray-500' : 'text-gray-600',
+                      'group bg-white rounded-md px-2 inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500'
                     )}
                   >
                     <span>Torneos</span>
                     <ChevronDownIcon
                       className={classNames(
-                        open ? "text-gray-400" : "text-gray-600",
-                        "ml-2 h-5 w-5 group-hover:text-gray-500"
+                        open ? 'text-gray-400' : 'text-gray-600',
+                        'ml-2 h-5 w-5 group-hover:text-gray-500'
                       )}
                       aria-hidden="true"
                     />
@@ -160,15 +162,15 @@ export const Header: React.FC = () => {
                 <>
                   <Popover.Button
                     className={classNames(
-                      open ? "text-gray-600" : "text-gray-600",
-                      "group bg-white rounded-md px-2 inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                      open ? 'text-gray-600' : 'text-gray-600',
+                      'group bg-white rounded-md px-2 inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500'
                     )}
                   >
                     <span>Equipos</span>
                     <ChevronDownIcon
                       className={classNames(
-                        open ? "text-gray-400" : "text-gray-600",
-                        "ml-2 h-5 w-5 group-hover:text-gray-500"
+                        open ? 'text-gray-400' : 'text-gray-600',
+                        'ml-2 h-5 w-5 group-hover:text-gray-500'
                       )}
                       aria-hidden="true"
                     />
@@ -302,7 +304,7 @@ export const Header: React.FC = () => {
                   Sign up
                 </a>
                 <p className="mt-6 text-center text-base font-medium text-gray-500">
-                  Existing customer?{" "}
+                  Existing customer?{' '}
                   <a href="#" className="text-sky-600 hover:text-sky-500">
                     Sign in
                   </a>

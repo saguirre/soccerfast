@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { Prisma } from '@prisma/client';
+import { Contact_Info, Prisma } from '@prisma/client';
 import { ContactInfo } from '@dtos';
 
 @Injectable()
@@ -9,9 +9,16 @@ export class ContactInfoService {
 
   async contactInfo(
     contact_InfoWhereUniqueInput: Prisma.Contact_InfoWhereUniqueInput,
-  ): Promise<ContactInfo | null> {
-    return this.prisma.contact_Info.findUnique({
+  ): Promise<Contact_Info | null> {
+    return this.prisma.contact_Info.findFirst({
       where: contact_InfoWhereUniqueInput,
+      include: {
+        emails: { where: { contactInfoId: contact_InfoWhereUniqueInput.id } },
+        phones: { where: { contactInfoId: contact_InfoWhereUniqueInput.id } },
+        socialMedias: {
+          where: { contactInfoId: contact_InfoWhereUniqueInput.id },
+        },
+      },
     });
   }
 

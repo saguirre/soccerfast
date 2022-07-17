@@ -15,3 +15,7 @@ export * from "./Modals/Base";
 export * from "./Modals/Base/ModalTitle";
 export * from "./Modals/Base/ModalBackground";
 export * from "./NotificationAlert";
+export * from "./Logos";
+export * from "./Logos/FacebookLogo";
+export * from "./Logos/InstagramLogo";
+export * from "./Logos/TwitterLogo";

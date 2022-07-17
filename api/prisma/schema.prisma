@@ -91,6 +91,7 @@ model Contact_Info {
   companyName    String
   companyPhrase  String
   companyLogo    String
+  copyright      String                 @default("")
   companyLogoUrl String?
   phones         Contact_Phone[]
   emails         Contact_Email[]

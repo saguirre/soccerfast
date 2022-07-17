@@ -86,9 +86,9 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ teams }) => {
                       </td>
                       <td className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500">{team.points}</td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                        <div className="text-indigo-600 hover:text-indigo-900">
                           Editar<span className="sr-only">Edit</span>
-                        </a>
+                        </div>
                       </td>
                     </tr>
                   ))}

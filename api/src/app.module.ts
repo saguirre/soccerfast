@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { NotificationModule } from './notification/notification.module';
 import { UserService } from './user/user.service';
 import { PrismaService } from './prisma.service';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { PrismaService } from './prisma.service';
     ContactModule,
     AuthModule,
     NotificationModule,
-    ConfigModule.forRoot({ isGlobal: true })
+    ConfigModule.forRoot({ isGlobal: true }),
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService, UserService, PrismaService],

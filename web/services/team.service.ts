@@ -1,14 +1,14 @@
-import { AddTeamModel, Team } from "@models";
-import { HttpService } from "./http-abstract.service";
+import { AddTeamModel, Team } from '@models';
+import { HttpService } from './http-abstract.service';
 
 export interface ITeamService {
   getTeams(userToken: string): Promise<Team[]>;
   addTeam(userToken: string, body: AddTeamModel): Promise<Team | undefined>;
-  getTeam(userToken: string, id: number): Promise<Team>;
+  getTeam(userToken: string, id: number): Promise<Team | null>;
 }
 
 export class TeamService extends HttpService implements ITeamService {
-  private endpointPrefix: string = "teams";
+  private endpointPrefix: string = 'teams';
 
   getTeams = async (userToken: string): Promise<Team[]> => {
     try {
@@ -32,6 +32,7 @@ export class TeamService extends HttpService implements ITeamService {
       return new Promise<Team>(() => {});
     } catch (error) {
       console.error(error);
+      return null;
     }
   };
 }

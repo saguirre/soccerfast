@@ -100,7 +100,7 @@ export const PrivateHeader: React.FC = () => {
       <div className="flex justify-between items-center px-4 py-6 sm:px-6 md:justify-start md:space-x-10">
         <div>
           <Link href="/">
-            <div className="flex">
+            <div className="flex hover:cursor-pointer">
               <span className="sr-only">SoccerFast</span>
               <Image width={200} height={60} src="/logo-black.svg" alt="Logo" />
             </div>
@@ -149,7 +149,7 @@ export const PrivateHeader: React.FC = () => {
                             <div
                               key={item.name}
                               onClick={() => goToTournament(item.href)}
-                              className="-m-3 p-3 flex items-start rounded-lg hover:bg-gray-50"
+                              className="-m-3 p-3 flex items-start rounded-lg hover:bg-gray-50 hover:cursor-pointer"
                             >
                               <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md bg-sky-500 text-white sm:h-12 sm:w-12">
                                 <item.icon className="h-6 w-6" aria-hidden="true" />

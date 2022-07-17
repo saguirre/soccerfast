@@ -4,7 +4,7 @@ import { HttpService } from './http-abstract.service';
 export interface IRuleService {
   getRules(): Promise<Rule[]>;
   addRule(body: AddRuleModel): Promise<Rule | undefined>;
-  getRule(id: number): Promise<Rule>;
+  getRule(id: number): Promise<Rule | undefined>;
 }
 
 export class RuleService extends HttpService implements IRuleService {

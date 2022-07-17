@@ -4,7 +4,7 @@ import { HttpService } from "./http-abstract.service";
 export interface ITournamentService {
   getTournaments(): Promise<Tournament[]>;
   addTournament(body: AddTournamentModel): Promise<Tournament | undefined>;
-  getTournament(id: number): Promise<Tournament>;
+  getTournament(id: number): Promise<Tournament | undefined>;
 }
 
 export class TournamentService extends HttpService implements ITournamentService {

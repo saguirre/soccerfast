@@ -245,11 +245,16 @@ export const PrivateHeader: React.FC = () => {
               <div>
                 <Menu.Button className="flex flex-row items-center justify-between hover:ring-2 hover:ring-offset-2 hover:ring-offset-sky-500 rounded-xl hover:ring-white hover:cursor-pointer p-2">
                   <span className="ml-2 mr-3">{user?.name}</span>
-
                   <span className="sr-only">Open user menu</span>
-                  <div className="bg-sky-600 flex p-2 mr-3 items-center justify-center text-sm rounded-full text-white focus:outline-none ">
-                    <UserIcon className="h-7 w-7" />
-                  </div>
+                  {user?.avatar ? (
+                    <div className="flex items-center mr-3 h-11 w-11 justify-center text-sm rounded-full text-white focus:outline-none">
+                      <img src={user?.avatar} className="h-full w-full" />
+                    </div>
+                  ) : (
+                    <div className="bg-sky-600 flex p-2 mr-3 items-center justify-center text-sm rounded-full text-white focus:outline-none ">
+                      <UserIcon className="h-7 w-7" />
+                    </div>
+                  )}
                 </Menu.Button>
               </div>
               <Transition

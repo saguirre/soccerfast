@@ -7,14 +7,26 @@ import {
   Put,
   Delete,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  Logger,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { PostUser, PutUser, User } from '@dtos';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileService } from 'src/file/file.service';
+import { readFileSync, existsSync, mkdirSync, unlinkSync } from 'fs';
+import { SpacesFolderEnum } from '@enums';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { randomUUID } from 'crypto';
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private fileService: FileService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
@@ -74,6 +86,57 @@ export class UserController {
       where: { id: Number(id) },
       data,
     });
+  }
+
+  @Post('/:id/upload/avatar')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      limits: { fileSize: 4000000 },
+      storage: diskStorage({
+        destination: (req: any, file: any, cb: any) => {
+          const uploadPath = './src/images/avatars';
+          // Create folder if doesn't exist
+          if (!existsSync(uploadPath)) {
+            mkdirSync(uploadPath);
+          }
+          cb(null, uploadPath);
+        },
+        filename: (req: any, file: any, cb: any) => {
+          cb(null, `${randomUUID()}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  async uploadAvatar(
+    @Param('id') id: string,
+    @UploadedFile()
+    fileInfo: Express.Multer.File,
+  ) {
+    const file = readFileSync(fileInfo.path);
+
+    const user = await this.userService.user({ id: Number(id) });
+    let previousFileName = user?.avatar || null;
+    if (previousFileName) {
+      previousFileName = previousFileName.split('/')[4];
+    }
+
+    await this.fileService.uploadObject(
+      file,
+      previousFileName,
+      fileInfo,
+      file.byteLength,
+      SpacesFolderEnum.UserAvatars,
+    );
+    unlinkSync(fileInfo.path);
+
+    const avatar = `${process.env.IMAGE_RETURN_ENDPOINT}/${SpacesFolderEnum.UserAvatars}/${fileInfo.filename}`;
+    await this.userService.updateUser({
+      where: { id: Number(id) },
+      data: { avatar },
+    });
+
+    return avatar;
   }
 
   @UseGuards(JwtAuthGuard)

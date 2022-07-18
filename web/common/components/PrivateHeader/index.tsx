@@ -1,4 +1,4 @@
-import { Fragment, useContext, useState } from 'react';
+import { Fragment, useContext } from 'react';
 import Image from 'next/image';
 
 import { Menu, Popover, Transition } from '@headlessui/react';
@@ -17,7 +17,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { classNames } from '@utils';
 import { AuthContext, UserContext } from '@contexts';
-import { User } from '@models';
 import { useEffect } from 'react';
 
 const userNavigation = [
@@ -75,8 +74,7 @@ const teams = [
 
 export const PrivateHeader: React.FC = () => {
   const router = useRouter();
-  const { userService } = useContext(UserContext);
-  const [user, setUser] = useState<User | null>(null);
+  const { user, setUser, userService } = useContext(UserContext);
   const { setUserToken } = useContext(AuthContext);
   const goToTournament = (href: string) => {
     router.push(href);
@@ -89,8 +87,11 @@ export const PrivateHeader: React.FC = () => {
   };
 
   const getUser = async () => {
-    setUser(await userService.getUser());
+    if (!user) {
+      setUser(await userService.getUser());
+    }
   };
+
   useEffect(() => {
     getUser();
   }, []);

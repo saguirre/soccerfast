@@ -20,6 +20,7 @@ import { SpacesFolderEnum } from '../enums';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
+
 @Controller('user')
 export class UserController {
   constructor(

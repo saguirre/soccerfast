@@ -13,8 +13,7 @@ interface FormValues {
 }
 
 const ProfilePage: NextPage = () => {
-  const { userService } = useContext(UserContext);
-  const [user, setUser] = useState<User | null>(null);
+  const { user, setUser, userService } = useContext(UserContext);
   const [newlyUploadedAvatar, setNewlyUploadedAvatar] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingImageUpload, setLoadingImageUpload] = useState<boolean>(false);
@@ -30,6 +29,15 @@ const ProfilePage: NextPage = () => {
     if (files?.length) {
       setLoadingImageUpload(true);
       const uploadedImage = await userService.uploadAvatar(files[0]);
+      if (!uploadedImage) {
+        return;
+      }
+      setUser((current) => {
+        if (current) {
+          return { ...current, avatar: uploadedImage };
+        }
+        return user;
+      });
       setNewlyUploadedAvatar(uploadedImage);
       setLoadingImageUpload(false);
     }
@@ -40,8 +48,10 @@ const ProfilePage: NextPage = () => {
   };
 
   const getUser = async () => {
-    const user = await userService.getUser();
-    setUser(user);
+    if (!user) {
+      const user = await userService.getUser();
+      setUser(user);
+    }
     setLoading(false);
   };
 

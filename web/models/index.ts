@@ -9,3 +9,5 @@ export * from "./rule.model";
 export * from "./user-login.model";
 export * from "./notification.model";
 export * from "./contact-info.model";
+export * from "./role.model";
+export * from "./decoded-user-token.model";

@@ -17,11 +17,19 @@ model User {
   name              String
   phone             String?
   avatar            String?
+  roles             Role[]
   type              String
   active            Boolean?  @default(true)
   birthday          DateTime?
   preferredLanguage String?   @default("en")
   teams             Team[]
+}
+
+model Role {
+  id     Int    @id @default(autoincrement())
+  role   String
+  User   User?  @relation(fields: [userId], references: [id])
+  userId Int?
 }
 
 model Team {

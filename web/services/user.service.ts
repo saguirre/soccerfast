@@ -1,4 +1,4 @@
-import { User } from '@models';
+import { DecodedUserToken, User } from '@models';
 import { HttpService } from './http-abstract.service';
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 import axios from 'axios';
@@ -23,12 +23,8 @@ export class UserService extends HttpService implements IUserService {
 
   getUser = async (): Promise<User | null> => {
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        return null;
-      }
-      const { id }: User = jwtDecode(token);
-      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}/${id}`), {
+      const decodedToken: DecodedUserToken | null = this.getDecodedToken();
+      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}/${decodedToken?.id}`), {
         headers: this.getAuthHeaders(),
       });
       return axiosResponse.data;

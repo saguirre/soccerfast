@@ -12,7 +12,9 @@ export class ContactInfoService extends HttpService implements IContactInfoServi
 
   getContactInfo = async (): Promise<ContactInfo | null> => {
     try {
-      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}`));
+      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}`), {
+        headers: this.getAuthHeaders(),
+      });
       return axiosResponse.data;
     } catch (error) {
       console.error(error);

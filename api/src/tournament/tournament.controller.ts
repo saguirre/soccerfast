@@ -6,9 +6,13 @@ import {
   Body,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { PostTournament, PutTournament, Tournament } from '@dtos';
 import { TournamentService } from './tournament.service';
+import { Roles } from 'src/auth/auth.decorator';
+import { RoleEnum } from '@enums';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('tournament')
 export class TournamentController {
@@ -39,13 +43,17 @@ export class TournamentController {
     });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
+  @Roles(RoleEnum.Admin)
   async createTournament(
     @Body() tournamentData: PostTournament,
   ): Promise<Tournament> {
     return this.tournamentService.createTournament(tournamentData);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
   @Put('/:id')
   async updateTournamentProfile(
     @Param('id') id: string,
@@ -64,6 +72,8 @@ export class TournamentController {
     });
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
   @Delete('inactivate/:id')
   async inactivateTournament(@Param('id') id: string): Promise<Tournament> {
     return this.tournamentService.inactivateTournament(
@@ -72,6 +82,8 @@ export class TournamentController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
   @Delete('/:id')
   async deleteTournament(@Param('id') id: string): Promise<Tournament> {
     return this.tournamentService.deleteTournament({ id: Number(id) });

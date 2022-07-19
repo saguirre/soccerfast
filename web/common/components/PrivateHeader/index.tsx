@@ -87,6 +87,10 @@ export const PrivateHeader: React.FC = () => {
     router.push('/teams/add-team');
   };
 
+  const goToAddTournament = () => {
+    router.push('/tournaments/add-tournament');
+  };
+
   const logout = () => {
     localStorage.setItem('access_token', '');
     setUserToken('');
@@ -154,6 +158,13 @@ export const PrivateHeader: React.FC = () => {
                     <Popover.Panel className="absolute z-10 -ml-4 mt-3 transform w-screen max-w-md lg:max-w-3xl">
                       <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-y-scroll overflow-x-hidden">
                         <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8 lg:grid-cols-2">
+                          <button
+                            onClick={goToAddTournament}
+                            className="-m-3 p-4 w-1/3 col-span-2 flex flex-row items-center justify-between gap-3 rounded-lg hover:ring-2 hover:ring-sky-500"
+                          >
+                            <p className="text-md font-medium text-gray-900">Agregar torneo</p>
+                            <PlusIcon className="w-6 h-6 text-sky-600" />
+                          </button>
                           {tournaments.map((item) => (
                             <div
                               key={item.name}

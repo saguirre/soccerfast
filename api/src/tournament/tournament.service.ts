@@ -34,8 +34,9 @@ export class TournamentService {
   async createTournament(
     data: Prisma.TournamentCreateInput,
   ): Promise<Tournament> {
+
     return this.prisma.tournament.create({
-      data,
+      data
     });
   }
 

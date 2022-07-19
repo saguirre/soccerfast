@@ -1,5 +1,7 @@
 export interface AddTournamentModel {
   name: string;
-  email: string;
-  password: string;
+  description?: string | null;
+  logo?: string | null;
+  active?: boolean | null;
+  teamIds?: number[];
 }

@@ -49,7 +49,15 @@ export class TournamentController {
   async createTournament(
     @Body() tournamentData: PostTournament,
   ): Promise<Tournament> {
-    return this.tournamentService.createTournament(tournamentData);
+    const { teamIds, ...data } = tournamentData;
+    return this.tournamentService.createTournament({
+      ...data,
+      teams: {
+        connect: teamIds.map((teamId: number) => {
+          return { id: teamId };
+        }),
+      },
+    });
   }
 
   @UseGuards(JwtAuthGuard)

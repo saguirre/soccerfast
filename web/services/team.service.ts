@@ -9,6 +9,7 @@ export interface ITeamService {
   updateTeam(id: number, body: UpdateTeamModel): Promise<Team | undefined>;
   getTeam(id: number): Promise<Team | null>;
   uploadLogo(teamLogo: File): Promise<string | null>;
+  getFilteredTeams(searchString: string): Promise<Team[] | null>
 }
 
 export class TeamService extends HttpService implements ITeamService {
@@ -42,6 +43,22 @@ export class TeamService extends HttpService implements ITeamService {
       return axiosResponse.data;
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  getFilteredTeams = async (searchString: string): Promise<Team[] | null> => {
+    try {
+      if (!searchString.length) return null;
+      const axiosResponse = await axios.get(
+        this.getServiceUrl(`${this.endpointPrefix}/filtered-teams/${searchString}`),
+        {
+          headers: this.getAuthHeaders(),
+        }
+      );
+      return axiosResponse.data;
+    } catch (error) {
+      console.error(error);
+      return null;
     }
   };
 

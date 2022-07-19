@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { Tournament, Prisma } from '@prisma/client';
+import {
+  Tournament,
+  Prisma,
+  Team,
+  Tournament_Team_Score,
+} from '@prisma/client';
 
 export type TournamentWithTeamScores = Prisma.TournamentGetPayload<{
   include: { tournamentTeamScore: { include: { team: true } } };
@@ -22,6 +27,28 @@ export class TournamentService {
         },
       },
     });
+  }
+
+  async tournamentTeamScores(): Promise<Tournament_Team_Score[]> {
+    return this.prisma.tournament_Team_Score.findMany({
+      where: {},
+    });
+  }
+
+  async tournamentTeamsAndTeamScores(
+    tournamentWhereUniqueInput: Prisma.TournamentWhereUniqueInput,
+  ): Promise<{ teams: Team[] | null; teamsScores: Tournament_Team_Score[] }> {
+    const tournamentWithTeams = await this.prisma.tournament.findUnique({
+      where: tournamentWhereUniqueInput,
+      include: {
+        teams: true,
+        tournamentTeamScore: true,
+      },
+    });
+    return {
+      teams: tournamentWithTeams.teams,
+      teamsScores: tournamentWithTeams.tournamentTeamScore,
+    };
   }
 
   async tournaments(params: {

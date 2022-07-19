@@ -1,10 +1,11 @@
-import { AddTournamentModel, Tournament } from '@models/*';
+import { AddTournamentModel, Tournament, UpdateTournamentModel } from '@models';
 import axios from 'axios';
 import { HttpService } from './http-abstract.service';
 
 export interface ITournamentService {
   getTournaments(): Promise<Tournament[]>;
   addTournament(body: AddTournamentModel): Promise<Tournament | undefined>;
+  updateTournament(id: number, body: UpdateTournamentModel): Promise<Tournament | undefined>;
   getTournament(id: number): Promise<Tournament | null>;
 }
 
@@ -32,16 +33,16 @@ export class TournamentService extends HttpService implements ITournamentService
     }
   };
 
-  // updateTeam = async (id: number, body: UpdateTeamModel) => {
-  //   try {
-  //     const axiosResponse = await axios.put(this.getServiceUrl(`${this.endpointPrefix}/${id}`), body, {
-  //       headers: this.getAuthHeaders(),
-  //     });
-  //     return axiosResponse.data;
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  updateTournament = async (id: number, body: UpdateTournamentModel) => {
+    try {
+      const axiosResponse = await axios.put(this.getServiceUrl(`${this.endpointPrefix}/${id}`), body, {
+        headers: this.getAuthHeaders(),
+      });
+      return axiosResponse.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   getTournament = async (id: number) => {
     try {

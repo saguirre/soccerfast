@@ -1,9 +1,11 @@
 import { CheckIcon, XIcon } from '@heroicons/react/solid';
 import { TeamScore } from '@models';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 interface PositionsTableProps {
   isAdmin?: boolean;
+  tournamentId: number;
   tournamentTeamScore: TeamScore[] | undefined;
 }
 
@@ -21,7 +23,8 @@ export interface PositionsTableItem {
   editable?: boolean;
 }
 
-export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournamentTeamScore }) => {
+export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournamentId, tournamentTeamScore }) => {
+  const router = useRouter();
   const getGoalDiff = (teamScore: PositionsTableItem) => {
     return teamScore.goalsAhead - teamScore.goalsAgainst;
   };
@@ -65,6 +68,12 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournam
     });
   };
 
+  const goToEditTournament = () => {
+    router.push({
+      pathname: `/tournaments/edit/${tournamentId}`,
+    });
+  };
+
   return (
     <div className="w-full px-24">
       <div className="flex flex-row justify-between items-center">
@@ -72,6 +81,12 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournam
           <h1 className="text-xl font-semibold text-slate-900">Tabla de posiciones</h1>
           <p className="mt-2 text-sm text-gray-700">Visualiza las posiciones y puntos hasta la fecha.</p>
         </div>
+        <button
+          onClick={goToEditTournament}
+          className="w-48 h-10 bg-white hover:ring-2 hover:ring-sky-500 focus:ring-4 focus:outline-none focus:ring-sky-300 rounded-lg py-1 px-2 mr-3"
+        >
+          <span className="text-sky-500">Editar Torneo</span>
+        </button>
         <button className="w-48 h-10 bg-sky-500 hover:bg-sky-600 focus:ring-4 focus:outline-none focus:ring-sky-300 rounded-lg py-1 px-2">
           <span className="text-white">Agregar Equipo</span>
         </button>

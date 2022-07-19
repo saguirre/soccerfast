@@ -64,18 +64,17 @@ model Tournament {
 }
 
 model Tournament_Team_Score {
-  id            Int        @id @default(autoincrement())
-  team          Team       @relation(fields: [teamId], references: [id])
+  id            Int          @id @default(autoincrement())
+  team          Team         @relation(fields: [teamId], references: [id])
   teamId        Int
-  tournament    Tournament @relation(fields: [tournamentId], references: [id])
-  tournamentId  Int
-  matchesPlayed Int        @default(0)
-  matchesWon    Int        @default(0)
-  matchesTied   Int        @default(0)
-  matchesLost   Int        @default(0)
-  goalsAhead    Int        @default(0)
-  goalsAgainst  Int        @default(0)
-  points        Int        @default(0)
+  tournaments   Tournament[]
+  matchesPlayed Int          @default(0)
+  matchesWon    Int          @default(0)
+  matchesTied   Int          @default(0)
+  matchesLost   Int          @default(0)
+  goalsAhead    Int          @default(0)
+  goalsAgainst  Int          @default(0)
+  points        Int          @default(0)
 }
 
 model Rule {

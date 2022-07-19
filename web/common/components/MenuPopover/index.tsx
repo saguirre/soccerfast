@@ -1,5 +1,6 @@
 import { Popover, Transition } from '@headlessui/react';
 import { ChevronDownIcon, LightningBoltIcon, PlusIcon } from '@heroicons/react/solid';
+import { ExclamationIcon } from '@heroicons/react/outline';
 import { classNames } from '@utils';
 import { Fragment, SVGProps } from 'react';
 
@@ -7,6 +8,7 @@ export interface PopoverItem {
   id: number;
   name: string;
   logo?: string;
+  active?: boolean;
   icon?: (props: SVGProps<SVGSVGElement>) => JSX.Element;
   description?: string;
 }
@@ -63,30 +65,38 @@ export const MenuPopover: React.FC<Props> = ({ announcement, title, addTitle, go
                     <div
                       key={item.name}
                       onClick={() => goToItem(item.id)}
-                      className="-m-3 p-3 flex items-start rounded-lg hover:bg-gray-50 hover:cursor-pointer"
+                      className="-m-3 p-3 rounded-lg hover:bg-gray-50 hover:cursor-pointer"
                     >
-                      <div
-                        className={classNames(
-                          item.icon || !item.logo ? 'bg-sky-500' : '',
-                          'flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md  text-white sm:h-12 sm:w-12'
-                        )}
-                      >
-                        {item.icon ? (
-                          <item.icon className="h-6 w-6" aria-hidden="true" />
-                        ) : (
-                          <>
-                            {item.logo ? (
-                              <img src={item.logo} />
-                            ) : (
-                              <LightningBoltIcon className="h-6 w-6" aria-hidden="true" />
-                            )}
-                          </>
-                        )}
+                      <div className=" flex items-start">
+                        <div
+                          className={classNames(
+                            item.icon || !item.logo ? 'bg-sky-500' : '',
+                            'flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md  text-white sm:h-12 sm:w-12'
+                          )}
+                        >
+                          {item.icon ? (
+                            <item.icon className="h-6 w-6" aria-hidden="true" />
+                          ) : (
+                            <>
+                              {item.logo ? (
+                                <img src={item.logo} />
+                              ) : (
+                                <LightningBoltIcon className="h-6 w-6" aria-hidden="true" />
+                              )}
+                            </>
+                          )}
+                        </div>
+                        <div className="ml-4">
+                          <p className="text-base font-medium text-gray-900">{item.name}</p>
+                          <p className="mt-1 text-sm text-gray-500">{item.description}</p>
+                        </div>
                       </div>
-                      <div className="ml-4">
-                        <p className="text-base font-medium text-gray-900">{item.name}</p>
-                        <p className="mt-1 text-sm text-gray-500">{item.description}</p>
-                      </div>
+                      {!item.active && (
+                        <div className="flex flex-row items-center justify-start mt-2">
+                          <ExclamationIcon className="h-5 w-5 text-amber-400 mr-1" />
+                          <span className="text-sm text-gray-400">Inactivo</span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

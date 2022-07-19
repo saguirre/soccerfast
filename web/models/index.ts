@@ -13,3 +13,4 @@ export * from "./role.model";
 export * from "./decoded-user-token.model";
 export * from "./update-team.model";
 export * from "./team-score.model";
+export * from "./update-tournament.model";

@@ -119,7 +119,11 @@ const Tournament: NextPage<PageProps> = (props) => {
             </p>
           </div>
           <DotsDivider />
-          <PositionsTable isAdmin={isAdmin} tournamentTeamScore={tournament?.tournamentTeamScore} />
+          <PositionsTable
+            tournamentId={props.tournamentId}
+            isAdmin={isAdmin}
+            tournamentTeamScore={tournament?.tournamentTeamScore}
+          />
           <p className="my-4 max-w-2xl text-sm text-gray-500 lg:mx-auto">La tabla se actualiza todos los miércoles.</p>
         </div>
       </div>

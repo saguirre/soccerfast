@@ -315,6 +315,7 @@ const TeamPage: NextPage<PageProps> = (props) => {
                     handleRemove={(event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, id: number) =>
                       handleRemoveUser(event, id)
                     }
+                    placeholder="Buscar..."
                     handleItemSelection={(id: number) => handleUserSelection(id)}
                     open={selectOpen}
                     selectedItems={selectedUsers}

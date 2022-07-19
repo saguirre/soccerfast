@@ -17,6 +17,7 @@ interface Props {
   selectedItems: SelectItem[];
   items: SelectItem[];
   searchString: string;
+  placeholder: string;
   handleSearchStringChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -33,6 +34,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, Props>(
       handleSearchStringChange,
       toggleDropdown,
       handleRemove,
+      placeholder,
     },
     ref
   ) => {
@@ -69,7 +71,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, Props>(
                     <input
                       value={searchString}
                       onChange={handleSearchStringChange}
-                      placeholder={'Escribe para buscar entre los usuarios...'}
+                      placeholder={placeholder}
                       className="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-gray-800 placeholder:text-gray-300 placeholder:text-base "
                     />
                   </div>

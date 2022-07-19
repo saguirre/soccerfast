@@ -16,6 +16,7 @@ import {
 import { Roles } from 'src/auth/auth.decorator';
 import { RoleEnum } from '@enums';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Team } from '@prisma/client';
 
 @Controller('tournament')
 export class TournamentController {
@@ -63,11 +64,9 @@ export class TournamentController {
         }),
       },
       tournamentTeamScore: {
-        createMany: {
-          data: teamIds.map((teamId: number) => {
-            return { teamId };
-          }),
-        },
+        create: teamIds.map((teamId: number) => {
+          return { teamId };
+        }),
       },
     });
   }
@@ -86,9 +85,69 @@ export class TournamentController {
       data.description = updateTournamentData.description;
     if (updateTournamentData.logo) data.logo = updateTournamentData.logo;
 
+    const tournamentTeams =
+      await this.tournamentService.tournamentTeamsAndTeamScores({
+        id: Number(id),
+      });
+
+    const allTeamScores = await this.tournamentService.tournamentTeamScores();
+
+    const teamsToDisconnect = tournamentTeams.teams.filter(
+      (team: Team) =>
+        !updateTournamentData.teamIds.some((id: number) => id == team.id),
+    );
+
+    const mappedTeamsToDisconnect = teamsToDisconnect.map((team: Team) => ({
+      id: team.id,
+    }));
+
+    const teamsToConnect = updateTournamentData.teamIds.filter(
+      (id: number) =>
+        !tournamentTeams.teams.some((team: Team) => team.id === id),
+    );
+
+    const mappedTeamsToConnect = teamsToConnect.map((id: number) => ({
+      id,
+    }));
+
+    const teamScoresToConnect = allTeamScores
+      .filter((teamScore) =>
+        teamsToConnect.some((id) => id === teamScore.teamId),
+      )
+      .map((teamScore) => ({ id: teamScore.teamId }));
+
+    const teamScoresToDisconnect = tournamentTeams.teamsScores
+      .filter((teamScore) =>
+        teamsToDisconnect.some(
+          (connectTeam) => connectTeam.id === teamScore.teamId,
+        ),
+      )
+      .map((teamScore) => ({ id: teamScore.id }));
+
+    const teams: any = {};
+    if (mappedTeamsToConnect.length) {
+      teams.connect = mappedTeamsToConnect;
+    }
+    if (mappedTeamsToDisconnect.length) {
+      teams.disconnect = mappedTeamsToDisconnect;
+    }
+
+    const tournamentTeamScore: any = {};
+    if (teamScoresToConnect.length) {
+      tournamentTeamScore.connect = teamScoresToConnect;
+    }
+
+    if (teamScoresToDisconnect.length) {
+      tournamentTeamScore.disconnect = teamScoresToDisconnect;
+    }
+
     return this.tournamentService.updateTournament({
       where: { id: Number(id) },
-      data,
+      data: {
+        ...data,
+        teams,
+        tournamentTeamScore,
+      },
     });
   }
 

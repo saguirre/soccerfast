@@ -22,3 +22,4 @@ export * from "./Logos/TwitterLogo";
 export * from "./MultiSelect";
 export * from "./AuthenticatedRoute";
 export * from "./AuthorizedRoute";
+export * from "./MenuPopover";

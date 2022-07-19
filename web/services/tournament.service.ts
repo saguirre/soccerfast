@@ -13,7 +13,8 @@ export class TournamentService extends HttpService implements ITournamentService
 
   getTournaments = async (): Promise<Tournament[]> => {
     try {
-      return new Promise<Tournament[]>(() => {});
+      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}`));
+      return axiosResponse.data;
     } catch (error) {
       console.error(error);
       return [];

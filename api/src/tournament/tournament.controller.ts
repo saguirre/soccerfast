@@ -9,7 +9,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PostTournament, PutTournament, Tournament } from '@dtos';
-import { TournamentService } from './tournament.service';
+import {
+  TournamentService,
+  TournamentWithTeamScores,
+} from './tournament.service';
 import { Roles } from 'src/auth/auth.decorator';
 import { RoleEnum } from '@enums';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -19,7 +22,9 @@ export class TournamentController {
   constructor(private readonly tournamentService: TournamentService) {}
 
   @Get('/:id')
-  async getUserById(@Param('id') id: string): Promise<Tournament> {
+  async getUserById(
+    @Param('id') id: string,
+  ): Promise<TournamentWithTeamScores> {
     return this.tournamentService.tournament({ id: Number(id) });
   }
 
@@ -56,6 +61,13 @@ export class TournamentController {
         connect: teamIds.map((teamId: number) => {
           return { id: teamId };
         }),
+      },
+      tournamentTeamScore: {
+        createMany: {
+          data: teamIds.map((teamId: number) => {
+            return { teamId };
+          }),
+        },
       },
     });
   }

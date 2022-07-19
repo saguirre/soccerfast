@@ -84,7 +84,7 @@ export const MenuPopover: React.FC<Props> = ({ announcement, title, addTitle, go
                       <div className="flex items-center">
                         <div className="text-base font-medium text-gray-900">Anuncio</div>
                         <span className="ml-1 inline-flex items-center py-0.5 px-2.5 rounded-full text-xs font-medium leading-5 bg-sky-100 text-sky-800">
-                          {/* <InformationCircleIcon className="w-4 h-4"/> */}!
+                          !
                         </span>
                       </div>
                       <p className="mt-1 text-sm text-gray-500">{announcement}</p>

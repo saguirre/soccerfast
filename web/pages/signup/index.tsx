@@ -51,11 +51,11 @@ const SignUpPage: React.FC = () => {
     }
     createNotification({
       title: 'Registro correcto!',
-      message: "Te estamos redirigiendo a la pantalla de Ingreso...",
+      message: 'Te estamos redirigiendo a la pantalla de Ingreso...',
     });
 
     setTimeout(() => {
-      router.push('/signin');
+      router.push({ pathname: '/signin' });
     }, 2000);
   };
 

@@ -64,11 +64,11 @@ export const Header: React.FC = () => {
   const router = useRouter();
 
   const goToTournament = (href: string) => {
-    router.push(href);
+    router.push({ pathname: href });
   };
 
   const goToTeamPage = (id: number) => {
-    router.push(`/teams/${id}`);
+    router.push({ pathname: `/teams/${id}` });
   };
 
   const getTeams = async () => {

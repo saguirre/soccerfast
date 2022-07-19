@@ -5,7 +5,7 @@ import { HttpService } from './http-abstract.service';
 export interface ITournamentService {
   getTournaments(): Promise<Tournament[]>;
   addTournament(body: AddTournamentModel): Promise<Tournament | undefined>;
-  getTournament(id: number): Promise<Tournament | undefined>;
+  getTournament(id: number): Promise<Tournament | null>;
 }
 
 export class TournamentService extends HttpService implements ITournamentService {
@@ -45,9 +45,12 @@ export class TournamentService extends HttpService implements ITournamentService
 
   getTournament = async (id: number) => {
     try {
-      return new Promise<Tournament>(() => {});
+      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}/${id}`));
+      console.log(axiosResponse.data)
+      return axiosResponse.data;
     } catch (error) {
       console.error(error);
+      return null;
     }
   };
 }

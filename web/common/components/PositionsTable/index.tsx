@@ -1,8 +1,51 @@
+import { TeamScore } from '@models';
+
 interface PositionsTableProps {
-  teams: any[];
+  tournamentTeamScore: TeamScore[] | undefined;
 }
 
-export const PositionsTable: React.FC<PositionsTableProps> = ({ teams }) => {
+export interface PositionsTableItem {
+  id: number;
+  name: string;
+  logo: string;
+  matchesPlayed: number;
+  matchesWon: number;
+  matchesTied: number;
+  matchesLost: number;
+  goalsAhead: number;
+  goalsAgainst: number;
+  points: number;
+}
+
+export const PositionsTable: React.FC<PositionsTableProps> = ({ tournamentTeamScore }) => {
+  const getGoalDiff = (teamScore: PositionsTableItem) => {
+    return teamScore.goalsAhead - teamScore.goalsAgainst;
+  };
+
+  const teams: PositionsTableItem[] | undefined = tournamentTeamScore
+    ?.map((score: TeamScore) => {
+      return {
+        id: score.teamId,
+        name: score.team.name,
+        logo: score.team.logo,
+        matchesPlayed: score.matchesPlayed,
+        matchesWon: score.matchesWon,
+        matchesTied: score.matchesTied,
+        matchesLost: score.matchesLost,
+        goalsAhead: score.goalsAhead,
+        goalsAgainst: score.goalsAgainst,
+        points: score.points,
+      };
+    })
+    .sort((t1: PositionsTableItem, t2: PositionsTableItem) => {
+      if (t2.points === t1.points) {
+        const t2GoalDiff = getGoalDiff(t2);
+        const t1GoalDiff = getGoalDiff(t1);
+        return t2GoalDiff - t1GoalDiff;
+      }
+      return t2.points - t1.points;
+    });
+
   return (
     <div className="w-full px-24">
       <div className="flex flex-row justify-between items-center">
@@ -52,9 +95,9 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ teams }) => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {teams.map((team) => (
+                  {teams?.map((team, index: number) => (
                     <tr key={team.name}>
-                      <td className="whitespace-nowrap pl-6 py-4 text-sm text-gray-500">{team.position}</td>
+                      <td className="whitespace-nowrap pl-6 py-4 text-sm text-gray-500">{index + 1}</td>
                       <td className="whitespace-nowrap py-4 pr-3 text-sm sm:pl-6">
                         <div className="flex items-center">
                           <div className="h-10 w-10 flex-shrink-0">
@@ -82,7 +125,7 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ teams }) => {
                         {team.goalsAhead}
                       </td>
                       <td className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500">
-                        {team.goalsDown}
+                        {team.goalsAgainst}
                       </td>
                       <td className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500">{team.points}</td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">

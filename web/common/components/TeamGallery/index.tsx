@@ -31,7 +31,7 @@ const images = [
 export const TeamGallery: React.FC = () => {
   const router = useRouter();
   const goToImageGallery = (href: string) => {
-    router.push(href);
+    router.push({pathname: href});
   };
 
   return (

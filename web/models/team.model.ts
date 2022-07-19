@@ -4,4 +4,5 @@ export interface Team {
   description?: string;
   logo: string;
   ownerId: number;
+  active?: boolean;
 }

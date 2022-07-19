@@ -2,15 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Tournament, Prisma } from '@prisma/client';
 
+export type TournamentWithTeamScores = Prisma.TournamentGetPayload<{
+  include: { tournamentTeamScore: { include: { team: true } } };
+}>;
 @Injectable()
 export class TournamentService {
   constructor(private prisma: PrismaService) {}
 
   async tournament(
     tournamentWhereUniqueInput: Prisma.TournamentWhereUniqueInput,
-  ): Promise<Tournament | null> {
+  ): Promise<TournamentWithTeamScores | null> {
     return this.prisma.tournament.findUnique({
       where: tournamentWhereUniqueInput,
+      include: {
+        tournamentTeamScore: {
+          include: {
+            team: true,
+          },
+        },
+      },
     });
   }
 
@@ -34,9 +44,8 @@ export class TournamentService {
   async createTournament(
     data: Prisma.TournamentCreateInput,
   ): Promise<Tournament> {
-
     return this.prisma.tournament.create({
-      data
+      data,
     });
   }
 

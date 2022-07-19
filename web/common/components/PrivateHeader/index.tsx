@@ -36,7 +36,7 @@ export const PrivateHeader: React.FC = () => {
   const [tournaments, setTournaments] = useState<Tournament[]>();
 
   const goToTeamPage = (id: number) => {
-    router.push(`/teams/${id}`);
+    router.push({ pathname: `/teams/${id}` });
   };
 
   const getTeams = async () => {
@@ -47,21 +47,21 @@ export const PrivateHeader: React.FC = () => {
   };
 
   const goToTournament = (id: number) => {
-    router.push(`/tournaments/${id}`);
+    router.push({ pathname: `/tournaments/${id}` });
   };
 
   const goToAddTeam = () => {
-    router.push('/teams/add-team');
+    router.push({ pathname: '/teams/add-team' });
   };
 
   const goToAddTournament = () => {
-    router.push('/tournaments/add-tournament');
+    router.push({ pathname: '/tournaments/add-tournament' });
   };
 
   const logout = () => {
     localStorage.setItem('access_token', '');
     setUserToken('');
-    router.push('/');
+    router.push({ pathname: '/' });
   };
 
   const getUser = async () => {

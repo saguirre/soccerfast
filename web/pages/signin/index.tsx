@@ -45,7 +45,7 @@ const SignInPage: NextPage = () => {
     });
     setTimeout(() => {
       setUserToken(user.token);
-      router.push('/');
+      router.push({ pathname: '/' });
     }, 2000);
   };
 
@@ -118,7 +118,7 @@ const SignInPage: NextPage = () => {
               </div>
 
               <div>
-                <SubmitButton loading={loadingRequest} text="Ingresar" errors={errors}/>
+                <SubmitButton loading={loadingRequest} text="Ingresar" errors={errors} />
               </div>
             </form>
 

@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useContext, useEffect, useState } from 'react';
 import Image from 'next/image';
 
 import { Popover, Transition } from '@headlessui/react';
@@ -16,6 +16,8 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { classNames } from '@utils';
+import { AppContext } from 'contexts/app.context';
+import { Team } from '@models/*';
 
 const tournaments = [
   {
@@ -56,20 +58,26 @@ const tournaments = [
   },
 ];
 
-const teams = [
-  { name: 'C.A. Cerro', imageUrl: '/escudo-cerro.png', href: '#' },
-  { name: 'Monterrey F.C.', imageUrl: '/escudo-monterrey.png', href: '#' },
-  { name: 'Beach City', imageUrl: '/escudo-beach-city.png', href: '#' },
-  { name: 'Racing Club Miami', imageUrl: '/escudo-racing.png', href: '#' },
-  { name: 'Rio de la Plata F.C.', imageUrl: '/escudo-rio-de-la-plata.png', href: '#' },
-  { name: 'Furiosos F.C.', imageUrl: '/escudo-furiosos.png', href: '#' },
-];
-
 export const Header: React.FC = () => {
+  const { teamService } = useContext(AppContext);
+  const [teams, setTeams] = useState<Team[]>();
   const router = useRouter();
+
   const goToTournament = (href: string) => {
     router.push(href);
   };
+
+  const goToTeamPage = (id: number) => {
+    router.push(`/teams/${id}`);
+  };
+
+  const getTeams = async () => {
+    setTeams(await teamService.getTeams());
+  };
+
+  useEffect(() => {
+    getTeams();
+  }, []);
 
   return (
     <Popover className="relative bg-white">
@@ -188,15 +196,13 @@ export const Header: React.FC = () => {
                     <Popover.Panel className="absolute z-10 left-1/2 transform -translate-x-1/2 mt-3 px-2 w-screen max-w-xs sm:px-0">
                       <div className="rounded-lg shadow-lg ring-1 max-h-96 ring-black ring-opacity-5 overflow-y-scroll overflow-x-hidden">
                         <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-6 sm:p-8">
-                          {teams.map((team) => (
-                            <a
-                              key={team.name}
-                              href={team.href}
-                              className="-m-3 p-3 flex flex-row items-center justify-start gap-3 rounded-md hover:bg-gray-50"
-                            >
-                              <img className="h-10 w-10" src={team.imageUrl} alt={team.name} />
-                              <p className="text-base font-medium text-gray-900">{team.name}</p>
-                            </a>
+                          {teams?.map((team) => (
+                            <div key={team.name} onClick={() => goToTeamPage(team.id)}>
+                              <div className="-m-3 p-3 flex flex-row items-center hover:cursor-pointer justify-start gap-3 rounded-md hover:bg-gray-50">
+                                <img className="h-10 w-10" src={team.logo} alt={team.name} />
+                                <p className="text-base font-medium text-gray-900">{team.name}</p>
+                              </div>
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -274,28 +280,6 @@ export const Header: React.FC = () => {
               </div>
             </div>
             <div className="py-6 px-5">
-              <div className="grid grid-cols-2 gap-4">
-                <a href="#" className="text-base font-medium text-gray-900 hover:text-gray-700">
-                  Pricing
-                </a>
-
-                <a href="#" className="text-base font-medium text-gray-900 hover:text-gray-700">
-                  Docs
-                </a>
-
-                <a href="#" className="text-base font-medium text-gray-900 hover:text-gray-700">
-                  Enterprise
-                </a>
-                {teams.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className="text-base font-medium text-gray-900 hover:text-gray-700"
-                  >
-                    {item.name}
-                  </a>
-                ))}
-              </div>
               <div className="mt-6">
                 <a
                   href="#"

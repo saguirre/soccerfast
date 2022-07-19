@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
 
-import { LoadingWrapper, Title } from '@components';
+import { authenticatedRoute, LoadingWrapper, Title } from '@components';
 import { ChangeEvent, useContext, useRef, useState } from 'react';
 import { UserContext } from 'contexts/user.context';
 import { useEffect } from 'react';
@@ -213,4 +213,4 @@ const ProfilePage: NextPage = () => {
   );
 };
 
-export default ProfilePage;
+export default authenticatedRoute(ProfilePage);

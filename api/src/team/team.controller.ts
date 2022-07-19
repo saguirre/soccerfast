@@ -7,19 +7,30 @@ import {
   Put,
   Delete,
   UseGuards,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PostTeam, PutTeam, Team } from '@dtos';
-import { TeamService } from './team.service';
+import { TeamService, TeamWithOwners } from './team.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/auth.decorator';
-import { RoleEnum } from '@enums';
+import { RoleEnum, SpacesFolderEnum } from '@enums';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { randomUUID } from 'crypto';
+import { existsSync, mkdirSync, readFileSync, unlinkSync } from 'fs';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { FileService } from 'src/file/file.service';
 
 @Controller('team')
 export class TeamController {
-  constructor(private readonly teamService: TeamService) {}
+  constructor(
+    private readonly teamService: TeamService,
+    private fileService: FileService,
+  ) {}
 
   @Get('/:id')
-  async getUserById(@Param('id') id: string): Promise<Team> {
+  async getUserById(@Param('id') id: string): Promise<TeamWithOwners> {
     return this.teamService.team({ id: Number(id) });
   }
 
@@ -71,6 +82,45 @@ export class TeamController {
       where: { id: Number(id) },
       data,
     });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/upload/team-logo')
+  @UseInterceptors(
+    FileInterceptor('logo', {
+      limits: { fileSize: 4000000 },
+      storage: diskStorage({
+        destination: (req: any, file: any, cb: any) => {
+          const uploadPath = './src/images/temporal';
+          if (!existsSync(uploadPath)) {
+            mkdirSync(uploadPath);
+          }
+          cb(null, uploadPath);
+        },
+        filename: (req: any, file: any, cb: any) => {
+          cb(null, `${randomUUID()}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  async uploadAvatar(
+    @Param('id') id: string,
+    @UploadedFile()
+    fileInfo: Express.Multer.File,
+  ) {
+    const file = readFileSync(fileInfo.path);
+
+    await this.fileService.uploadObject(
+      file,
+      null,
+      fileInfo,
+      file.byteLength,
+      SpacesFolderEnum.TeamLogos,
+    );
+    unlinkSync(fileInfo.path);
+
+    const avatar = `${process.env.IMAGE_RETURN_ENDPOINT}/${SpacesFolderEnum.TeamLogos}/${fileInfo.filename}`;
+    return avatar;
   }
 
   @UseGuards(JwtAuthGuard)

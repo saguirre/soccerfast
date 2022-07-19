@@ -1,5 +1,5 @@
-export interface AddTeamModel {
-  name: string;
+export interface UpdateTeamModel {
+  name?: string;
   description?: string;
   logo?: string;
   ownerId?: number;

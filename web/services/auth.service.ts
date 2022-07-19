@@ -1,10 +1,13 @@
-import { AddUserModel, User, UserLoginModel } from '@models';
+import { AddUserModel, Role, User, UserLoginModel } from '@models';
 import { HttpService } from './http-abstract.service';
 import axios from 'axios';
+import { RoleEnum } from '@enums';
 
 export interface IAuthService {
   signUp(user: AddUserModel): Promise<User | null>;
   login(user: UserLoginModel): Promise<User | null>;
+  userHasRole(role: RoleEnum): boolean | undefined;
+  validateUserToken(): Promise<boolean>;
 }
 
 export class AuthService extends HttpService implements IAuthService {
@@ -17,6 +20,28 @@ export class AuthService extends HttpService implements IAuthService {
     } catch (error) {
       console.error(error);
       return null;
+    }
+  };
+
+  userHasRole = (role: RoleEnum) => {
+    const decodedToken = this.getDecodedToken();
+    return decodedToken?.roles.some((userRole: Role) => userRole.role === role);
+  };
+
+  validateUserToken = async () => {
+    try {
+      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}/verify`), {
+        headers: this.getAuthHeaders(),
+      });
+
+      if (axiosResponse.status === 401) {
+        return false;
+      }
+
+      return axiosResponse.data;
+    } catch (error) {
+      console.error(error);
+      return false;
     }
   };
 

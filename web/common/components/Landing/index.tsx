@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export const Landing: React.FC = () => {
   return (
@@ -43,7 +43,7 @@ export const Landing: React.FC = () => {
               </h1>
               <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
                 <span className="font-semibold text-sky-500"> SoccerFast </span>es tu lugar para jugar al fútbol en
-                Miami. Somos expertos en organizaciones de torneos amateur, con más de 10 años de presencia en el rubro.{" "}
+                Miami. Somos expertos en organizaciones de torneos amateur, con más de 10 años de presencia en el rubro.{' '}
                 <br />
                 <br />
                 Explora nuestro sitio para encontrar más información acerca de los actuales torneos, los equipos, fotos

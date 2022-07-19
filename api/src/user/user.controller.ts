@@ -105,7 +105,7 @@ export class UserController {
       limits: { fileSize: 4000000 },
       storage: diskStorage({
         destination: (req: any, file: any, cb: any) => {
-          const uploadPath = './src/images/avatars';
+          const uploadPath = './src/images/temporal';
           // Create folder if doesn't exist
           if (!existsSync(uploadPath)) {
             mkdirSync(uploadPath);

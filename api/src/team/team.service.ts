@@ -2,15 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Team, Prisma } from '@prisma/client';
 
+export type TeamWithOwners = Prisma.TeamGetPayload<{
+  include: { owner: true };
+}>;
+
 @Injectable()
 export class TeamService {
   constructor(private prisma: PrismaService) {}
 
   async team(
     teamWhereUniqueInput: Prisma.TeamWhereUniqueInput,
-  ): Promise<Team | null> {
+  ): Promise<TeamWithOwners | null> {
     return this.prisma.team.findUnique({
       where: teamWhereUniqueInput,
+      include: { owner: true },
     });
   }
 

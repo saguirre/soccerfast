@@ -23,7 +23,7 @@ export const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ children, loadin
             <div className="flex items-center justify-center h-80 p-2 w-full">
               <svg
                 role="status"
-                className="inline w-10 h-10 mr-2 text-slate-100 animate-spin fill-black"
+                className="inline w-10 h-10 mr-2 text-slate-100 animate-spin fill-sky-600"
                 viewBox="0 0 100 101"
                 fill="none"
               >

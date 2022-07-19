@@ -11,3 +11,4 @@ export * from "./notification.model";
 export * from "./contact-info.model";
 export * from "./role.model";
 export * from "./decoded-user-token.model";
+export * from "./update-team.model";

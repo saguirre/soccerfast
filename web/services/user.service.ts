@@ -4,20 +4,40 @@ import jwtDecode, { JwtPayload } from 'jwt-decode';
 import axios from 'axios';
 
 export interface IUserService {
-  getUsers(): Promise<User[]>;
+  getUsers(): Promise<User[] | null>;
   getUser(): Promise<User | null>;
   uploadAvatar(avatar: File): Promise<string | null>;
+  getFilteredUsers(searchString: string): Promise<User[] | null>;
 }
 
 export class UserService extends HttpService implements IUserService {
   private endpointPrefix: string = 'user';
 
-  getUsers = async (): Promise<User[]> => {
+  getUsers = async (): Promise<User[] | null> => {
     try {
-      return new Promise<User[]>(() => {});
+      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}`), {
+        headers: this.getAuthHeaders(),
+      });
+      return axiosResponse.data;
     } catch (error) {
       console.error(error);
-      return [];
+      return null;
+    }
+  };
+
+  getFilteredUsers = async (searchString: string): Promise<User[] | null> => {
+    try {
+      if (!searchString.length) return null;
+      const axiosResponse = await axios.get(
+        this.getServiceUrl(`${this.endpointPrefix}/filtered-users/${searchString}`),
+        {
+          headers: this.getAuthHeaders(),
+        }
+      );
+      return axiosResponse.data;
+    } catch (error) {
+      console.error(error);
+      return null;
     }
   };
 

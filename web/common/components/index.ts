@@ -19,3 +19,5 @@ export * from "./Logos";
 export * from "./Logos/FacebookLogo";
 export * from "./Logos/InstagramLogo";
 export * from "./Logos/TwitterLogo";
+export * from "./AuthenticatedRoute";
+export * from "./AuthorizedRoute";

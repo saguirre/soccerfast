@@ -40,9 +40,8 @@ model Team {
   active              Boolean?                @default(true)
   owner               User?                   @relation(fields: [ownerId], references: [id])
   ownerId             Int?
-  tournament          Tournament?             @relation(fields: [tournamentId], references: [id])
-  tournamentId        Int?
   tournamentTeamScore Tournament_Team_Score[]
+  tournaments         Tournament[]
   teamPicture         Team_Picture[]
 }
 

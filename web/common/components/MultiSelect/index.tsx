@@ -38,7 +38,7 @@ export const MultiSelect: React.FC<Props> = ({
     <div
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
-      className="col-span-12 flex flex-col items-center h-fit mx-auto"
+      className="col-span-12 flex flex-col items-center h-52 mx-auto"
     >
       <div className="w-full">
         <div className="flex flex-col items-center relative">

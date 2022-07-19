@@ -6,6 +6,8 @@ import { Tournament } from '@models';
 import { useState, useEffect, useContext } from 'react';
 import { AppContext } from 'contexts/app.context';
 import { useRouter } from 'next/router';
+import { AuthContext } from 'contexts/auth.context';
+import { RoleEnum } from 'enums/role.enum';
 
 const teams = [
   {
@@ -91,6 +93,8 @@ const Tournament: NextPage<PageProps> = (props) => {
   const [loading, setLoading] = useState(true);
   const { tournamentService } = useContext(AppContext);
   const router = useRouter();
+  const { authService } = useContext(AuthContext);
+  const isAdmin = authService.userHasRole(RoleEnum.Admin);
 
   const getTournament = async (id: number) => {
     setTournament(await tournamentService.getTournament(id));
@@ -115,7 +119,7 @@ const Tournament: NextPage<PageProps> = (props) => {
             </p>
           </div>
           <DotsDivider />
-          <PositionsTable tournamentTeamScore={tournament?.tournamentTeamScore} />
+          <PositionsTable isAdmin={isAdmin} tournamentTeamScore={tournament?.tournamentTeamScore} />
           <p className="my-4 max-w-2xl text-sm text-gray-500 lg:mx-auto">La tabla se actualiza todos los miércoles.</p>
         </div>
       </div>

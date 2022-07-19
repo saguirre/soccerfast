@@ -1,6 +1,9 @@
+import { CheckIcon, XIcon } from '@heroicons/react/solid';
 import { TeamScore } from '@models';
+import { useState } from 'react';
 
 interface PositionsTableProps {
+  isAdmin?: boolean;
   tournamentTeamScore: TeamScore[] | undefined;
 }
 
@@ -15,36 +18,52 @@ export interface PositionsTableItem {
   goalsAhead: number;
   goalsAgainst: number;
   points: number;
+  editable?: boolean;
 }
 
-export const PositionsTable: React.FC<PositionsTableProps> = ({ tournamentTeamScore }) => {
+export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournamentTeamScore }) => {
   const getGoalDiff = (teamScore: PositionsTableItem) => {
     return teamScore.goalsAhead - teamScore.goalsAgainst;
   };
 
-  const teams: PositionsTableItem[] | undefined = tournamentTeamScore
-    ?.map((score: TeamScore) => {
-      return {
-        id: score.teamId,
-        name: score.team.name,
-        logo: score.team.logo,
-        matchesPlayed: score.matchesPlayed,
-        matchesWon: score.matchesWon,
-        matchesTied: score.matchesTied,
-        matchesLost: score.matchesLost,
-        goalsAhead: score.goalsAhead,
-        goalsAgainst: score.goalsAgainst,
-        points: score.points,
-      };
-    })
-    .sort((t1: PositionsTableItem, t2: PositionsTableItem) => {
-      if (t2.points === t1.points) {
-        const t2GoalDiff = getGoalDiff(t2);
-        const t1GoalDiff = getGoalDiff(t1);
-        return t2GoalDiff - t1GoalDiff;
-      }
-      return t2.points - t1.points;
+  const mapTeams = () => {
+    return tournamentTeamScore
+      ?.map((score: TeamScore) => {
+        return {
+          id: score.teamId,
+          name: score.team.name,
+          logo: score.team.logo,
+          matchesPlayed: score.matchesPlayed,
+          matchesWon: score.matchesWon,
+          matchesTied: score.matchesTied,
+          matchesLost: score.matchesLost,
+          goalsAhead: score.goalsAhead,
+          goalsAgainst: score.goalsAgainst,
+          points: score.points,
+        };
+      })
+      .sort((t1: PositionsTableItem, t2: PositionsTableItem) => {
+        if (t2.points === t1.points) {
+          const t2GoalDiff = getGoalDiff(t2);
+          const t1GoalDiff = getGoalDiff(t1);
+          return t2GoalDiff - t1GoalDiff;
+        }
+        return t2.points - t1.points;
+      });
+  };
+
+  const [teams, setTeams] = useState<PositionsTableItem[] | undefined>(mapTeams);
+
+  const handleEdit = (id: number, editable: boolean) => {
+    setTeams((currentTeams) => {
+      return currentTeams?.map((team: PositionsTableItem) => {
+        if (team.id === id) {
+          return { ...team, editable };
+        }
+        return team;
+      });
     });
+  };
 
   return (
     <div className="w-full px-24">
@@ -89,9 +108,11 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ tournamentTeamSc
                     <th scope="col" className="px-4 py-3.5 text-center text-sm font-semibold text-gray-900">
                       PTS
                     </th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                      <span className="sr-only">Edit</span>
-                    </th>
+                    {isAdmin && (
+                      <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                        <span className="sr-only">Edit</span>
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
@@ -110,29 +131,99 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ tournamentTeamSc
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500">
-                        {team.matchesPlayed}
+                        {!team.editable ? (
+                          <span>{team.matchesPlayed}</span>
+                        ) : (
+                          <input
+                            className="w-1/4 text-end border border-gray-300 rounded-md shadow-sm px-2 py-1"
+                            defaultValue={team.matchesPlayed}
+                          />
+                        )}
                       </td>
                       <td className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500">
-                        {team.matchesWon}
+                        {!team.editable ? (
+                          <span>{team.matchesWon}</span>
+                        ) : (
+                          <input
+                            className="w-1/4 text-end border border-gray-300 rounded-md shadow-sm px-2 py-1"
+                            defaultValue={team.matchesWon}
+                          />
+                        )}
                       </td>
                       <td className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500">
-                        {team.matchesTied}
+                        {!team.editable ? (
+                          <span>{team.matchesTied}</span>
+                        ) : (
+                          <input
+                            className="w-1/4 text-end border border-gray-300 rounded-md shadow-sm px-2 py-1"
+                            defaultValue={team.matchesTied}
+                          />
+                        )}
                       </td>
                       <td className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500">
-                        {team.matchesLost}
+                        {!team.editable ? (
+                          <span>{team.matchesLost}</span>
+                        ) : (
+                          <input
+                            className="w-1/4 text-end border border-gray-300 rounded-md shadow-sm px-2 py-1"
+                            defaultValue={team.matchesLost}
+                          />
+                        )}
                       </td>
                       <td className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500">
-                        {team.goalsAhead}
+                        {!team.editable ? (
+                          <span>{team.goalsAhead}</span>
+                        ) : (
+                          <input
+                            className="w-1/4 text-end border border-gray-300 rounded-md shadow-sm px-2 py-1"
+                            defaultValue={team.goalsAhead}
+                          />
+                        )}
                       </td>
                       <td className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500">
-                        {team.goalsAgainst}
+                        {!team.editable ? (
+                          <span>{team.goalsAgainst}</span>
+                        ) : (
+                          <input
+                            className="w-1/4 text-end border border-gray-300 rounded-md shadow-sm px-2 py-1"
+                            defaultValue={team.goalsAhead}
+                          />
+                        )}
                       </td>
-                      <td className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500">{team.points}</td>
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <div className="text-indigo-600 hover:text-indigo-900">
-                          Editar<span className="sr-only">Edit</span>
-                        </div>
+                      <td className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500">
+                        {!team.editable ? (
+                          <span>{team.points}</span>
+                        ) : (
+                          <input
+                            className="w-1/4 text-end border border-gray-300 rounded-md shadow-sm px-2 py-1"
+                            defaultValue={team.points}
+                          />
+                        )}
                       </td>
+                      {isAdmin && (
+                        <td className="flex flex-row justify-end items-center relative whitespace-nowrap py-4 text-right text-sm font-medium sm:pr-6">
+                          {!team.editable ? (
+                            <div
+                              className="w-fit px-2 py-1 text-sky-600 hover:cursor-pointer hover:ring-2 rounded-md hover:ring-sky-600"
+                              onClick={() => handleEdit(team.id, true)}
+                            >
+                              Editar<span className="sr-only">Edit</span>
+                            </div>
+                          ) : (
+                            <div className="flex flex-row justify-end items-center">
+                              <button
+                                onClick={() => handleEdit(team.id, false)}
+                                className="mr-4 p-0.5 rounded-full hover:ring-2 hover:ring-red-500"
+                              >
+                                <XIcon className="h-6 w-6 text-red-400" />
+                              </button>
+                              <button className=" p-0.5 rounded-full hover:ring-2 hover:ring-green-500">
+                                <CheckIcon className="h-6 w-6 text-green-500" />
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

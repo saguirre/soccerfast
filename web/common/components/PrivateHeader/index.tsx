@@ -103,61 +103,13 @@ export const PrivateHeader: React.FC = () => {
               goToAdd={goToAddTournament}
             />
 
-            <Popover className="relative">
-              {({ open }) => (
-                <>
-                  <Popover.Button
-                    className={classNames(
-                      open ? 'text-gray-600' : 'text-gray-600',
-                      'group bg-white rounded-md px-2 inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500'
-                    )}
-                  >
-                    <span>Equipos</span>
-                    <ChevronDownIcon
-                      className={classNames(
-                        open ? 'text-gray-400' : 'text-gray-600',
-                        'ml-2 h-5 w-5 group-hover:text-gray-500'
-                      )}
-                      aria-hidden="true"
-                    />
-                  </Popover.Button>
-
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-200"
-                    enterFrom="opacity-0 translate-y-1"
-                    enterTo="opacity-100 translate-y-0"
-                    leave="transition ease-in duration-150"
-                    leaveFrom="opacity-100 translate-y-0"
-                    leaveTo="opacity-0 translate-y-1"
-                  >
-                    <Popover.Panel className="absolute z-10 left-1/2 transform -translate-x-1/2 mt-3 px-2 w-screen max-w-xs sm:px-0">
-                      <div className="rounded-lg shadow-lg ring-1 max-h-96 ring-black ring-opacity-5 overflow-y-scroll overflow-x-hidden">
-                        <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-6 sm:p-8">
-                          <button
-                            onClick={goToAddTeam}
-                            className="-m-3 p-4 flex flex-row items-center justify-between gap-3 rounded-lg hover:ring-2 hover:ring-sky-500"
-                          >
-                            <p className="text-md font-medium text-gray-900">Agregar equipo</p>
-                            <PlusIcon className="w-6 h-6 text-sky-600" />
-                          </button>
-                          {teams?.map((team) => (
-                            <div
-                              key={team.name}
-                              onClick={() => goToTeamPage(team?.id)}
-                              className="-m-3 p-3 flex flex-row hover:cursor-pointer items-center justify-start gap-3 rounded-lg hover:bg-gray-50"
-                            >
-                              <img className="h-10 w-10" src={team?.logo} alt={team?.name} />
-                              <p className="text-base font-medium text-gray-900">{team?.name}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </Popover.Panel>
-                  </Transition>
-                </>
-              )}
-            </Popover>
+            <MenuPopover
+              items={teams || []}
+              title="Equipos"
+              goToItem={(id: number) => goToTeamPage(id)}
+              addTitle="Agregar equipo"
+              goToAdd={goToAddTeam}
+            />
             <Link href="/gallery" className="text-base font-medium text-gray-500 hover:text-gray-900">
               Galería
             </Link>

@@ -1,11 +1,12 @@
 import { Popover, Transition } from '@headlessui/react';
-import { ChevronDownIcon, ClipboardListIcon, PlusIcon } from '@heroicons/react/solid';
+import { ChevronDownIcon, LightningBoltIcon, PlusIcon } from '@heroicons/react/solid';
 import { classNames } from '@utils';
 import { Fragment, SVGProps } from 'react';
 
 export interface PopoverItem {
   id: number;
   name: string;
+  logo?: string;
   icon?: (props: SVGProps<SVGSVGElement>) => JSX.Element;
   description?: string;
 }
@@ -64,11 +65,22 @@ export const MenuPopover: React.FC<Props> = ({ announcement, title, addTitle, go
                       onClick={() => goToItem(item.id)}
                       className="-m-3 p-3 flex items-start rounded-lg hover:bg-gray-50 hover:cursor-pointer"
                     >
-                      <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md bg-sky-500 text-white sm:h-12 sm:w-12">
+                      <div
+                        className={classNames(
+                          item.icon || !item.logo ? 'bg-sky-500' : '',
+                          'flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md  text-white sm:h-12 sm:w-12'
+                        )}
+                      >
                         {item.icon ? (
                           <item.icon className="h-6 w-6" aria-hidden="true" />
                         ) : (
-                          <ClipboardListIcon className="h-6 w-6" aria-hidden="true" />
+                          <>
+                            {item.logo ? (
+                              <img src={item.logo} />
+                            ) : (
+                              <LightningBoltIcon className="h-6 w-6" aria-hidden="true" />
+                            )}
+                          </>
                         )}
                       </div>
                       <div className="ml-4">

@@ -20,7 +20,7 @@ interface Props {
   handleSearchStringChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const MultiSelect: React.FC<Props> = forwardRef<HTMLDivElement, Props>(
+export const MultiSelect = forwardRef<HTMLDivElement, Props>(
   (
     {
       open,

@@ -2,7 +2,7 @@ import { GetServerSideProps, NextPage } from 'next';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
 
-import { authorizedRoute, LoadingWrapper, NotificationAlert, SubmitButton, Title } from '@components';
+import { authorizedRoute, LoadingWrapper, MultiSelect, NotificationAlert, SubmitButton, Title } from '@components';
 import { ChangeEvent, useContext, useRef, useState } from 'react';
 import { UserContext } from 'contexts/user.context';
 import { useEffect } from 'react';
@@ -108,15 +108,15 @@ const TeamPage: NextPage<PageProps> = (props) => {
     setSearchString(event.target.value);
   };
 
-  const handleRemoveUser = (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, user: User) => {
+  const handleRemoveUser = (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, id: number) => {
     event.preventDefault();
     event.stopPropagation();
-    removeUser(user);
+    removeUser(id);
   };
 
-  const removeUser = (user: User) => {
+  const removeUser = (id: number) => {
     setSelectedUsers((current) => {
-      return current.filter((currentUser: User) => currentUser.id !== user.id);
+      return current.filter((currentUser: User) => currentUser.id !== id);
     });
   };
 
@@ -129,11 +129,14 @@ const TeamPage: NextPage<PageProps> = (props) => {
     }
   };
 
-  const handleUserSelection = (user: User) => {
-    if (selectedUsers.some((selectedUser: User) => selectedUser.id === user.id)) {
-      removeUser(user);
+  const handleUserSelection = (id: number) => {
+    if (selectedUsers.some((selectedUser: User) => selectedUser.id === id)) {
+      removeUser(id);
     } else {
-      setSelectedUsers((current) => [...current, user]);
+      const user = users?.find((userInArray: User) => userInArray.id === id);
+      if (user) {
+        setSelectedUsers((current) => [...current, user]);
+      }
     }
   };
 
@@ -307,90 +310,21 @@ const TeamPage: NextPage<PageProps> = (props) => {
                       </div>
                     </div>
                   </div>
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                      Dueño o referente
-                    </label>
-                    <div
-                      onMouseLeave={handleMouseLeave}
-                      onMouseEnter={handleMouseEnter}
-                      className="col-span-12 flex flex-col items-center h-32 mx-auto"
-                    >
-                      <div className="w-full">
-                        <div className="flex flex-col items-center relative">
-                          <div className="w-full">
-                            <div
-                              ref={selectRef}
-                              onClick={() => setSelectOpen((current) => !current)}
-                              className="my-2 p-1 flex border border-gray-300 shadow-sm bg-white rounded-md"
-                            >
-                              <div className="flex flex-auto flex-wrap">
-                                {selectedUsers?.map((user: User, index: number) => (
-                                  <div
-                                    key={index}
-                                    className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-md text-sky-500 ring-1 ring-sky-500 "
-                                  >
-                                    <div className="text-xs font-normal leading-none max-w-full flex-initial">
-                                      {user?.name}
-                                    </div>
-                                    <div className="flex flex-auto flex-row-reverse">
-                                      <div onClick={(event) => handleRemoveUser(event, user)}>
-                                        <XIcon className="feather feather-x cursor-pointer text-sky-500 hover:text-sky-400 rounded-full w-4 h-4 ml-2" />
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-
-                                <div className="flex-1">
-                                  <input
-                                    value={searchString}
-                                    onChange={handleSearchStringChange}
-                                    placeholder={'Escribe para buscar entre los usuarios...'}
-                                    className="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-gray-800 placeholder:text-gray-300 placeholder:text-base "
-                                  />
-                                </div>
-                              </div>
-                              <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200 svelte-1l8159u">
-                                <button className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none">
-                                  {selectOpen ? (
-                                    <ChevronUpIcon className="feather feather-chevron-up w-4 h-4" />
-                                  ) : (
-                                    <ChevronDownIcon className="feather feather-chevron-up w-4 h-4" />
-                                  )}
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                          {selectOpen && (
-                            <div className="absolute shadow mt-14 bg-white z-40 w-full left-0 rounded max-h-select overflow-y-auto svelte-5uyqqj">
-                              <div className="flex flex-col w-full">
-                                {filteredUsers?.map((user: User, index: number) => (
-                                  <div
-                                    key={index}
-                                    onClick={() => handleUserSelection(user)}
-                                    className="cursor-pointer w-full border-gray-100 rounded-b hover:bg-sky-100"
-                                  >
-                                    <div
-                                      className={classNames(
-                                        selectedUsers.some((selectedUser: User) => user.id === selectedUser.id)
-                                          ? 'border-l-4 border-sky-500'
-                                          : '',
-                                        'flex w-full items-center p-2 pl-2 border-transparent  relative '
-                                      )}
-                                    >
-                                      <div className="w-full items-center flex">
-                                        <div className="mx-2 leading-6  ">{user?.name} </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <MultiSelect
+                    handleMouseLeave={handleMouseLeave}
+                    handleMouseEnter={handleMouseEnter}
+                    ref={selectRef}
+                    toggleDropdown={(value: boolean | undefined) => setSelectOpen(value || false)}
+                    handleRemove={(event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, id: number) =>
+                      handleRemoveUser(event, id)
+                    }
+                    handleItemSelection={(id: number) => handleUserSelection(id)}
+                    open={selectOpen}
+                    selectedItems={selectedUsers}
+                    items={filteredUsers || []}
+                    searchString={searchString}
+                    handleSearchStringChange={handleSearchStringChange}
+                  />
                 </div>
                 <div className="flex flex-row justify-end items-end px-4 py-3 text-right sm:px-6">
                   <div className="w-1/4">

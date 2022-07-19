@@ -1,4 +1,4 @@
-import { NextPage } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
 
@@ -22,7 +22,11 @@ interface FormValues {
   description?: string;
 }
 
-const TeamPage: NextPage = () => {
+interface PageProps {
+  teamId: number;
+}
+
+const TeamPage: NextPage<PageProps> = (props) => {
   const { teamService } = useContext(AppContext);
   const { userService } = useContext(UserContext);
   const [users, setUsers] = useState<User[] | null>(null);
@@ -45,7 +49,6 @@ const TeamPage: NextPage = () => {
     formState: { errors },
   } = useForm<FormValues>({ mode: 'all' });
   const router = useRouter();
-  const teamId = router.query.id as string;
   const handleSetImage = async (event: ChangeEvent<HTMLInputElement>) => {
     const { files } = event?.target;
     if (files?.length) {
@@ -153,7 +156,7 @@ const TeamPage: NextPage = () => {
   };
 
   const getTeam = async () => {
-    setTeam(await teamService.getTeam(Number(teamId)));
+    setTeam(await teamService.getTeam(Number(props.teamId)));
   };
 
   useEffect(() => {
@@ -165,7 +168,7 @@ const TeamPage: NextPage = () => {
     setLoading(true);
     getTeam();
     setLoading(false);
-  }, [teamId]);
+  }, [props.teamId]);
 
   useEffect(() => {
     const owner = users?.find((user: User) => user.id === team?.ownerId);
@@ -406,6 +409,10 @@ const TeamPage: NextPage = () => {
       </LoadingWrapper>
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return { props: { teamId: context.params?.id } };
 };
 
 export default authorizedRoute(TeamPage, RoleEnum.Admin);

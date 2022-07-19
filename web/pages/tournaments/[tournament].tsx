@@ -82,12 +82,15 @@ const teams = [
   },
 ];
 
-const Tournament: NextPage = () => {
+interface PageProps {
+  tournamentId: number;
+}
+
+const Tournament: NextPage<PageProps> = (props) => {
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [loading, setLoading] = useState(true);
   const { tournamentService } = useContext(AppContext);
   const router = useRouter();
-  const tournamentId = router.query.tournament as string;
 
   const getTournament = async (id: number) => {
     setTournament(await tournamentService.getTournament(id));
@@ -96,9 +99,9 @@ const Tournament: NextPage = () => {
 
   useEffect(() => {
     if (router.isReady) {
-      getTournament(Number(tournamentId));
+      getTournament(Number(props.tournamentId));
     }
-  }, [tournamentId]);
+  }, []);
 
   return (
     <LoadingWrapper loading={loading}>
@@ -118,6 +121,10 @@ const Tournament: NextPage = () => {
       </div>
     </LoadingWrapper>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return { props: { tournamentId: context.params?.tournament } };
 };
 
 export default Tournament;

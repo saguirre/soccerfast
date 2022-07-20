@@ -1,7 +1,8 @@
 import { CheckIcon, XIcon } from '@heroicons/react/solid';
 import { TeamScore } from '@models';
+import { AppContext } from 'contexts/app.context';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 interface PositionsTableProps {
   isAdmin?: boolean;
@@ -25,6 +26,8 @@ export interface PositionsTableItem {
 
 export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournamentId, tournamentTeamScore }) => {
   const router = useRouter();
+  const { tournamentService } = useContext(AppContext);
+
   const getGoalDiff = (teamScore: PositionsTableItem) => {
     return teamScore.goalsAhead - teamScore.goalsAgainst;
   };
@@ -53,6 +56,10 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournam
         }
         return t2.points - t1.points;
       });
+  };
+
+  const editRow = async (row: PositionsTableItem) => {
+    console.log(row);
   };
 
   const [teams, setTeams] = useState<PositionsTableItem[] | undefined>(mapTeams);

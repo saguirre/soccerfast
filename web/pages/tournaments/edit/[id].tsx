@@ -69,15 +69,15 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
     setLoadingAddRequest(false);
     if (!addTournamentResult) {
       createNotification({
-        title: 'Error',
-        message: `Ha ocurrido un error al actualizar el torneo ${body.name}. Revise los datos e inténtelo nuevamente.`,
+        title: t('common:notification.updateErrorTitle'),
+        message: t('common:notification.updateErrorMessage', { entity: body.name }),
         isError: true,
       });
       return;
     }
     createNotification({
-      title: 'Torneo actualizado',
-      message: `El torneo ${body.name} fue actualizad correctamente!`,
+      title: t('common:notification.updateSuccessTitle', { entity: t('common:entity.tournament') }),
+      message: t('common:notification.updateSuccessMessage', { entity: body.name }),
     });
   };
 
@@ -177,16 +177,16 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
               <div className="sm:overflow-hidden">
                 <div className="bg-white py-6 px-4 space-y-6 sm:p-6">
                   <div>
-                    <h3 className="text-lg leading-6 font-medium text-gray-900 my-2">{t('editTournament.form.title')}</h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                    {t('editTournament.form.subtitle')}
-                    </p>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900 my-2">
+                      {t('editTournament.form.title')}
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-500">{t('editTournament.form.subtitle')}</p>
                   </div>
                   <div className="grid grid-cols-3 gap-6">
                     <div className="flex flex-row items-center justify-between col-span-3">
                       <div className="w-1/2">
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                        {t('editTournament.form.name')}
+                          {t('editTournament.form.name')}
                         </label>
                         <div className="mt-1">
                           <input
@@ -210,7 +210,7 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
                     </div>
                     <div className="col-span-3">
                       <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                      {t('editTournament.form.description')}
+                        {t('editTournament.form.description')}
                       </label>
                       <div className="mt-1">
                         <textarea
@@ -234,7 +234,7 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
                   </div>
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                    {t('editTournament.form.teams')}
+                      {t('editTournament.form.teams')}
                     </label>
                     <MultiSelect
                       handleMouseLeave={handleMouseLeave}

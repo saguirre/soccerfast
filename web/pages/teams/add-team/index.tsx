@@ -1,8 +1,8 @@
-import { NextPage } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
 
-import { authorizedRoute, LoadingWrapper, NotificationAlert, SubmitButton, Title } from '@components';
+import { authorizedRoute, LoadingWrapper, MultiSelect, NotificationAlert, SubmitButton, Title } from '@components';
 import { ChangeEvent, useContext, useRef, useState } from 'react';
 import { UserContext } from 'contexts/user.context';
 import { useEffect } from 'react';
@@ -14,6 +14,8 @@ import { MouseEvent } from 'react';
 import { classNames } from '@utils/*';
 import { useNotification } from 'hooks/useNotification.hook';
 import { RoleEnum } from 'enums/role.enum';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 interface FormValues {
   name: string;
@@ -22,6 +24,7 @@ interface FormValues {
 }
 
 const AddTeamPage: NextPage = () => {
+  const { t } = useTranslation(['common', 'pages']);
   const { teamService } = useContext(AppContext);
   const { userService } = useContext(UserContext);
   const [users, setUsers] = useState<User[] | null>(null);
@@ -75,16 +78,16 @@ const AddTeamPage: NextPage = () => {
     setLoadingAddRequest(false);
     if (!addTeamResult) {
       createNotification({
-        title: 'Error',
-        message: `Ha ocurrido un error al crear el equipo ${body.name}. Revise los datos e inténtelo nuevamente.`,
+        title: t('common:notification.addErrorTitle'),
+        message: t('common:notification.addErrorMessage', { entity: body.name }),
         isError: true,
       });
       return;
     }
     resetFormAndValues();
     createNotification({
-      title: 'Equipo agregado',
-      message: `El equipo ${body.name} fue agregado correctamente!`,
+      title: t('common:notification.addSuccessTitle', { entity: t('common:entity.team') }),
+      message: t('common:notification.addSuccessMessage', { entity: body.name }),
     });
   };
 
@@ -105,15 +108,15 @@ const AddTeamPage: NextPage = () => {
     setSearchString(event.target.value);
   };
 
-  const handleRemoveUser = (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, user: User) => {
+  const handleRemoveUser = (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, id: number) => {
     event.preventDefault();
     event.stopPropagation();
-    removeUser(user);
+    removeUser(id);
   };
 
-  const removeUser = (user: User) => {
+  const removeUser = (id: number) => {
     setSelectedUsers((current) => {
-      return current.filter((currentUser: User) => currentUser.id !== user.id);
+      return current.filter((currentUser: User) => currentUser.id !== id);
     });
   };
 
@@ -126,11 +129,14 @@ const AddTeamPage: NextPage = () => {
     }
   };
 
-  const handleUserSelection = (user: User) => {
-    if (selectedUsers.some((selectedUser: User) => selectedUser.id === user.id)) {
-      removeUser(user);
+  const handleUserSelection = (id: number) => {
+    if (selectedUsers.some((selectedUser: User) => selectedUser.id === id)) {
+      removeUser(id);
     } else {
-      setSelectedUsers((current) => [...current, user]);
+      const user = users?.find((userInArray: User) => userInArray.id === id);
+      if (user) {
+        setSelectedUsers((current) => [...current, user]);
+      }
     }
   };
 
@@ -163,7 +169,7 @@ const AddTeamPage: NextPage = () => {
 
   return (
     <div className="h-full w-full bg-white flex flex-col justify-center pt-4 pb-20 sm:px-6 lg:px-8">
-      <Title title="Agregar Equipo" subtitle="Rellena la información para agregar un equipo." />
+      <Title title={t('pages:addTeam.title')} subtitle={t('pages:addTeam.subtitle')} />
       <LoadingWrapper loading={loading}>
         <div className="sm:mx-auto max-w-2xl">
           <div onClick={handleFocus} className="p-8 mt-4 sm:px-10 border border-slate-200 shadow-md rounded-lg">
@@ -171,14 +177,16 @@ const AddTeamPage: NextPage = () => {
               <div className="sm:overflow-hidden">
                 <div className="bg-white py-6 px-4 space-y-6 sm:p-6">
                   <div>
-                    <h3 className="text-lg leading-6 font-medium text-gray-900 my-2">Agregar Equipo</h3>
-                    <p className="mt-1 text-sm text-gray-500">Recuerda agregar una foto para el equipo!</p>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900 my-2">
+                      {t('pages:addTeam.form.title')}
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-500">{t('pages:addTeam.form.subtitle')}</p>
                   </div>
                   <div className="grid grid-cols-3 gap-6">
                     <div className="flex flex-row items-center justify-between col-span-3">
                       <div className="w-1/2">
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                          Nombre
+                          {t('pages:addTeam.form.name')}
                         </label>
                         <div className="mt-1">
                           <input
@@ -192,14 +200,16 @@ const AddTeamPage: NextPage = () => {
                               },
                               maxLength: { value: 50, message: 'El nombre es demasiado largo.' },
                             })}
-                            placeholder="C.A. Cerro"
+                            placeholder={t('pages:addTeam.form.namePlaceholder')}
                             autoComplete="name"
                             className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                           />
                         </div>
                       </div>
                       <div className="mr-4">
-                        <label className="block text-sm font-medium text-gray-700">Foto</label>
+                        <label className="block text-sm font-medium text-gray-700">
+                          {t('pages:addTeam.form.photo')}
+                        </label>
                         <div className="mt-1 flex items-center">
                           <div className="flex justify-center items-center bg-gray-100 rounded-full overflow-hidden h-12 w-12">
                             <div>
@@ -252,14 +262,14 @@ const AddTeamPage: NextPage = () => {
                             onClick={openFileExplorer}
                             className="ml-5 bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
                           >
-                            Cambiar
+                            {t('pages:addTeam.form.changePhoto')}
                           </button>
                         </div>
                       </div>
                     </div>
                     <div className="col-span-3">
                       <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                        Descripción
+                        {t('pages:addTeam.form.description')}
                       </label>
                       <div className="mt-1">
                         <textarea
@@ -272,7 +282,7 @@ const AddTeamPage: NextPage = () => {
                           })}
                           rows={3}
                           className="shadow-sm placeholder-slate-300 focus:ring-sky-500 focus:border-sky-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
-                          placeholder="Descripción del equipo"
+                          placeholder={t('pages:addTeam.form.descriptionPlaceholder')}
                           defaultValue={''}
                         />
                         {errors.description && (
@@ -283,92 +293,28 @@ const AddTeamPage: NextPage = () => {
                   </div>
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                      Dueño o referente
+                      {t('pages:addTeam.form.owner')}
                     </label>
-                    <div
-                      onMouseLeave={handleMouseLeave}
-                      onMouseEnter={handleMouseEnter}
-                      className="col-span-12 flex flex-col items-center h-32 mx-auto"
-                    >
-                      <div className="w-full">
-                        <div className="flex flex-col items-center relative">
-                          <div className="w-full">
-                            <div
-                              ref={selectRef}
-                              onClick={() => setSelectOpen((current) => !current)}
-                              className="my-2 p-1 flex border border-gray-300 shadow-sm bg-white rounded-md"
-                            >
-                              <div className="flex flex-auto flex-wrap">
-                                {selectedUsers?.map((user: User, index: number) => (
-                                  <div
-                                    key={index}
-                                    className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-md text-sky-500 ring-1 ring-sky-500 "
-                                  >
-                                    <div className="text-xs font-normal leading-none max-w-full flex-initial">
-                                      {user?.name}
-                                    </div>
-                                    <div className="flex flex-auto flex-row-reverse">
-                                      <div onClick={(event) => handleRemoveUser(event, user)}>
-                                        <XIcon className="feather feather-x cursor-pointer text-sky-500 hover:text-sky-400 rounded-full w-4 h-4 ml-2" />
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-
-                                <div className="flex-1">
-                                  <input
-                                    value={searchString}
-                                    onChange={handleSearchStringChange}
-                                    placeholder={'Escribe para buscar entre los usuarios...'}
-                                    className="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-gray-800 placeholder:text-gray-300 placeholder:text-base "
-                                  />
-                                </div>
-                              </div>
-                              <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200 svelte-1l8159u">
-                                <button className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none">
-                                  {selectOpen ? (
-                                    <ChevronUpIcon className="feather feather-chevron-up w-4 h-4" />
-                                  ) : (
-                                    <ChevronDownIcon className="feather feather-chevron-up w-4 h-4" />
-                                  )}
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                          {selectOpen && (
-                            <div className="absolute shadow mt-14 bg-white z-40 w-full left-0 rounded max-h-select overflow-y-auto svelte-5uyqqj">
-                              <div className="flex flex-col w-full">
-                                {filteredUsers?.map((user: User, index: number) => (
-                                  <div
-                                    key={index}
-                                    onClick={() => handleUserSelection(user)}
-                                    className="cursor-pointer w-full border-gray-100 rounded-b hover:bg-sky-100"
-                                  >
-                                    <div
-                                      className={classNames(
-                                        selectedUsers.some((selectedUser: User) => user.id === selectedUser.id)
-                                          ? 'border-l-4 border-sky-500'
-                                          : '',
-                                        'flex w-full items-center p-2 pl-2 border-transparent  relative '
-                                      )}
-                                    >
-                                      <div className="w-full items-center flex">
-                                        <div className="mx-2 leading-6  ">{user?.name} </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    <MultiSelect
+                      handleMouseLeave={handleMouseLeave}
+                      handleMouseEnter={handleMouseEnter}
+                      ref={selectRef}
+                      toggleDropdown={(value: boolean | undefined) => setSelectOpen(value || false)}
+                      handleRemove={(event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, id: number) =>
+                        handleRemoveUser(event, id)
+                      }
+                      handleItemSelection={(id: number) => handleUserSelection(id)}
+                      open={selectOpen}
+                      selectedItems={selectedUsers}
+                      items={filteredUsers || []}
+                      searchString={searchString}
+                      handleSearchStringChange={handleSearchStringChange}
+                    />
                   </div>
                 </div>
                 <div className="flex flex-row justify-end items-end px-4 py-3 text-right sm:px-6">
                   <div className="w-1/4">
-                    <SubmitButton text={'Guardar'} loading={loadingAddRequest} errors={errors} />
+                    <SubmitButton text={t('pages:addTeam.form.submit')} loading={loadingAddRequest} errors={errors} />
                   </div>
                 </div>
               </div>
@@ -383,6 +329,12 @@ const AddTeamPage: NextPage = () => {
       </LoadingWrapper>
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+  return {
+    props: { ...(await serverSideTranslations(locale || 'es', ['common', 'pages'])) },
+  };
 };
 
 export default authorizedRoute(AddTeamPage, RoleEnum.Admin);

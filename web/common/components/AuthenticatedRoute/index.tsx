@@ -15,7 +15,6 @@ export const authenticatedRoute = (Component: React.FC<any>) => {
       if (!token) {
         router.push({
           pathname: '/',
-          query: 'unauthorized',
         });
         return;
       }
@@ -24,7 +23,6 @@ export const authenticatedRoute = (Component: React.FC<any>) => {
       if (!validToken) {
         router.push({
           pathname: '/',
-          query: 'unauthorized',
         });
         return;
       }

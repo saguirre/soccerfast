@@ -1,4 +1,4 @@
-import { NextPage } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
 
@@ -21,6 +21,8 @@ import { MouseEvent } from 'react';
 import { classNames } from '@utils/*';
 import { useNotification } from 'hooks/useNotification.hook';
 import { RoleEnum } from 'enums/role.enum';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 interface FormValues {
   name: string;
@@ -28,6 +30,7 @@ interface FormValues {
 }
 
 const AddTournamentPage: NextPage = () => {
+  const { t } = useTranslation(['common', 'pages']);
   const { teamService, tournamentService } = useContext(AppContext);
   const [teams, setTeams] = useState<Team[] | null>(null);
   const [filteredTeams, setFilteredTeams] = useState<Team[] | null>(null);
@@ -63,16 +66,16 @@ const AddTournamentPage: NextPage = () => {
     setLoadingAddRequest(false);
     if (!addTournamentResult) {
       createNotification({
-        title: 'Error',
-        message: `Ha ocurrido un error al crear el torneo ${body.name}. Revise los datos e inténtelo nuevamente.`,
+        title: t('common:notification.addErrorTitle', { entity: t('common:entity.tournament') }),
+        message: t('common:notification.addErrorMessage', { entity: body.name }),
         isError: true,
       });
       return;
     }
     resetFormAndValues();
     createNotification({
-      title: 'Torneo agregado',
-      message: `El torneo ${body.name} fue agregado correctamente!`,
+      title: t('common:notification.addSuccessTitle', { entity: t('common:entity.tournament') }),
+      message: t('common:notification.addSuccessMessage', { entity: body.name }),
     });
   };
 
@@ -150,7 +153,7 @@ const AddTournamentPage: NextPage = () => {
 
   return (
     <div className="h-full w-full bg-white flex flex-col justify-center pt-4 pb-20 sm:px-6 lg:px-8">
-      <Title title="Agregar Torneo" subtitle="Rellena la información para agregar un torneo." />
+      <Title title={t('pages:addTournament.title')} subtitle={t('pages:addTournament.subtitle')} />
       <LoadingWrapper loading={loading}>
         <div className="sm:mx-auto max-w-2xl">
           <div onClick={handleFocus} className="p-8 mt-4 sm:px-10 border border-slate-200 shadow-md rounded-lg">
@@ -158,14 +161,16 @@ const AddTournamentPage: NextPage = () => {
               <div className="sm:overflow-hidden">
                 <div className="bg-white py-6 px-4 space-y-6 sm:p-6">
                   <div>
-                    <h3 className="text-lg leading-6 font-medium text-gray-900 my-2">Agregar Torneo</h3>
-                    <p className="mt-1 text-sm text-gray-500">Recuerda agregar equipos!</p>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900 my-2">
+                      {t('pages:addTournament.form.title')}
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-500">{t('pages:addTournament.form.subtitle')}</p>
                   </div>
                   <div className="grid grid-cols-3 gap-6">
                     <div className="flex flex-row items-center justify-between col-span-3">
                       <div className="w-1/2">
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                          Nombre
+                          {t('pages:addTournament.form.name')}
                         </label>
                         <div className="mt-1">
                           <input
@@ -179,7 +184,7 @@ const AddTournamentPage: NextPage = () => {
                               },
                               maxLength: { value: 50, message: 'El nombre es demasiado largo.' },
                             })}
-                            placeholder="Torneo SoccerFast"
+                            placeholder={t('pages:addTournament.form.namePlaceholder')}
                             autoComplete="name"
                             className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                           />
@@ -188,7 +193,7 @@ const AddTournamentPage: NextPage = () => {
                     </div>
                     <div className="col-span-3">
                       <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                        Descripción
+                        {t('pages:addTournament.form.description')}
                       </label>
                       <div className="mt-1">
                         <textarea
@@ -201,7 +206,7 @@ const AddTournamentPage: NextPage = () => {
                           })}
                           rows={3}
                           className="shadow-sm placeholder-slate-300 focus:ring-sky-500 focus:border-sky-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
-                          placeholder="Descripción del torneo"
+                          placeholder={t('pages:addTournament.form.descriptionPlaceholder')}
                           defaultValue={''}
                         />
                         {errors.description && (
@@ -212,7 +217,7 @@ const AddTournamentPage: NextPage = () => {
                   </div>
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                      Equipos
+                      {t('pages:addTournament.form.teams')}
                     </label>
                     <MultiSelect
                       handleMouseLeave={handleMouseLeave}
@@ -233,7 +238,11 @@ const AddTournamentPage: NextPage = () => {
                 </div>
                 <div className="flex flex-row justify-end items-end px-4 py-3 text-right sm:px-6">
                   <div className="w-1/4">
-                    <SubmitButton text={'Guardar'} loading={loadingAddRequest} errors={errors} />
+                    <SubmitButton
+                      text={t('pages:addTournament.form.submit')}
+                      loading={loadingAddRequest}
+                      errors={errors}
+                    />
                   </div>
                 </div>
               </div>
@@ -248,6 +257,12 @@ const AddTournamentPage: NextPage = () => {
       </LoadingWrapper>
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+  return {
+    props: { ...(await serverSideTranslations(locale || 'es', ['common', 'pages'])) },
+  };
 };
 
 export default authenticatedRoute(authorizedRoute(AddTournamentPage, RoleEnum.Admin));

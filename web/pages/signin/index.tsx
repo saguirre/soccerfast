@@ -18,7 +18,7 @@ interface FormValues {
 
 const SignInPage: NextPage = () => {
   const router = useRouter();
-  const { t } = useTranslation('pages');
+  const { t } = useTranslation(['common', 'pages']);
   const [loadingRequest, setLoadingRequest] = useState(false);
   const { setUserToken, authService } = useContext(AuthContext);
   const { createNotification, closeNotification, notification, showNotification } = useNotification();
@@ -35,15 +35,15 @@ const SignInPage: NextPage = () => {
     setLoadingRequest(false);
     if (!user) {
       createNotification({
-        title: 'Error al Ingresar',
-        message: 'Ha ocurrido un error al ingresar, por favor verifica tus datos e inténtalo de nuevo.',
+        title: t('common:notification.signInErrorTitle'),
+        message: t('common:notification.signInErrorMessage'),
         isError: true,
       });
       return;
     }
     createNotification({
-      title: 'Ingreso correcto!',
-      message: 'Te estamos redirigiendo a la pantalla de inicio...',
+      title: t('common:notification.signInSuccessTitle'),
+      message: t('common:notification.signInSuccessMessage'),
     });
     setTimeout(() => {
       setUserToken(user.token);
@@ -54,18 +54,18 @@ const SignInPage: NextPage = () => {
   return (
     <>
       <div className="h-full bg-white flex flex-col justify-center pt-4 pb-20 sm:px-6 lg:px-8">
-        <Title title={t('signin.title')} subtitle={t('signin.subtitle')} />
+        <Title title={t('pages:signin.title')} subtitle={t('pages:signin.subtitle')} />
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow-md border border-slate-100 sm:rounded-lg sm:px-10">
             <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  {t('signin.form.email')}
+                  {t('pages:signin.form.email')}
                 </label>
                 <div className="mt-1">
                   <input
                     id="email"
-                    placeholder={t('signin.form.emailPlaceholder')}
+                    placeholder={t('pages:signin.form.emailPlaceholder')}
                     required
                     type="email"
                     {...register('email', {
@@ -88,7 +88,7 @@ const SignInPage: NextPage = () => {
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  {t('signin.form.password')}
+                  {t('pages:signin.form.password')}
                 </label>
                 <div className="mt-1">
                   <input
@@ -102,7 +102,7 @@ const SignInPage: NextPage = () => {
                       },
                       maxLength: { value: 50, message: 'La contraseña es demasiado larga.' },
                     })}
-                    placeholder={t('signin.form.passwordPlaceholder')}
+                    placeholder={t('pages:signin.form.passwordPlaceholder')}
                     autoComplete="current-password"
                     required
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
@@ -114,13 +114,13 @@ const SignInPage: NextPage = () => {
               <div className="flex items-center justify-start">
                 <div className="text-sm">
                   <a href="#" className="font-medium text-sky-600 hover:text-sky-500">
-                    {t('signin.form.forgotPassword')}
+                    {t('pages:signin.form.forgotPassword')}
                   </a>
                 </div>
               </div>
 
               <div>
-                <SubmitButton loading={loadingRequest} text={t('signin.form.submit')} errors={errors} />
+                <SubmitButton loading={loadingRequest} text={t('pages:signin.form.submit')} errors={errors} />
               </div>
             </form>
 
@@ -130,7 +130,7 @@ const SignInPage: NextPage = () => {
                   <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">{t('signin.form.continueWith')}</span>
+                  <span className="px-2 bg-white text-gray-500">{t('pages:signin.form.continueWith')}</span>
                 </div>
               </div>
 

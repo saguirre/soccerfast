@@ -99,6 +99,22 @@
       "submit": "Guardar"
     }
   },
+  "addTeam": {
+    "title": "Agregar Equipo",
+    "subtitle": "Rellena la información para agregar un equipo.",
+    "form": {
+      "title": "Agregar Equipo",
+      "subtitle": "Para agregar el equipo presiona Guardar",
+      "name": "Nombre",
+      "namePlaceholder": "C.A. Cerro",
+      "owner": "Dueños o representantes",
+      "photo": "Escudo",
+      "changePhoto": "Cambiar",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Descripción del equipo",
+      "submit": "Guardar"
+    }
+  },
   "tournament": {
     "title": "Torneo",
     "subtitle": "Aquí se puede ver toda la información relacionada al Torneo",
@@ -124,6 +140,22 @@
       "editTournament": "Editar Torneo",
       "addTeam": "Agregar Equipo",
       "tableUpdate": "La tabla se actualiza todos los miércoles"
+    }
+  },
+  "addTournament": {
+    "title": "Agregar Torneo",
+    "subtitle": "Rellena la información para agregar un torneo.",
+    "form": {
+      "title": "Agregar Torneo",
+      "subtitle": "Para poder agregar el torneo, presiona Guardar",
+      "name": "Nombre",
+      "namePlaceholder": "Nombre del torneo",
+      "photo": "Foto",
+      "teams": "Equipos",
+      "changePhoto": "Cambiar",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Descripción del torneo",
+      "submit": "Guardar"
     }
   },
   "editTournament": {

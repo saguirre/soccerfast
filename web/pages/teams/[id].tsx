@@ -26,7 +26,7 @@ interface PageProps {
 }
 
 const TeamPage: NextPage<PageProps> = (props) => {
-  const { t } = useTranslation('pages');
+  const { t } = useTranslation(['pages', 'common']);
   const { teamService } = useContext(AppContext);
   const { userService } = useContext(UserContext);
   const [users, setUsers] = useState<User[] | null>(null);
@@ -76,8 +76,8 @@ const TeamPage: NextPage<PageProps> = (props) => {
       setLoadingAddRequest(false);
       if (!updateTeamResult) {
         createNotification({
-          title: 'Error',
-          message: `Ha ocurrido un error al actualizar el equipo ${body.name}. Revise los datos e inténtelo nuevamente.`,
+          title: t('common:notification.updateErrorTitle'),
+          message: t('common:notification.updateErrorMessage', { entity: body.name }),
           isError: true,
         });
         return;
@@ -85,8 +85,8 @@ const TeamPage: NextPage<PageProps> = (props) => {
       setTeam(updateTeamResult);
       setNewlyUploadedLogo(null);
       createNotification({
-        title: 'Equipo actualizado',
-        message: `El equipo ${body.name} fue actualizado correctamente!`,
+        title: t('common:notification.updateSuccessTitle', { entity: t('common:entity.team') }),
+        message: t('common:notification.updateSuccessMessage', { entity: body.name }),
       });
     }
   };

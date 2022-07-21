@@ -84,6 +84,22 @@
       "submit": "Save"
     }
   },
+  "addTeam": {
+    "title": "Add Team",
+    "subtitle": "Fill out the information in order to add a team.",
+    "form": {
+      "title": "Add Team",
+      "subtitle": "In order to create a team, press Save",
+      "name": "Name",
+      "namePlaceholder": "C.A. Cerro",
+      "photo": "Logo",
+      "changePhoto": "Change",
+      "description": "Description",
+      "owner": "Owners or representatives",
+      "descriptionPlaceholder": "Team description",
+      "submit": "Save"
+    }
+  },
   "team": {
     "title": "Team",
     "subtitle": "Review and edit the team information",
@@ -124,6 +140,22 @@
       "editTournament": "Edit Tournament",
       "addTeam": "Add Team",
       "tableUpdate": "The table is updated every wednesday."
+    }
+  },
+  "addTournament": {
+    "title": "Add Tournament",
+    "subtitle": "Fill out the information in order to add a tournament.",
+    "form": {
+      "title": "Add Tournament",
+      "subtitle": "In order to create the tournament, press Save",
+      "name": "Name",
+      "namePlaceholder": "Tournament name",
+      "photo": "Photo",
+      "teams": "Teams",
+      "changePhoto": "Change",
+      "description": "Description",
+      "descriptionPlaceholder": "Tournament description",
+      "submit": "Save"
     }
   },
   "editTournament": {

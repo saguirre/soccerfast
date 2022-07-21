@@ -16,7 +16,6 @@ export const authorizedRoute = (Component: React.FC<any>, role: RoleEnum) => {
       if (!hasRole) {
         router.push({
           pathname: '/',
-          query: 'unauthorized',
         });
       }
 

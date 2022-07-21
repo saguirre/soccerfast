@@ -12,7 +12,6 @@
     "submit": "Guardar",
     "subscribe": "Notificarme"
   },
-
   "header": {
     "tournaments": { "title": "Torneos", "add": "Agregar Torneo" },
     "teams": { "title": "Equipos", "add": "Agregar Equipo" },
@@ -28,5 +27,45 @@
   },
   "multiselect": {
     "placeholder": "Buscar..."
+  },
+  "entity": {
+    "team": "Equipo",
+    "tournament": "Torneo",
+    "rule": "Reglamento",
+    "contact": "Contacto",
+    "user": "Usuario"
+  },
+
+  "notification": {
+    "successTitle": "Éxito",
+    "errorTitle": "Error",
+    "signUpErrorTitle": "Error al registrarse",
+    "signUpSuccessTitle": "Registro exitoso!",
+    "signUpSuccessMessage": "Te estamos redirigiendo a la página de ingreso...",
+    "signUpErrorMessage": "Ha ocurrido un error al registrarse, por favor verifica tus datos e inténtalo de nuevo.",
+    "signInErrorTitle": "Error al ingresar",
+    "signInSuccessTitle": "Ingreso exitoso!",
+    "signInSuccessMessage": "Te estamos redirigiendo a la página de inicio",
+    "signInErrorMessage": "Ha ocurrido un error al ingresar, por favor verifica tus datos e inténtalo de nuevo.",
+    "updateSuccessTitle": "{{entity}} actualizado",
+    "updateErrorTitle": "Error al actualizar",
+    "updateSuccessMessage": "{{entity}} fue actualizado exitosamente!",
+    "updateErrorMessage": "Ha ocurrido un error al intentar actualizar {{entity}}. Por favor intenta de nuevo más tarde.",
+    "addSuccessTitle": "{{entity}} agregado",
+    "addErrorTitle": "Error al agregar",
+    "addSuccessMessage": "{{entity}} fue agregado exitosamente!",
+    "addErrorMessage": "Ha ocurrido un error al intentar agregar {{entity}}. Por favor intenta de nuevo más tarde.",
+    "deleteSuccessTitle": "{{entity}} borrado",
+    "deleteErrorTitle": "Error al borrar",
+    "deleteSuccessMessage": "{{entity}} borrado exitosamente!",
+    "deleteErrorMessage": "Ha ocurrido un error al intentar borrar {{entity}}. Por favor intenta de nuevo más tarde.",
+    "inactivateSuccessTitle": "{{entity}} desactivado",
+    "inactivateErrorTitle": "Error al desactivar",
+    "inactivateSuccessMessage": "{{entity}} desactivado exitosamente!",
+    "inactivateErrormessage": "Ha ocurrido un error al intentar desactivar {{entity}}. Por favor intenta de nuevo más tarde.",
+    "activateSuccessTitle": "{{entity}} activado",
+    "activateErrorTitle": "Error al activar",
+    "activateSuccessMessage": "{{entity}} activado exitosamente!",
+    "activateErrorMessage": "Ha ocurrido un error al intentar activar {{entity}}. Por favor intenta de nuevo más tarde."
   }
 }

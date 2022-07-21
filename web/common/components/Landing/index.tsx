@@ -1,6 +1,9 @@
+import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 
 export const Landing: React.FC = () => {
+  const { t } = useTranslation('pages');
+
   return (
     <div className="relative bg-white overflow-hidden">
       <div className="hidden lg:block lg:absolute lg:inset-0" aria-hidden="true">
@@ -34,24 +37,22 @@ export const Landing: React.FC = () => {
             <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
               <h1>
                 <span className="block text-sm font-semibold uppercase tracking-wide text-gray-500 sm:text-base lg:text-sm xl:text-base">
-                  Miami, Florida
+                  Miami, Florida  
                 </span>
                 <span className="mt-1 block text-4xl tracking-tight font-extrabold sm:text-5xl xl:text-6xl">
-                  <span className="block text-gray-900">Bienvenido a </span>
+                  <span className="block text-gray-900">{t('landing.titleBlack')} </span>
                   <span className="block text-sky-500">SoccerFast</span>
                 </span>
               </h1>
               <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
-                <span className="font-semibold text-sky-500"> SoccerFast </span>es tu lugar para jugar al fútbol en
-                Miami. Somos expertos en organizaciones de torneos amateur, con más de 10 años de presencia en el rubro.{' '}
+                <span className="font-semibold text-sky-500"> SoccerFast </span>
+                {t('landing.intro')} <br />
                 <br />
-                <br />
-                Explora nuestro sitio para encontrar más información acerca de los actuales torneos, los equipos, fotos
-                y más!
+                {t('landing.intro2')}
               </p>
               <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
                 <p className="text-base font-medium text-gray-900">
-                  Suscribite a nuestra lista de correos para no perderte ninguna novedad!
+                  {t('landing.mailingList.title')}
                 </p>
                 <form action="#" method="POST" className="mt-3 sm:flex">
                   <label htmlFor="email" className="sr-only">
@@ -62,20 +63,20 @@ export const Landing: React.FC = () => {
                     name="email"
                     id="email"
                     className="block w-full py-3 text-base rounded-md placeholder-gray-400 shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:flex-1 border-gray-300"
-                    placeholder="Ingresa tu Email"
+                    placeholder={t('landing.mailingList.placeholder')}
                   />
                   <button
                     type="submit"
                     className="mt-3 w-full px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-sky-500 shadow-sm hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white sm:mt-0 sm:ml-3 sm:flex-shrink-0 sm:inline-flex sm:items-center sm:w-auto"
                   >
-                    Notificarme
+                    {t('landing.mailingList.submit')}
                   </button>
                 </form>
                 <p className="mt-3 text-sm text-gray-500">
-                  Nos interesa mucho tu privacidad. Lee más acerca de nuestra
+                  {t('landing.mailingList.privacyPolicy')}
                   <Link href="/privacy-policy">
-                    <span className="font-medium ml-1.5 text-black underline hover:cursor-pointer hover:text-slate-600">
-                      Política de Privacidad
+                    <span className="font-medium ml-0.5 text-black underline hover:cursor-pointer hover:text-slate-600">
+                      {t('landing.mailingList.privacyPolicyLink')}
                     </span>
                   </Link>
                   .

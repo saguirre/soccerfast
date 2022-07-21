@@ -5,9 +5,11 @@ import { MailIcon, PhoneIcon } from '@heroicons/react/solid';
 import { LogoComponent } from '@components';
 import { AppContext } from '@contexts';
 import { ContactInfo, ContactInfoEmail, ContactInfoPhone, ContactInfoSocialMedia } from '@models';
+import { useTranslation } from 'next-i18next';
 
 export const Footer: React.FC = () => {
   const { contactInfoService } = useContext(AppContext);
+  const { t } = useTranslation('common');
   const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
   const getContactInfo = async () => {
     const contactInfoResponse = await contactInfoService.getContactInfo();
@@ -27,7 +29,7 @@ export const Footer: React.FC = () => {
         <div className="flex flex-row items-center justify-start gap-20">
           <div className="xl:col-span-1">
             <img className="h-14" src={'/' + contactInfo?.companyLogo} alt="Company name" />
-            <p className="text-gray-400 text-base mt-4">{contactInfo?.companyPhrase}</p>
+            <p className="text-gray-400 text-base mt-4">{t('footer.slogan')}</p>
             <div className="flex mt-4 space-x-6">
               {contactInfo?.socialMedias?.map((socialMedia: ContactInfoSocialMedia) => (
                 <a key={socialMedia.id} href={socialMedia.url} className="text-gray-400 hover:text-gray-300">
@@ -38,7 +40,7 @@ export const Footer: React.FC = () => {
             </div>
           </div>
           <div>
-            <h3 className="text-sm leading-6 font-medium uppercase text-gray-200">Contacto</h3>
+            <h3 className="text-sm leading-6 font-medium uppercase text-gray-200">{t('footer.contact')}</h3>
             <dl className="mt-2 space-y-1.5">
               <dt>
                 <span className="sr-only">Phone number</span>
@@ -63,7 +65,7 @@ export const Footer: React.FC = () => {
           </div>
         </div>
         <div className="mt-6 border-t opacity-30 border-slate-300 pt-6"></div>
-        <p className="text-base text-gray-400 xl:text-center">&copy; {contactInfo?.copyright}</p>
+        <p className="text-base text-gray-400 xl:text-center">&copy; {t('footer.copyright')}</p>
       </div>
     </footer>
   );

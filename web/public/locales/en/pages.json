@@ -1,0 +1,158 @@
+{
+  "landing": {
+    "location": "Miami, Florida",
+    "titleBlack": "Welcome to",
+    "companyName": "SoccerFast",
+    "intro": " is your place to play soccer in Miami. We're experts in the organizing of amateur soccer tournaments, with more than 10 years of presence in the market.",
+    "intro2": "Explore our site to find more information about our current tournaments, teams, photos and more!",
+    "mailingList": {
+      "title": "Subscribe to our mailing list so you don't miss out on anything!",
+      "placeholder": "Enter your Email",
+      "submit": "Subscribe",
+      "privacyPolicy": "We really care about your Privacy. Read more about our ",
+      "privacyPolicyLink": "Privacy Policy"
+    }
+  },
+  "signup": {
+    "title": "Sign Up",
+    "subtitle": "Sign up with your email or your social network account",
+    "form": {
+      "name": "Full Name",
+      "namePlaceholder": "Pablo Bengoechea",
+      "email": "Email",
+      "emailPlaceholder": "pablo.bengoechea@gmail.com",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "repeatPassword": "Repeat password",
+      "repeatPasswordPlaceholder": "Repeat your password",
+      "alreadyHaveAnAccount": "Already have an account?",
+      "alreadyHaveAnAccountLink": "Sign in",
+      "submit": "Sign Up",
+      "continueWith": "Or continue with"
+    }
+  },
+  "signin": {
+    "title": "Sign In",
+    "subtitle": "Sign in with your email or your social network account",
+    "form": {
+      "email": "Email",
+      "emailPlaceholder": "pablo.bengoechea@gmail.com",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot your password?",
+      "submit": "Sign In",
+      "continueWith": "Or continue with"
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Send us a message with any questions you have and we'll get back to you shortly!",
+    "infotitle": "Contact information",
+    "info": "Send us a message to clear any doubts or send us proposals. We'll get back to you in no time!",
+    "form": {
+      "title": "Send us a message",
+      "name": "Name",
+      "namePlaceholder": "Pablo",
+      "lastname": "Last Name",
+      "lastnamePlaceholder": "Bengoechea",
+      "email": "Email",
+      "emailPlaceholder": "pablo.bengoechea@gmail.com",
+      "phone": "Phone",
+      "phonePlaceholder": "+1 (786) 289-1891",
+      "subject": "Subject",
+      "subjectPlaceholder": "Subject",
+      "optional": "Optional",
+      "message": "Message",
+      "messageMax": "Max. 500 characters",
+      "messagePlaceholder": "Message",
+      "submit": "Send"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "View your information and update it",
+    "info": {
+      "title": "Personal information",
+      "subtitle": "This information will be show publicly, so be careful with what you share!",
+      "name": "Complete Name",
+      "photo": "Photo",
+      "changePhoto": "Change",
+      "email": "Email",
+      "description": "About me",
+      "descriptionPlaceholder": "About me",
+      "descriptionNotice": "Brief description of your profile.",
+      "submit": "Save"
+    }
+  },
+  "team": {
+    "title": "Team",
+    "subtitle": "Review and edit the team information",
+    "form": {
+      "title": "Information for",
+      "subtitle": "In order to update the information, press Save",
+      "name": "Name",
+      "namePlaceholder": "C.A. Cerro",
+      "photo": "Logo",
+      "changePhoto": "Change",
+      "description": "Description",
+      "descriptionPlaceholder": "Team description",
+      "submit": "Save"
+    }
+  },
+  "tournament": {
+    "title": "Tournament",
+    "subtitle": "Here you can review all the information related to the Tournament",
+    "positions": {
+      "title": "Positions Table",
+      "subtitle": "Review positions and points.",
+      "matchesPlayed": "MP",
+      "matchesWon": "MW",
+      "matchesTied": "MT",
+      "matchesLost": "ML",
+      "goalsAhead": "GAH",
+      "goalsAgainst": "GAG",
+      "points": "PTS",
+      "matchesPlayedInfo": "Matches Played",
+      "matchesWonInfo": "Matches Won",
+      "matchesTiedInfo": "Matches Tied",
+      "matchesLostInfo": "Matches Lost",
+      "goalsAheadInfo": "Goals Ahead",
+      "goalsAgainstInfo": "Goals Against",
+      "pointsInfo": "Points",
+      "edit": "Edit",
+      "teams": "Teams",
+      "editTournament": "Edit Tournament",
+      "addTeam": "Add Team",
+      "tableUpdate": "The table is updated every wednesday."
+    }
+  },
+  "editTournament": {
+    "title": "Tournament",
+    "subtitle": "Review and edit the tournament information",
+    "form": {
+      "title": "Edit Tournament",
+      "subtitle": "In order to update the information, press Save",
+      "name": "Name",
+      "namePlaceholder": "Tournament name",
+      "photo": "Photo",
+      "teams": "Teams",
+      "changePhoto": "Change",
+      "description": "Description",
+      "descriptionPlaceholder": "Tournament description",
+      "submit": "Save"
+    }
+  },
+  "gallery": {
+    "title": "Gallery",
+    "subtitle": "View all our teams photos!"
+  },
+  "teamPhotos": {
+    "title": "Photos",
+    "subtitle": "Here are all {{team}} photos"
+  },
+  "rules": {
+    "title": "Official SoccerFast rules",
+    "subtitle": "Next we list all articles from the Official SoccerFast rules. You can find every step to follow in order to participate in our tournaments without any inconvenience.",
+    "article": "Article {{articleNumber}}: "
+  }
+}

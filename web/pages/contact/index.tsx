@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { NextPage } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 
 import { MailIcon, PhoneIcon } from '@heroicons/react/solid';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -8,6 +8,8 @@ import { LogoComponent, Title } from '@components';
 import { emailRegex } from '@utils';
 import { AppContext } from '@contexts';
 import { ContactInfo, ContactInfoEmail, ContactInfoPhone, ContactInfoSocialMedia } from '@models';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 interface FormValues {
   name: string;
@@ -19,6 +21,7 @@ interface FormValues {
 }
 
 const ContactPage: NextPage = () => {
+  const { t } = useTranslation('pages');
   const { contactInfoService } = useContext(AppContext);
   const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
   const {
@@ -40,7 +43,7 @@ const ContactPage: NextPage = () => {
   return (
     <div className="relative py-12 bg-white h-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Title title="Contacto" subtitle="Envianos un mensaje con cualquier consulta y responderemos a la brevedad." />
+        <Title title={t('contact.title')} subtitle={t('contact.subtitle')} />
         {/* Contact section */}
         <section className="relative bg-white mt-10" aria-labelledby="contact-heading">
           <div className="absolute w-full h-1/2 bg-warm-gray-50" aria-hidden="true" />
@@ -150,11 +153,8 @@ const ContactPage: NextPage = () => {
                       </defs>
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-white">Información de contacto</h3>
-                  <p className="mt-6 text-base text-white max-w-3xl">
-                    Envianos un mensaje para aclarar cualquier duda o enviarnos propuestas. <br />
-                    Responderemos a la brevedad.
-                  </p>
+                  <h3 className="text-lg font-medium text-white">{t('contact.infotitle')}</h3>
+                  <p className="mt-6 text-base text-white max-w-3xl">{t('contact.info')}</p>
                   <dl className="mt-8 space-y-6">
                     <dt>
                       <span className="sr-only">Phone number</span>
@@ -187,14 +187,14 @@ const ContactPage: NextPage = () => {
 
                 {/* Contact form */}
                 <div className="py-10 px-6 sm:px-10 lg:col-span-2 xl:p-12 ">
-                  <h3 className="text-lg font-medium text-warm-gray-900">Envianos un mensaje</h3>
+                  <h3 className="text-lg font-medium text-warm-gray-900">{t('contact.form.title')}</h3>
                   <form
                     onSubmit={handleSubmit(onSubmit)}
                     className="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8"
                   >
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-warm-gray-900">
-                        Nombre
+                        {t('contact.form.name')}
                       </label>
                       <div className="mt-1">
                         <input
@@ -204,7 +204,7 @@ const ContactPage: NextPage = () => {
                             maxLength: { value: 50, message: 'El nombre es demasiado largo.' },
                           })}
                           id="name"
-                          placeholder="Pablo"
+                          placeholder={t('contact.form.namePlaceholder')}
                           autoComplete="given-name"
                           className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                         />
@@ -213,7 +213,7 @@ const ContactPage: NextPage = () => {
                     </div>
                     <div>
                       <label htmlFor="lastName" className="block text-sm font-medium text-warm-gray-900">
-                        Apellido
+                        {t('contact.form.lastname')}
                       </label>
                       <div className="mt-1">
                         <input
@@ -223,7 +223,7 @@ const ContactPage: NextPage = () => {
                             maxLength: { value: 50, message: 'El apellido es demasiado largo.' },
                           })}
                           id="lastName"
-                          placeholder="Bengoechea"
+                          placeholder={t('contact.form.lastnamePlaceholder')}
                           autoComplete="family-name"
                           className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                         />
@@ -234,7 +234,7 @@ const ContactPage: NextPage = () => {
                     </div>
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-warm-gray-900">
-                        Email
+                        {t('contact.form.email')}
                       </label>
                       <div className="mt-1">
                         <input
@@ -251,7 +251,7 @@ const ContactPage: NextPage = () => {
                               message: 'El email es demasiado largo.',
                             },
                           })}
-                          placeholder="pablo.bengoechea@gmail.com"
+                          placeholder={t('contact.form.emailPlaceholder')}
                           autoComplete="email"
                           className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                         />
@@ -261,10 +261,10 @@ const ContactPage: NextPage = () => {
                     <div>
                       <div className="flex justify-between">
                         <label htmlFor="phone" className="block text-sm font-medium text-warm-gray-900">
-                          Teléfono
+                          {t('contact.form.phone')}
                         </label>
                         <span id="phone-optional" className="text-sm text-gray-400">
-                          Opcional
+                          {t('contact.form.optional')}
                         </span>
                       </div>
                       <div className="mt-1">
@@ -277,7 +277,7 @@ const ContactPage: NextPage = () => {
                               message: 'El teléfono es demasiado largo.',
                             },
                           })}
-                          placeholder="+1 (786) 289-1891"
+                          placeholder={t('contact.form.phonePlaceholder')}
                           autoComplete="tel"
                           className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                           aria-describedby="phone-optional"
@@ -287,7 +287,7 @@ const ContactPage: NextPage = () => {
                     </div>
                     <div className="sm:col-span-2">
                       <label htmlFor="subject" className="block text-sm font-medium text-warm-gray-900">
-                        Asunto
+                        {t('contact.form.subject')}
                       </label>
                       <div className="mt-1">
                         <input
@@ -300,7 +300,7 @@ const ContactPage: NextPage = () => {
                               message: 'El asunto es demasiado largo.',
                             },
                           })}
-                          placeholder="Asunto"
+                          placeholder={t('contact.form.subjectPlaceholder')}
                           className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                         />
                         {errors.subject && <span className="text-sm text-rose-500 mt-1">{errors.subject.message}</span>}
@@ -309,10 +309,10 @@ const ContactPage: NextPage = () => {
                     <div className="sm:col-span-2">
                       <div className="flex justify-between">
                         <label htmlFor="message" className="block text-sm font-medium text-warm-gray-900">
-                          Mensaje
+                          {t('contact.form.message')}
                         </label>
                         <span id="message-max" className="text-sm text-gray-400">
-                          Max. 500 caracteres
+                          {t('contact.form.messageMax')}
                         </span>
                       </div>
                       <div className="mt-1">
@@ -326,7 +326,7 @@ const ContactPage: NextPage = () => {
                             },
                           })}
                           rows={4}
-                          placeholder="Mensaje"
+                          placeholder={t('contact.form.messagePlaceholder')}
                           className="py-3 px-4 block w-full shadow-sm text-warm-gray-900 focus:ring-sky-500 focus:border-sky-500 border border-gray-300 rounded-md placeholder-gray-400 text-sm"
                           aria-describedby="message-max"
                           defaultValue={''}
@@ -339,7 +339,7 @@ const ContactPage: NextPage = () => {
                         type="submit"
                         className="mt-2 w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 sm:w-auto"
                       >
-                        Enviar
+                        {t('contact.form.submit')}
                       </button>
                     </div>
                   </form>
@@ -351,6 +351,14 @@ const ContactPage: NextPage = () => {
       </div>
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(context.locale || 'es', ['common', 'pages'])),
+    },
+  };
 };
 
 export default ContactPage;

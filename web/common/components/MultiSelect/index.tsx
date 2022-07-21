@@ -1,6 +1,7 @@
 import { ChevronUpIcon } from '@heroicons/react/outline';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 import { classNames } from '@utils/*';
+import { useTranslation } from 'next-i18next';
 import { ChangeEvent, forwardRef, MouseEvent, RefObject } from 'react';
 
 export interface SelectItem {
@@ -17,7 +18,6 @@ interface Props {
   selectedItems: SelectItem[];
   items: SelectItem[];
   searchString: string;
-  placeholder: string;
   handleSearchStringChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -34,10 +34,10 @@ export const MultiSelect = forwardRef<HTMLDivElement, Props>(
       handleSearchStringChange,
       toggleDropdown,
       handleRemove,
-      placeholder,
     },
     ref
   ) => {
+    const { t } = useTranslation('common');
     return (
       <div
         onMouseLeave={handleMouseLeave}
@@ -71,7 +71,7 @@ export const MultiSelect = forwardRef<HTMLDivElement, Props>(
                     <input
                       value={searchString}
                       onChange={handleSearchStringChange}
-                      placeholder={placeholder}
+                      placeholder={t('multiselect.placeholder')}
                       className="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-gray-800 placeholder:text-gray-300 placeholder:text-base "
                     />
                   </div>

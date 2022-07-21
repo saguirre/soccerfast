@@ -3,6 +3,7 @@ import { ChevronDownIcon, LightningBoltIcon, PlusIcon } from '@heroicons/react/s
 import { ExclamationIcon } from '@heroicons/react/outline';
 import { classNames } from '@utils';
 import { Fragment, SVGProps } from 'react';
+import { useTranslation } from 'next-i18next';
 
 export interface PopoverItem {
   id: number;
@@ -23,6 +24,8 @@ interface Props {
 }
 
 export const MenuPopover: React.FC<Props> = ({ announcement, title, addTitle, goToAdd, goToItem, items }) => {
+  const { t } = useTranslation('common');
+
   return (
     <Popover className="relative">
       {({ open }) => (
@@ -94,7 +97,7 @@ export const MenuPopover: React.FC<Props> = ({ announcement, title, addTitle, go
                       {!item.active && (
                         <div className="flex flex-row items-center justify-start mt-2">
                           <ExclamationIcon className="h-5 w-5 text-amber-400 mr-1" />
-                          <span className="text-sm text-gray-400">Inactivo</span>
+                          <span className="text-sm text-gray-400">{t('header.inactive')}</span>
                         </div>
                       )}
                     </div>
@@ -104,7 +107,7 @@ export const MenuPopover: React.FC<Props> = ({ announcement, title, addTitle, go
                   <div className="p-5 bg-gray-50 sm:p-8">
                     <div className="-m-3 p-3 flow-root rounded-md">
                       <div className="flex items-center">
-                        <div className="text-base font-medium text-gray-900">Anuncio</div>
+                        <div className="text-base font-medium text-gray-900">{t('header.announcement')}</div>
                         <span className="ml-1 inline-flex items-center py-0.5 px-2.5 rounded-full text-xs font-medium leading-5 bg-sky-100 text-sky-800">
                           !
                         </span>

@@ -10,6 +10,9 @@ import { useContext, useState } from 'react';
 import { AuthContext } from 'contexts/auth.context';
 import { useRouter } from 'next/router';
 import { useNotification } from '@hooks';
+import { GetServerSideProps } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 interface FormValues {
   name: string;
@@ -22,7 +25,7 @@ const SignUpPage: React.FC = () => {
   const { authService } = useContext(AuthContext);
   const [loadingRequest, setLoadingRequest] = useState(false);
   const { createNotification, closeNotification, notification, showNotification } = useNotification();
-
+  const { t } = useTranslation('pages');
   const router = useRouter();
   const {
     register,
@@ -62,13 +65,13 @@ const SignUpPage: React.FC = () => {
   return (
     <>
       <div className="h-full bg-white flex flex-col justify-center pt-4 pb-20 sm:px-6 lg:px-8">
-        <Title title="Registro" subtitle="Registrate con tu email o con tus redes sociales." />
+        <Title title={t('signup.title')} subtitle={t('signup.subtitle')} />
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-6 px-4 shadow-md border border-slate-100 sm:rounded-lg sm:px-10">
             <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                  Nombre completo
+                  {t('signup.form.name')}
                 </label>
                 <div className="mt-1">
                   <input
@@ -82,7 +85,7 @@ const SignUpPage: React.FC = () => {
                       },
                       maxLength: { value: 50, message: 'El nombre es demasiado largo.' },
                     })}
-                    placeholder="Pablo Bengoechea"
+                    placeholder={t('signup.form.namePlaceholder')}
                     autoComplete="name"
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                   />
@@ -91,12 +94,12 @@ const SignUpPage: React.FC = () => {
               </div>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email
+                  {t('signup.form.email')}
                 </label>
                 <div className="mt-1">
                   <input
                     id="email"
-                    placeholder="pablo.bengoechea@gmail.com"
+                    placeholder={t('signup.form.emailPlaceholder')}
                     required
                     type="email"
                     {...register('email', {
@@ -119,7 +122,7 @@ const SignUpPage: React.FC = () => {
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Contraseña
+                  {t('signup.form.password')}
                 </label>
                 <div className="mt-1">
                   <input
@@ -133,7 +136,7 @@ const SignUpPage: React.FC = () => {
                       },
                       maxLength: { value: 50, message: 'La contraseña es demasiado larga.' },
                     })}
-                    placeholder="Escribe tu contraseña"
+                    placeholder={t('signup.form.passwordPlaceholder')}
                     autoComplete="current-password"
                     required
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
@@ -144,12 +147,12 @@ const SignUpPage: React.FC = () => {
 
               <div>
                 <label htmlFor="repeatPassword" className="block text-sm font-medium text-gray-700">
-                  Repite tu contraseña
+                  {t('signup.form.repeatPassword')}
                 </label>
                 <div className="flex flex-col w-full mt-1">
                   <input
                     id="repeatPassword"
-                    placeholder="Repite tu contraseña"
+                    placeholder={t('signup.form.repeatPasswordPlaceholder')}
                     {...register('repeatPassword', {
                       required: 'Debes confirmar tu contraseña.',
                       validate: (value) => value === watch('password'),
@@ -170,17 +173,17 @@ const SignUpPage: React.FC = () => {
 
               <div className="flex items-center justify-center">
                 <div className="text-sm">
-                  <span className="text-slate-500">Ya tienes una cuenta?</span>
+                  <span className="text-slate-500">{t('signup.form.alreadyHaveAnAccount')}</span>
                   <Link href="/signin">
                     <span className="ml-1 font-medium text-sky-600 hover:text-sky-500 hover:cursor-pointer">
-                      Ingresa
+                      {t('signup.form.alreadyHaveAnAccountLink')}
                     </span>
                   </Link>
                 </div>
               </div>
 
               <div>
-                <SubmitButton loading={loadingRequest} text="Registrarme" errors={errors} />
+                <SubmitButton loading={loadingRequest} text={t('signup.form.submit')} errors={errors} />
               </div>
             </form>
 
@@ -190,7 +193,7 @@ const SignUpPage: React.FC = () => {
                   <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">O continua con</span>
+                  <span className="px-2 bg-white text-gray-500">{t('signup.form.continueWith')}</span>
                 </div>
               </div>
 
@@ -245,4 +248,9 @@ const SignUpPage: React.FC = () => {
     </>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
+  return { props: { ...(await serverSideTranslations(locale || 'es', ['common', 'pages'])) } };
+};
+
 export default SignUpPage;

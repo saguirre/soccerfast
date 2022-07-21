@@ -8,6 +8,8 @@ import { AppContext } from 'contexts/app.context';
 import { useRouter } from 'next/router';
 import { AuthContext } from 'contexts/auth.context';
 import { RoleEnum } from 'enums/role.enum';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 const teams = [
   {
@@ -89,6 +91,7 @@ interface PageProps {
 }
 
 const Tournament: NextPage<PageProps> = (props) => {
+  const { t } = useTranslation('pages');
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [loading, setLoading] = useState(true);
   const { tournamentService } = useContext(AppContext);
@@ -115,7 +118,7 @@ const Tournament: NextPage<PageProps> = (props) => {
             <h2 className="text-base text-sky-600 font-semibold tracking-wide uppercase">{tournament?.name}</h2>
             <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl"></p>
             <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-              Aquí se puede ver toda la información relacionada al torneo {tournament?.name}.
+              {t('tournament.subtitle')}
             </p>
           </div>
           <DotsDivider />
@@ -124,7 +127,7 @@ const Tournament: NextPage<PageProps> = (props) => {
             isAdmin={isAdmin}
             tournamentTeamScore={tournament?.tournamentTeamScore}
           />
-          <p className="my-4 max-w-2xl text-sm text-gray-500 lg:mx-auto">La tabla se actualiza todos los miércoles.</p>
+          <p className="my-4 max-w-2xl text-sm text-gray-500 lg:mx-auto">{t('tournament.positions.tableUpdate')}</p>
         </div>
       </div>
     </LoadingWrapper>
@@ -132,7 +135,7 @@ const Tournament: NextPage<PageProps> = (props) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  return { props: { tournamentId: context.params?.tournament } };
+  return { props: { tournamentId: context.params?.tournament, ...(await serverSideTranslations(context.locale || "es", ['common', 'pages'])), } };
 };
 
 export default Tournament;

@@ -13,6 +13,8 @@ import { useNotification } from 'hooks/useNotification.hook';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { RoleEnum } from 'enums/role.enum';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 interface FormValues {
   name: string;
@@ -24,6 +26,7 @@ interface PageProps {
 }
 
 const TeamPage: NextPage<PageProps> = (props) => {
+  const { t } = useTranslation('pages');
   const { teamService } = useContext(AppContext);
   const { userService } = useContext(UserContext);
   const [users, setUsers] = useState<User[] | null>(null);
@@ -181,7 +184,7 @@ const TeamPage: NextPage<PageProps> = (props) => {
 
   return (
     <div className="h-full w-full bg-white flex flex-col justify-center pt-4 pb-20 sm:px-6 lg:px-8">
-      <Title title="Equipo" subtitle="Visualiza y edita la información del equipo" />
+      <Title title={t('team.title')} subtitle={t('team.subtitle')} />
       <LoadingWrapper loading={loading}>
         <div className="sm:mx-auto max-w-2xl">
           <div onClick={handleFocus} className="p-8 mt-4 sm:px-10 border border-slate-200 shadow-md rounded-lg">
@@ -189,14 +192,16 @@ const TeamPage: NextPage<PageProps> = (props) => {
               <div className="sm:overflow-hidden">
                 <div className="bg-white py-6 px-4 space-y-6 sm:p-6">
                   <div>
-                    <h3 className="text-lg leading-6 font-medium text-gray-900 my-2">Información de {team?.name}</h3>
-                    <p className="mt-1 text-sm text-gray-500">Para actualizar la información presiona Guardar</p>
+                    <h3 className="text-lg leading-6 font-medium text-gray-900 my-2">
+                      {t('team.form.title')} {team?.name}
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-500">{t('team.form.subtitle')}</p>
                   </div>
                   <div className="grid grid-cols-3 gap-6">
                     <div className="flex flex-row items-center justify-between col-span-3">
                       <div className="w-1/2">
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                          Nombre
+                          {t('team.form.name')}
                         </label>
                         <div className="mt-1">
                           <input
@@ -211,7 +216,7 @@ const TeamPage: NextPage<PageProps> = (props) => {
                               },
                               maxLength: { value: 50, message: 'El nombre es demasiado largo.' },
                             })}
-                            placeholder="C.A. Cerro"
+                            placeholder={t('team.form.namePlaceholder')}
                             autoComplete="name"
                             className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                           />
@@ -219,7 +224,7 @@ const TeamPage: NextPage<PageProps> = (props) => {
                         </div>
                       </div>
                       <div className="mr-4">
-                        <label className="block text-sm font-medium text-gray-700">Foto</label>
+                        <label className="block text-sm font-medium text-gray-700">{t('team.form.photo')}</label>
                         <div className="mt-1 flex items-center">
                           <div className="flex justify-center items-center rounded-full overflow-hidden h-12 w-12">
                             <div>
@@ -278,14 +283,14 @@ const TeamPage: NextPage<PageProps> = (props) => {
                             onClick={openFileExplorer}
                             className="ml-5 bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
                           >
-                            Cambiar
+                            {t('team.form.changePhoto')}
                           </button>
                         </div>
                       </div>
                     </div>
                     <div className="col-span-3">
                       <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                        Descripción
+                        {t('team.form.description')}
                       </label>
                       <div className="mt-1">
                         <textarea
@@ -299,7 +304,7 @@ const TeamPage: NextPage<PageProps> = (props) => {
                           })}
                           rows={3}
                           className="shadow-sm placeholder-slate-300 focus:ring-sky-500 focus:border-sky-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
-                          placeholder="Descripción del equipo"
+                          placeholder={t('team.form.descriptionPlaceholder')}
                         />
                         {errors.description && (
                           <span className="text-sm text-rose-500 mt-1">{errors.description.message}</span>
@@ -315,7 +320,6 @@ const TeamPage: NextPage<PageProps> = (props) => {
                     handleRemove={(event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, id: number) =>
                       handleRemoveUser(event, id)
                     }
-                    placeholder="Buscar..."
                     handleItemSelection={(id: number) => handleUserSelection(id)}
                     open={selectOpen}
                     selectedItems={selectedUsers}
@@ -326,7 +330,7 @@ const TeamPage: NextPage<PageProps> = (props) => {
                 </div>
                 <div className="flex flex-row justify-end items-end px-4 py-3 text-right sm:px-6">
                   <div className="w-1/4">
-                    <SubmitButton text={'Guardar'} loading={loadingAddRequest} errors={errors} />
+                    <SubmitButton text={t('team.form.submit')} loading={loadingAddRequest} errors={errors} />
                   </div>
                 </div>
               </div>
@@ -343,8 +347,8 @@ const TeamPage: NextPage<PageProps> = (props) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  return { props: { teamId: context.params?.id } };
+export const getServerSideProps: GetServerSideProps = async ({ params, locale }) => {
+  return { props: { teamId: params?.id, ...(await serverSideTranslations(locale || 'es', ['common', 'pages'])) } };
 };
 
 export default authorizedRoute(TeamPage, RoleEnum.Admin);

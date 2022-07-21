@@ -1,0 +1,31 @@
+{
+  "company": {
+    "slogan": "Your place to play soccer in Miami",
+    "copyright": "SoccerFast 2022. All rights reserved."
+  },
+  "footer": {
+    "contact": "Contact",
+    "slogan": "Your place to play soccer in Miami",
+    "copyright": "SoccerFast 2022. All rights reserved."
+  },
+  "button": {
+    "submit": "Save",
+    "subscribe": "Subscribe"
+  },
+  "header": {
+    "tournaments": { "title": "Tournaments", "add": "Add Tournament" },
+    "teams": { "title": "Teams", "add": "Add Team" },
+    "gallery": "Gallery",
+    "rules": "Rules",
+    "contact": "Contact",
+    "announcement": "Announcement",
+    "inactive": "Inactive"
+  },
+  "dropdown": {
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+    "multiselect": {
+      "placeholder": "Search..."
+    }
+}

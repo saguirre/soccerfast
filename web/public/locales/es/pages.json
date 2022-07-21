@@ -1,0 +1,158 @@
+{
+  "landing": {
+    "location": "Miami, Florida",
+    "titleBlack": "Bienvenido a",
+    "companyName": "SoccerFast",
+    "intro": "es tu lugar para jugar al fútbol en Miami. Somos expertos en organizaciones de torneos de fútbol amateur, con más de 10 años de presencia en el rubro.",
+    "intro2": "Explora nuestro sitio para encontrar más información acerca de los actuales torneos, los equipos, fotos y más!",
+    "mailingList": {
+      "title": "Suscribite a nuestra lista de correos para no perderte ninguna novedad!",
+      "placeholder": "Ingresa tu Email",
+      "submit": "Notificarme",
+      "privacyPolicy": "Nos interesa mucho tu privacidad. Lee más acerca de nuestra ",
+      "privacyPolicyLink": "Política de Privacidad"
+    }
+  },
+  "signup": {
+    "title": "Registro",
+    "subtitle": "Registrate con tu email o con tus redes sociales",
+    "form": {
+      "name": "Nombre completo",
+      "namePlaceholder": "Pablo Bengoechea",
+      "email": "Email",
+      "emailPlaceholder": "pablo.bengoechea@gmail.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Escribe tu contraseña",
+      "repeatPassword": "Repite tu contraseña",
+      "repeatPasswordPlaceholder": "Repite tu contraseña",
+      "alreadyHaveAnAccount": "Ya tienes una cuenta?",
+      "alreadyHaveAnAccountLink": "Ingresa",
+      "submit": "Registrarme",
+      "continueWith": "O continúa con"
+    }
+  },
+  "signin": {
+    "title": "Ingresar",
+    "subtitle": "Ingresa con tu email o con tus redes sociales",
+    "form": {
+      "email": "Email",
+      "emailPlaceholder": "pablo.bengoechea@gmail.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Escribe tu contraseña",
+      "forgotPassword": "Olvidaste tu contraseña?",
+      "submit": "Ingresar",
+      "continueWith": "O continúa con"
+    }
+  },
+  "contact": {
+    "title": "Contacto",
+    "subtitle": "Envianos un mensaje con cualquier consulta y responderemos a la brevedad.",
+    "infotitle": "Información de contacto",
+    "info": "Envianos un mensaje para aclarar cualquier duda o enviarnos propuestas. Responderemos a la brevedad.",
+    "form": {
+      "title": "Envianos un mensaje",
+      "name": "Nombre",
+      "namePlaceholder": "Pablo",
+      "lastname": "Apellido",
+      "lastnamePlaceholder": "Bengoechea",
+      "email": "Email",
+      "emailPlaceholder": "pablo.bengoechea@gmail.com",
+      "phone": "Teléfono",
+      "phonePlaceholder": "+1 (786) 289-1891",
+      "subject": "Asunto",
+      "subjectPlaceholder": "Asunto",
+      "optional": "Opcional",
+      "message": "Mensaje",
+      "messageMax": "Max. 500 caracteres",
+      "messagePlaceholder": "Mensaje",
+      "submit": "Enviar"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "subtitle": "Visualiza tu información y actualízala",
+    "info": {
+      "title": "Información personal",
+      "subtitle": "Esta información se mostrará públicamente, así que ten cuidado con lo que compartes!",
+      "name": "Nombre Completo",
+      "photo": "Foto",
+      "changePhoto": "Cambiar",
+      "email": "Email",
+      "description": "Acerca de mí",
+      "descriptionPlaceholder": "Acerca de mí",
+      "descriptionNotice": "Breve descripción de tu perfil.",
+      "submit": "Guardar"
+    }
+  },
+  "team": {
+    "title": "Equipo",
+    "subtitle": "Visualiza y edita la información del equipo",
+    "form": {
+      "title": "Información de",
+      "subtitle": "Para actualizar la información presiona Guardar",
+      "name": "Nombre",
+      "namePlaceholder": "C.A. Cerro",
+      "photo": "Escudo",
+      "changePhoto": "Cambiar",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Descripción del equipo",
+      "submit": "Guardar"
+    }
+  },
+  "tournament": {
+    "title": "Torneo",
+    "subtitle": "Aquí se puede ver toda la información relacionada al Torneo",
+    "positions": {
+      "title": "Tabla de posiciones",
+      "subtitle": "Visualiza las posiciones y puntos hasta la fecha.",
+      "matchesPlayed": "PJ",
+      "matchesWon": "PG",
+      "matchesTied": "PE",
+      "matchesLost": "PP",
+      "goalsAhead": "GAF",
+      "goalsAgainst": "GE",
+      "points": "PTS",
+      "matchesPlayedInfo": "Partidos Jugados",
+      "matchesWonInfo": "Partidos Ganados",
+      "matchesTiedInfo": "Partidos Empatados",
+      "matchesLostInfo": "Partidos Perdidos",
+      "goalsAheadInfo": "Goles a favor",
+      "goalsAgainstInfo": "Goles en contra",
+      "pointsInfo": "Puntos",
+      "edit": "Editar",
+      "teams": "Equipos",
+      "editTournament": "Editar Torneo",
+      "addTeam": "Agregar Equipo",
+      "tableUpdate": "La tabla se actualiza todos los miércoles"
+    }
+  },
+  "editTournament": {
+    "title": "Torneo",
+    "subtitle": "Visualiza y edita la información del torneo",
+    "form": {
+      "title": "Editar Torneo",
+      "subtitle": "Para actualizar la información presiona Guardar",
+      "name": "Nombre",
+      "namePlaceholder": "Nombre del torneo",
+      "teams": "Equipos",
+      "photo": "Foto",
+      "changePhoto": "Cambiar",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Descripción del torneo",
+      "submit": "Guardar"
+    }
+  },
+  "gallery": {
+    "title": "Galería",
+    "subtitle": "Mira todas las fotos de nuestros equipos!"
+  },
+  "teamPhotos": {
+    "title": "Fotos",
+    "subtitle": "Aquí puedes ver todas las fotos de {{team}}"
+  },
+  "rules": {
+    "title": "Reglamento Oficial SoccerFast",
+    "subtitle": "A continuación se listan los artículos del Reglamento Oficial SoccerFast 2022. Aquí puede encontrar todos los pasos a seguir para poder participar de los torneos sin inconvenientes.",
+    "article": "Artículo {{articleNumber}}: "
+  }
+}

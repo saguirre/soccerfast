@@ -1,10 +1,9 @@
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 const images = [
   {
     title: 'C.A. Cerro',
-    description: 'Actual campeón',
+    description: '',
     href: '/gallery/ca-cerro',
     source: '/escudo-cerro.png',
   },
@@ -31,7 +30,7 @@ const images = [
 export const TeamGallery: React.FC = () => {
   const router = useRouter();
   const goToImageGallery = (href: string) => {
-    router.push({pathname: href});
+    router.push({ pathname: href });
   };
 
   return (

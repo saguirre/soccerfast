@@ -1,0 +1,76 @@
+{
+  "languages": {
+    "english": "English",
+    "spanish": "Spanish"
+  },
+  "company": {
+    "slogan": "Your place to play soccer in Miami",
+    "copyright": "SoccerFast 2022. All rights reserved."
+  },
+  "footer": {
+    "contact": "Contact",
+    "slogan": "Your place to play soccer in Miami",
+    "copyright": "SoccerFast 2022. All rights reserved."
+  },
+  "button": {
+    "submit": "Save",
+    "subscribe": "Subscribe"
+  },
+  "header": {
+    "signup": "Sign up",
+    "signin": "Sign in",
+    "tournaments": { "title": "Tournaments", "add": "Add Tournament" },
+    "teams": { "title": "Teams", "add": "Add Team" },
+    "gallery": "Gallery",
+    "rules": "Rules",
+    "contact": "Contact",
+    "announcement": "Announcement",
+    "inactive": "Inactive"
+  },
+  "dropdown": {
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "multiselect": {
+    "placeholder": "Search..."
+  },
+  "entity": {
+    "team": "Team",
+    "tournament": "Tournament",
+    "rule": "Rules",
+    "contact": "Contact",
+    "user": "User"
+  },
+  "notification": {
+    "successTitle": "Success",
+    "errorTitle": "Error",
+    "signUpErrorTitle": "Error signin up",
+    "signUpSuccessTitle": "Successfully signed up!",
+    "signUpSuccessMessage": "We're redirecting you to the sign in page...",
+    "signUpErrorMessage": "An error has occurred while attempting to sign up. Please try again later.",
+    "signInErrorTitle": "Error signing in",
+    "signInSuccessTitle": "Successfully signed in!",
+    "signInSuccessMessage": "We're redirecting you to the home page...",
+    "signInErrorMessage": "An error has occurred while attempting to sign in. Please try again later.",
+    "addErrorTitle": "Error adding",
+    "addSuccessTitle": "{{entity}} added",
+    "addSuccessMessage": "{{entity}} successfully added!",
+    "addErrorMessage": "An error has occurred while attempting to add {{entity}}. Please try again later.",
+    "updateSuccessTitle": "{{entity}} updated",
+    "updateErrorTitle": "Error updating",
+    "updateSuccessMessage": "{{entity}} successfully updated!",
+    "updateErrorMessage": "An error has occurred while attempting to update {{entity}}. Please try again later.",
+    "deleteErrorTitle": "Error deleting",
+    "deleteSuccessTitle": "{{entity}} deleted",
+    "deleteSuccessMessage": "{{entity}} successfully deleted!",
+    "deleteErrorMessage": "An error has occurred while attempting to delete {{entity}}. Please try again later.",
+    "inactivateErrorTitle": "Error inactivating",
+    "inactivateSuccessTitle": "{{entity}} inactivated",
+    "inactivateSuccessMessage": "{{entity}} successfully inactivated!",
+    "inactivateErrormessage": "An error has occurred while attempting to inactivate {{entity}}. Please try again later.",
+    "activateErrorTitle": "Error activating",
+    "activateSuccessTitle": "{{entity}} activated",
+    "activateSuccessMessage": "{{entity}} successfully activated!",
+    "activateErrorMessage": "An error has occurred while attempting to activate {{entity}}. Please try again later."
+  }
+}

@@ -1,5 +1,6 @@
 export interface AddTeamModel {
   name: string;
-  email: string;
-  password: string;
+  description?: string;
+  logo?: string;
+  ownerId?: number;
 }

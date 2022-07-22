@@ -12,6 +12,8 @@ import { NotificationModule } from './notification/notification.module';
 import { UserService } from './user/user.service';
 import { PrismaService } from './prisma.service';
 import { FileModule } from './file/file.module';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './auth/roles.guard';
 
 @Module({
   imports: [
@@ -26,6 +28,14 @@ import { FileModule } from './file/file.module';
     FileModule,
   ],
   controllers: [AppController],
-  providers: [AppService, UserService, PrismaService],
+  providers: [
+    AppService,
+    UserService,
+    PrismaService,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

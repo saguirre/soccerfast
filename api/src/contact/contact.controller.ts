@@ -6,19 +6,25 @@ import {
   Body,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { PostContactInfo, PutContactInfo, ContactInfo } from '@dtos';
 import { ContactInfoService } from './contact.service';
+import { Roles } from 'src/auth/auth.decorator';
+import { RoleEnum } from '@enums';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('contact')
 export class ContactInfoController {
   constructor(private readonly contactInfoService: ContactInfoService) {}
 
   @Get()
-  async getUserById(): Promise<ContactInfo> {
+  async getContactInfoById(): Promise<ContactInfo> {
     return this.contactInfoService.contactInfo({ id: 1 });
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
   @Post()
   async createContactInfo(
     @Body() contactInfoData: PostContactInfo,
@@ -26,6 +32,8 @@ export class ContactInfoController {
     return this.contactInfoService.createContactInfo(contactInfoData);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
   @Put('/:id')
   async updateContactInfoProfile(
     @Param('id') id: string,
@@ -48,6 +56,8 @@ export class ContactInfoController {
     });
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
   @Delete('/:id')
   async deleteContactInfo(@Param('id') id: string): Promise<ContactInfo> {
     return this.contactInfoService.deleteContactInfo({ id: Number(id) });

@@ -5,14 +5,15 @@ import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/outline';
 import { XIcon } from '@heroicons/react/solid';
 
 import { Notification } from '@models';
+import { classNames } from '@utils';
 
 interface Props {
-  show: boolean;
-  onClose: any;
+  showNotification: boolean;
+  closeNotification: any;
   notification: Notification | undefined;
 }
 
-export const NotificationAlert: React.FC<Props> = ({ show, onClose, notification }) => {
+export const NotificationAlert: React.FC<Props> = ({ showNotification, closeNotification, notification }) => {
   return (
     <>
       <div
@@ -21,16 +22,22 @@ export const NotificationAlert: React.FC<Props> = ({ show, onClose, notification
       >
         <div className="w-full flex flex-col items-center space-y-4 sm:items-end">
           <Transition
-            show={show}
+            show={showNotification}
             as={Fragment}
             enter="transform ease-out duration-300 transition"
-            enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+            enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-32"
             enterTo="translate-y-0 opacity-100 sm:translate-x-0"
-            leave="transition ease-in duration-100"
+            leave="transition ease-in duration-150 sm:translate-x-32"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
+            <div
+              onClick={() => closeNotification()}
+              className={classNames(
+                notification?.isError ? 'hover:ring-red-400' : 'hover:ring-green-400',
+                'hover:cursor-pointer hover:ring-2 max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden'
+              )}
+            >
               <div className="p-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
@@ -47,10 +54,11 @@ export const NotificationAlert: React.FC<Props> = ({ show, onClose, notification
                   <div className="ml-4 flex-shrink-0 flex">
                     <button
                       type="button"
-                      className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                      onClick={() => {
-                        onClose();
-                      }}
+                      className={classNames(
+                        notification?.isError ? 'focus:ring-red-400' : 'focus:ring-green-400',
+                        'bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2'
+                      )}
+                      onClick={() => closeNotification()}
                     >
                       <span className="sr-only">Close</span>
                       <XIcon className="h-5 w-5" aria-hidden="true" />

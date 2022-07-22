@@ -1,35 +1,85 @@
 import { AddTeamModel, Team } from '@models';
+import axios from 'axios';
 import { HttpService } from './http-abstract.service';
+import { UpdateTeamModel } from '@models';
 
 export interface ITeamService {
-  getTeams(userToken: string): Promise<Team[]>;
-  addTeam(userToken: string, body: AddTeamModel): Promise<Team | undefined>;
-  getTeam(userToken: string, id: number): Promise<Team | null>;
+  getTeams(): Promise<Team[] | undefined>;
+  addTeam(body: AddTeamModel): Promise<Team | undefined>;
+  updateTeam(id: number, body: UpdateTeamModel): Promise<Team | undefined>;
+  getTeam(id: number): Promise<Team | null>;
+  uploadLogo(teamLogo: File): Promise<string | null>;
+  getFilteredTeams(searchString: string): Promise<Team[] | null>
 }
 
 export class TeamService extends HttpService implements ITeamService {
-  private endpointPrefix: string = 'teams';
+  private endpointPrefix: string = 'team';
 
-  getTeams = async (userToken: string): Promise<Team[]> => {
+  getTeams = async (): Promise<Team[] | undefined> => {
     try {
-      return new Promise<Team[]>(() => {});
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
-  };
-
-  addTeam = async (userToken: string, body: AddTeamModel) => {
-    try {
-      return new Promise<Team>(() => {});
+      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}`));
+      return axiosResponse.data;
     } catch (error) {
       console.error(error);
     }
   };
 
-  getTeam = async (userToken: string, id: number) => {
+  addTeam = async (body: AddTeamModel) => {
     try {
-      return new Promise<Team>(() => {});
+      const axiosResponse = await axios.post(this.getServiceUrl(`${this.endpointPrefix}`), body, {
+        headers: this.getAuthHeaders(),
+      });
+      return axiosResponse.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  updateTeam = async (id: number, body: UpdateTeamModel) => {
+    try {
+      const axiosResponse = await axios.put(this.getServiceUrl(`${this.endpointPrefix}/${id}`), body, {
+        headers: this.getAuthHeaders(),
+      });
+      return axiosResponse.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  getFilteredTeams = async (searchString: string): Promise<Team[] | null> => {
+    try {
+      if (!searchString.length) return null;
+      const axiosResponse = await axios.get(
+        this.getServiceUrl(`${this.endpointPrefix}/filtered-teams/${searchString}`),
+        {
+          headers: this.getAuthHeaders(),
+        }
+      );
+      return axiosResponse.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  getTeam = async (id: number) => {
+    try {
+      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}/${id}`));
+      return axiosResponse.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  uploadLogo = async (teamLogo: File): Promise<string | null> => {
+    try {
+      let formData = new FormData();
+      formData.append('logo', teamLogo, teamLogo.name);
+      const axiosResponse = await axios.post(this.getServiceUrl(`${this.endpointPrefix}/upload/team-logo`), formData, {
+        headers: this.getAuthHeaders(),
+      });
+      return axiosResponse.data;
     } catch (error) {
       console.error(error);
       return null;

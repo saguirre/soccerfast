@@ -11,15 +11,18 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { PostUser, PutUser, User } from '@dtos';
+import { User } from '@prisma/client';
+import { PostUser, PutUser } from '@dtos';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from '../file/file.service';
 import { readFileSync, existsSync, mkdirSync, unlinkSync } from 'fs';
-import { SpacesFolderEnum } from '../enums';
+import { RoleEnum, SpacesFolderEnum } from '../enums';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
+import { Roles } from 'src/auth/auth.decorator';
+
 @Controller('user')
 export class UserController {
   constructor(
@@ -65,10 +68,18 @@ export class UserController {
 
   @Post()
   async signupUser(@Body() userData: PostUser): Promise<User> {
-    return this.userService.createUser(userData);
+    return this.userService.createUser({
+      ...userData,
+      roles: {
+        connect: userData.roles.map((role: number) => {
+          return { id: role };
+        }),
+      },
+    });
   }
 
   @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
   @Put('/:id')
   async updateUserProfile(
     @Param('id') id: string,
@@ -87,14 +98,14 @@ export class UserController {
     });
   }
 
-  @Post('/:id/upload/avatar')
   @UseGuards(JwtAuthGuard)
+  @Post('/:id/upload/avatar')
   @UseInterceptors(
     FileInterceptor('avatar', {
       limits: { fileSize: 4000000 },
       storage: diskStorage({
         destination: (req: any, file: any, cb: any) => {
-          const uploadPath = './src/images/avatars';
+          const uploadPath = './src/images/temporal';
           // Create folder if doesn't exist
           if (!existsSync(uploadPath)) {
             mkdirSync(uploadPath);
@@ -139,6 +150,7 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
   @Delete('inactivate/:id')
   async inactivateUser(@Param('id') id: string): Promise<User> {
     return this.userService.inactivateUser(
@@ -148,6 +160,7 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
   @Delete('/:id')
   async deleteUser(@Param('id') id: string): Promise<User> {
     return this.userService.deleteUser({ id: Number(id) });

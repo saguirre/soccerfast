@@ -20,6 +20,8 @@
       "@layouts": ["./layouts/index.ts"],
       "@components/*": ["./common/components"],
       "@components": ["./common/components/index.ts"],
+      "@features/*": ["./features"],
+      "@features": ["./features/index.ts"],
       "@enums/*": ["./common/enums"],
       "@enums": ["./common/enums/index.ts"],
       "@models/*": ["./models"],

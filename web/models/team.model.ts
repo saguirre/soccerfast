@@ -1,7 +1,8 @@
-import { User } from "./user.model";
-
 export interface Team {
+  id: number;
   name: string;
+  description?: string;
   logo: string;
-  players?: User[];
+  ownerId: number;
+  active?: boolean;
 }

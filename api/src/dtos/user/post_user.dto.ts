@@ -3,6 +3,7 @@ export interface PostUser {
   password: string;
   name: string;
   type: string;
+  roles: number[];
   phone?: string;
   avatar?: string;
   birthday?: Date;

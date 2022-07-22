@@ -1,99 +1,73 @@
-import { NextPage } from "next";
+import { useState, useEffect, useContext } from 'react';
+import { GetServerSideProps, NextPage } from 'next';
+import { useRouter } from 'next/router';
 
-import { DotsDivider, PositionsTable } from "@components/*";
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
-const teams = [
-  {
-    name: "C.A. Cerro",
-    position: 1,
-    matchesPlayed: 0,
-    matchesWon: 0,
-    matchesTied: 0,
-    matchesLost: 0,
-    goalsAhead: 0,
-    goalsDown: 0,
-    points: 0,
-    logo: "/escudo-cerro.png",
-  },
-  {
-    name: "Monterrey F.C.",
-    position: 2,
-    matchesPlayed: 0,
-    matchesWon: 0,
-    matchesTied: 0,
-    matchesLost: 0,
-    goalsAhead: 0,
-    goalsDown: 0,
-    points: 0,
-    logo: "/escudo-monterrey.png",
-  },
-  {
-    name: "Beach City",
-    position: 3,
-    matchesPlayed: 0,
-    matchesWon: 0,
-    matchesTied: 0,
-    matchesLost: 0,
-    goalsAhead: 0,
-    goalsDown: 0,
-    points: 0,
-    logo: "/escudo-beach-city.png",
-  },
-  {
-    name: "Racing Club Miami",
-    position: 4,
-    matchesPlayed: 0,
-    matchesWon: 0,
-    matchesTied: 0,
-    matchesLost: 0,
-    goalsAhead: 0,
-    goalsDown: 0,
-    points: 0,
-    logo: "/escudo-racing.png",
-  },
-  {
-    name: "Rio de la Plata F.C.",
-    position: 5,
-    matchesPlayed: 0,
-    matchesWon: 0,
-    matchesTied: 0,
-    matchesLost: 0,
-    goalsAhead: 0,
-    goalsDown: 0,
-    points: 0,
-    logo: "/escudo-rio-de-la-plata.png",
-  },
-  {
-    name: "Furiosos F.C.",
-    position: 6,
-    matchesPlayed: 0,
-    matchesWon: 0,
-    matchesTied: 0,
-    matchesLost: 0,
-    goalsAhead: 0,
-    goalsDown: 0,
-    points: 0,
-    logo: "/escudo-furiosos.png",
-  },
-];
+import { DotsDivider, LoadingWrapper } from '@components';
+import { AppContext, AuthContext } from '@contexts';
+import { RoleEnum } from '@enums';
+import { PositionsTable } from '@features';
+import { Tournament } from '@models';
 
-const Tournament: NextPage = () => {
+interface PageProps {
+  tournamentId: number;
+}
+
+const Tournament: NextPage<PageProps> = (props) => {
+  const router = useRouter();
+  const { t } = useTranslation('pages');
+  const [loading, setLoading] = useState(true);
+  const { tournamentService } = useContext(AppContext);
+  const { authService } = useContext(AuthContext);
+  const [tournament, setTournament] = useState<Tournament | null>(null);
+  const isAdmin = authService.userHasRole(RoleEnum.Admin);
+
+  const getTournament = async (id: number) => {
+    setTournament(await tournamentService.getTournament(id));
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (router.isReady) {
+      getTournament(Number(props.tournamentId));
+    }
+  }, []);
+
+  useEffect(() => {
+    getTournament(Number(props.tournamentId));
+  }, [props.tournamentId]);
+
   return (
-    <div className="bg-white h-full w-screen p-8">
-      <div className="flex flex-col items-center justify-center">
-        <div className="lg:text-center">
-          <h2 className="text-base text-sky-600 font-semibold tracking-wide uppercase">Torneo SoccerFast</h2>
-          <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl"></p>
-          <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-            Aquí se puede ver toda la información relacionada al torneo SoccerFast.
-          </p>
+    <LoadingWrapper loading={loading}>
+      <div className="bg-white h-full w-screen p-8">
+        <div className="flex flex-col items-center justify-center">
+          <div className="lg:text-center">
+            <h2 className="text-base text-sky-600 font-semibold tracking-wide uppercase">{tournament?.name}</h2>
+            <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl"></p>
+            <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">{t('tournament.subtitle')}</p>
+          </div>
+          <DotsDivider />
+          <PositionsTable
+            tournamentId={props.tournamentId}
+            isAdmin={isAdmin}
+            tournamentTeamScore={tournament?.tournamentTeamScore}
+          />
+          <p className="my-4 max-w-2xl text-sm text-gray-500 lg:mx-auto">{t('tournament.positions.tableUpdate')}</p>
         </div>
-        <DotsDivider />
-        <PositionsTable teams={teams} />
-        <p className="my-4 max-w-2xl text-sm text-gray-500 lg:mx-auto">La tabla se actualiza todos los miércoles.</p>
       </div>
-    </div>
+    </LoadingWrapper>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return {
+    props: {
+      tournamentId: context.params?.tournament,
+      ...(await serverSideTranslations(context.locale || 'es', ['common', 'pages'])),
+    },
+  };
 };
 
 export default Tournament;

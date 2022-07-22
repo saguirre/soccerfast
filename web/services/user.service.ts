@@ -1,34 +1,50 @@
-import { User } from '@models';
+import { DecodedUserToken, User } from '@models';
 import { HttpService } from './http-abstract.service';
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 import axios from 'axios';
 
 export interface IUserService {
-  getUsers(): Promise<User[]>;
+  getUsers(): Promise<User[] | null>;
   getUser(): Promise<User | null>;
   uploadAvatar(avatar: File): Promise<string | null>;
+  getFilteredUsers(searchString: string): Promise<User[] | null>;
 }
 
 export class UserService extends HttpService implements IUserService {
   private endpointPrefix: string = 'user';
 
-  getUsers = async (): Promise<User[]> => {
+  getUsers = async (): Promise<User[] | null> => {
     try {
-      return new Promise<User[]>(() => {});
+      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}`), {
+        headers: this.getAuthHeaders(),
+      });
+      return axiosResponse.data;
     } catch (error) {
       console.error(error);
-      return [];
+      return null;
+    }
+  };
+
+  getFilteredUsers = async (searchString: string): Promise<User[] | null> => {
+    try {
+      if (!searchString.length) return null;
+      const axiosResponse = await axios.get(
+        this.getServiceUrl(`${this.endpointPrefix}/filtered-users/${searchString}`),
+        {
+          headers: this.getAuthHeaders(),
+        }
+      );
+      return axiosResponse.data;
+    } catch (error) {
+      console.error(error);
+      return null;
     }
   };
 
   getUser = async (): Promise<User | null> => {
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        return null;
-      }
-      const { id }: User = jwtDecode(token);
-      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}/${id}`), {
+      const decodedToken: DecodedUserToken | null = this.getDecodedToken();
+      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}/${decodedToken?.id}`), {
         headers: this.getAuthHeaders(),
       });
       return axiosResponse.data;

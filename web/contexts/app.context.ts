@@ -8,6 +8,7 @@ import {
   ITournamentService,
   IRuleService,
 } from '@services';
+import { Team } from '@models';
 import { createContext } from 'react';
 
 export interface IAppContext {
@@ -15,6 +16,7 @@ export interface IAppContext {
   teamService: ITeamService;
   tournamentService: ITournamentService;
   ruleService: IRuleService;
+  teams?: Team[];
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -22,4 +24,5 @@ export const AppContext = createContext<IAppContext>({
   teamService: new TeamService(),
   tournamentService: new TournamentService(),
   ruleService: new RuleService(),
+  teams: undefined,
 });

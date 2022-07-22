@@ -40,7 +40,7 @@ const AddTournamentPage: NextPage = () => {
   const [loadingAddRequest, setLoadingAddRequest] = useState<boolean>(false);
   const [selectOpen, setSelectOpen] = useState<boolean>(false);
   const [isOverSelect, setIsOverSelect] = useState<boolean>(false);
-  const { createNotification, notification, showNotification, closeNotification } = useNotification();
+  const notificationHandler = useNotification();
   const selectRef = useRef<HTMLDivElement>(null);
   const {
     register,
@@ -65,7 +65,7 @@ const AddTournamentPage: NextPage = () => {
     const addTournamentResult = await tournamentService.addTournament(body);
     setLoadingAddRequest(false);
     if (!addTournamentResult) {
-      createNotification({
+      notificationHandler.createNotification({
         title: t('common:notification.addErrorTitle', { entity: t('common:entity.tournament') }),
         message: t('common:notification.addErrorMessage', { entity: body.name }),
         isError: true,
@@ -73,7 +73,7 @@ const AddTournamentPage: NextPage = () => {
       return;
     }
     resetFormAndValues();
-    createNotification({
+    notificationHandler.createNotification({
       title: t('common:notification.addSuccessTitle', { entity: t('common:entity.tournament') }),
       message: t('common:notification.addSuccessMessage', { entity: body.name }),
     });
@@ -248,11 +248,7 @@ const AddTournamentPage: NextPage = () => {
               </div>
             </form>
           </div>
-          <NotificationAlert
-            notification={notification}
-            show={showNotification}
-            onClose={closeNotification}
-          ></NotificationAlert>
+          <NotificationAlert {...notificationHandler}></NotificationAlert>
         </div>
       </LoadingWrapper>
     </div>

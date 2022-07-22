@@ -21,7 +21,7 @@ const SignInPage: NextPage = () => {
   const { t } = useTranslation(['common', 'pages']);
   const [loadingRequest, setLoadingRequest] = useState(false);
   const { setUserToken, authService } = useContext(AuthContext);
-  const { createNotification, closeNotification, notification, showNotification } = useNotification();
+  const notificationHandler = useNotification();
 
   const {
     register,
@@ -34,14 +34,14 @@ const SignInPage: NextPage = () => {
     const user = await authService.login(data);
     setLoadingRequest(false);
     if (!user) {
-      createNotification({
+      notificationHandler.createNotification({
         title: t('common:notification.signInErrorTitle'),
         message: t('common:notification.signInErrorMessage'),
         isError: true,
       });
       return;
     }
-    createNotification({
+    notificationHandler.createNotification({
       title: t('common:notification.signInSuccessTitle'),
       message: t('common:notification.signInSuccessMessage'),
     });
@@ -176,11 +176,7 @@ const SignInPage: NextPage = () => {
             </div>
           </div>
         </div>
-        <NotificationAlert
-          show={showNotification}
-          notification={notification}
-          onClose={() => closeNotification()}
-        ></NotificationAlert>
+        <NotificationAlert {...notificationHandler}></NotificationAlert>
       </div>
     </>
   );

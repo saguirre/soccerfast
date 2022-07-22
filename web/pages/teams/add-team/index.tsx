@@ -38,7 +38,7 @@ const AddTeamPage: NextPage = () => {
   const [selectOpen, setSelectOpen] = useState<boolean>(false);
   const [isOverSelect, setIsOverSelect] = useState<boolean>(false);
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const { createNotification, notification, showNotification, closeNotification } = useNotification();
+  const notificationHandler = useNotification();
   const selectRef = useRef<HTMLDivElement>(null);
   const {
     register,
@@ -77,7 +77,7 @@ const AddTeamPage: NextPage = () => {
     const addTeamResult = await teamService.addTeam(body);
     setLoadingAddRequest(false);
     if (!addTeamResult) {
-      createNotification({
+      notificationHandler.createNotification({
         title: t('common:notification.addErrorTitle'),
         message: t('common:notification.addErrorMessage', { entity: body.name }),
         isError: true,
@@ -85,7 +85,7 @@ const AddTeamPage: NextPage = () => {
       return;
     }
     resetFormAndValues();
-    createNotification({
+    notificationHandler.createNotification({
       title: t('common:notification.addSuccessTitle', { entity: t('common:entity.team') }),
       message: t('common:notification.addSuccessMessage', { entity: body.name }),
     });
@@ -320,11 +320,7 @@ const AddTeamPage: NextPage = () => {
               </div>
             </form>
           </div>
-          <NotificationAlert
-            notification={notification}
-            show={showNotification}
-            onClose={closeNotification}
-          ></NotificationAlert>
+          <NotificationAlert {...notificationHandler}></NotificationAlert>
         </div>
       </LoadingWrapper>
     </div>

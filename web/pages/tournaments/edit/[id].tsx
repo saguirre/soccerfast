@@ -43,7 +43,7 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
   const [loadingAddRequest, setLoadingAddRequest] = useState<boolean>(false);
   const [selectOpen, setSelectOpen] = useState<boolean>(false);
   const [isOverSelect, setIsOverSelect] = useState<boolean>(false);
-  const { createNotification, notification, showNotification, closeNotification } = useNotification();
+  const notificationHandler = useNotification();
   const selectRef = useRef<HTMLDivElement>(null);
   const {
     register,
@@ -68,14 +68,14 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
     const addTournamentResult = await tournamentService.updateTournament(props.tournamentId, body);
     setLoadingAddRequest(false);
     if (!addTournamentResult) {
-      createNotification({
+      notificationHandler.createNotification({
         title: t('common:notification.updateErrorTitle'),
         message: t('common:notification.updateErrorMessage', { entity: body.name }),
         isError: true,
       });
       return;
     }
-    createNotification({
+    notificationHandler.createNotification({
       title: t('common:notification.updateSuccessTitle', { entity: t('common:entity.tournament') }),
       message: t('common:notification.updateSuccessMessage', { entity: body.name }),
     });
@@ -261,11 +261,7 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
               </div>
             </form>
           </div>
-          <NotificationAlert
-            notification={notification}
-            show={showNotification}
-            onClose={closeNotification}
-          ></NotificationAlert>
+          <NotificationAlert {...notificationHandler}></NotificationAlert>
         </div>
       </LoadingWrapper>
     </div>

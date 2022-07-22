@@ -24,7 +24,7 @@ interface FormValues {
 const SignUpPage: React.FC = () => {
   const { authService } = useContext(AuthContext);
   const [loadingRequest, setLoadingRequest] = useState(false);
-  const { createNotification, closeNotification, notification, showNotification } = useNotification();
+  const notificationHandler = useNotification();
   const { t } = useTranslation(['pages', 'common']);
   const router = useRouter();
   const {
@@ -45,14 +45,14 @@ const SignUpPage: React.FC = () => {
     const response = await authService.signUp(body);
     setLoadingRequest(false);
     if (!response) {
-      createNotification({
+      notificationHandler.createNotification({
         title: t('common:notification.signUpErrorTitle'),
         message: t('common:notification.signUpErrorMessage'),
         isError: true,
       });
       return;
     }
-    createNotification({
+    notificationHandler.createNotification({
       title: t('common:notification.signUpSuccessTitle'),
       message: t('common:notification.signUpSuccessMessage'),
     });
@@ -240,11 +240,7 @@ const SignUpPage: React.FC = () => {
           </div>
         </div>
       </div>
-      <NotificationAlert
-        show={showNotification}
-        notification={notification}
-        onClose={() => closeNotification()}
-      ></NotificationAlert>
+      <NotificationAlert {...notificationHandler}></NotificationAlert>
     </>
   );
 };

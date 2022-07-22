@@ -25,9 +25,9 @@ export const LanguageDropdown: React.FC = () => {
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
         <>
-          <Listbox.Label className="sr-only">Change published status</Listbox.Label>
+          <Listbox.Label className="sr-only">Change language</Listbox.Label>
           <div className="relative">
-            <Listbox.Button className="flex flex-row items-center justify-center gap-2 bg-transparent p-3 rounded-full text-sm font-medium text-slate-800 hover:bg-gray-200 focus:outline-none focus:z-10 focus:ring-2 focus:ring-sky-500">
+            <Listbox.Button className="flex flex-row items-center justify-center gap-2 bg-transparent p-3 rounded-full text-sm font-medium text-slate-800 hover:ring-2 hover:ring-sky-500 focus:outline-none focus:z-10 focus:ring-2 focus:ring-sky-500">
               <span className="sr-only">Change language</span>
               <div className="flex justify-center items-center w-6 h-6">
                 <Flag code={selected?.code} className="rounded-sm" />

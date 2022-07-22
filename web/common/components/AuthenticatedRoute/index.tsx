@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+
+import { AuthContext } from '@contexts';
 import { LoadingWrapper } from '@components/LoadingWrapper';
-import { AuthContext } from 'contexts/auth.context';
 
 export const authenticatedRoute = (Component: React.FC<any>) => {
   return (props: any) => {

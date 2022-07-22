@@ -7,6 +7,7 @@
     "intro2": "Explora nuestro sitio para encontrar más información acerca de los actuales torneos, los equipos, fotos y más!",
     "mailingList": {
       "title": "Suscribite a nuestra lista de correos para no perderte ninguna novedad!",
+      "email": "Email",
       "placeholder": "Ingresa tu Email",
       "submit": "Notificarme",
       "privacyPolicy": "Nos interesa mucho tu privacidad. Lee más acerca de nuestra ",

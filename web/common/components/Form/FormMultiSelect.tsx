@@ -1,13 +1,16 @@
+import { ChangeEvent, forwardRef, MouseEvent } from 'react';
+
+import { useTranslation } from 'next-i18next';
 import { ChevronUpIcon } from '@heroicons/react/outline';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
-import { classNames } from '@utils/*';
-import { useTranslation } from 'next-i18next';
-import { ChangeEvent, forwardRef, MouseEvent, RefObject } from 'react';
+
+import { classNames } from '@utils';
 
 export interface SelectItem {
   id: number;
   name: string;
 }
+
 interface Props {
   handleMouseLeave: (event: MouseEvent) => void;
   handleMouseEnter: (event: MouseEvent) => void;
@@ -21,7 +24,7 @@ interface Props {
   handleSearchStringChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const MultiSelect = forwardRef<HTMLDivElement, Props>(
+export const FormMultiSelect = forwardRef<HTMLDivElement, Props>(
   (
     {
       open,

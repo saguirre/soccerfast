@@ -6,7 +6,7 @@ import {
   authenticatedRoute,
   authorizedRoute,
   LoadingWrapper,
-  MultiSelect,
+  FormMultiSelect,
   NotificationAlert,
   SubmitButton,
   Title,
@@ -236,7 +236,7 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                       {t('editTournament.form.teams')}
                     </label>
-                    <MultiSelect
+                    <FormMultiSelect
                       handleMouseLeave={handleMouseLeave}
                       handleMouseEnter={handleMouseEnter}
                       ref={selectRef}

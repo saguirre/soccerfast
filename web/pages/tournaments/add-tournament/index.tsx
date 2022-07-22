@@ -6,7 +6,7 @@ import {
   authenticatedRoute,
   authorizedRoute,
   LoadingWrapper,
-  MultiSelect,
+  FormMultiSelect,
   NotificationAlert,
   SubmitButton,
   Title,
@@ -219,7 +219,7 @@ const AddTournamentPage: NextPage = () => {
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                       {t('pages:addTournament.form.teams')}
                     </label>
-                    <MultiSelect
+                    <FormMultiSelect
                       handleMouseLeave={handleMouseLeave}
                       handleMouseEnter={handleMouseEnter}
                       ref={selectRef}

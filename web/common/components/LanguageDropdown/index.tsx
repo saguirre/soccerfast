@@ -57,7 +57,7 @@ export const LanguageDropdown: React.FC = () => {
                     {({ active }) => (
                       <div className="flex flex-row gap-3 items-center justify-end">
                         <div className="flex flex-row gap-3 items-center justify-between">
-                          <p className={classNames(active ? 'text-sky-300' : 'text-gray-500', '')}>
+                          <p className={classNames(active ? 'text-white' : 'text-gray-500', '')}>
                             {t(option.description)}
                           </p>
                         </div>

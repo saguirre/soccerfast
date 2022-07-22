@@ -8,6 +8,7 @@
     "mailingList": {
       "title": "Subscribe to our mailing list so you don't miss out on anything!",
       "placeholder": "Enter your Email",
+      "email": "Email",
       "submit": "Subscribe",
       "privacyPolicy": "We really care about your Privacy. Read more about our ",
       "privacyPolicyLink": "Privacy Policy"

@@ -2,7 +2,7 @@ import { GetServerSideProps, NextPage } from 'next';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
 
-import { authorizedRoute, LoadingWrapper, MultiSelect, NotificationAlert, SubmitButton, Title } from '@components';
+import { authorizedRoute, LoadingWrapper, FormMultiSelect, NotificationAlert, SubmitButton, Title } from '@components';
 import { ChangeEvent, useContext, useRef, useState } from 'react';
 import { UserContext } from 'contexts/user.context';
 import { useEffect } from 'react';
@@ -312,7 +312,7 @@ const TeamPage: NextPage<PageProps> = (props) => {
                       </div>
                     </div>
                   </div>
-                  <MultiSelect
+                  <FormMultiSelect
                     handleMouseLeave={handleMouseLeave}
                     handleMouseEnter={handleMouseEnter}
                     ref={selectRef}

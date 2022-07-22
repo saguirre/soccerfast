@@ -4,17 +4,19 @@ interface SubmitButtonProps {
   text: string;
   onClick?: () => void;
   loading?: boolean;
-  errors: any;
+  className?: string;
+  errors?: any;
 }
 
-export const SubmitButton: React.FC<SubmitButtonProps> = ({ text, loading, onClick, errors }) => {
+export const SubmitButton: React.FC<SubmitButtonProps> = ({ text, loading, onClick, className, errors }) => {
   return (
     <button
       type="submit"
       onClick={onClick}
       className={classNames(
+        className || '',
         'w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm',
-        !Object.entries(errors).length
+        !errors || !Object.entries(errors).length
           ? 'bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500'
           : 'bg-slate-300 cursor-default'
       )}
@@ -37,7 +39,7 @@ export const SubmitButton: React.FC<SubmitButtonProps> = ({ text, loading, onCli
           />
         </svg>
       ) : (
-        <span className="text-sm font-medium text-white">{text}</span>
+        <span className="text-md font-medium text-white">{text}</span>
       )}
     </button>
   );

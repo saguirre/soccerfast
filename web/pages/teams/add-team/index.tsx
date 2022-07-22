@@ -2,7 +2,7 @@ import { GetServerSideProps, NextPage } from 'next';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
 
-import { authorizedRoute, LoadingWrapper, MultiSelect, NotificationAlert, SubmitButton, Title } from '@components';
+import { authorizedRoute, LoadingWrapper, FormMultiSelect, NotificationAlert, SubmitButton, Title } from '@components';
 import { ChangeEvent, useContext, useRef, useState } from 'react';
 import { UserContext } from 'contexts/user.context';
 import { useEffect } from 'react';
@@ -295,7 +295,7 @@ const AddTeamPage: NextPage = () => {
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                       {t('pages:addTeam.form.owner')}
                     </label>
-                    <MultiSelect
+                    <FormMultiSelect
                       handleMouseLeave={handleMouseLeave}
                       handleMouseEnter={handleMouseEnter}
                       ref={selectRef}

@@ -17,6 +17,8 @@
     "subscribe": "Subscribe"
   },
   "header": {
+    "signup": "Sign up",
+    "signin": "Sign in",
     "tournaments": { "title": "Tournaments", "add": "Add Tournament" },
     "teams": { "title": "Teams", "add": "Add Team" },
     "gallery": "Gallery",

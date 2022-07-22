@@ -17,15 +17,11 @@ import { LanguageDropdown } from '../LanguageDropdown';
 export const PrivateHeader: React.FC = () => {
   const router = useRouter();
   const { user, setUser, userService } = useContext(UserContext);
-  const { setUserToken } = useContext(AuthContext);
+  const { setUserToken, userToken, authService } = useContext(AuthContext);
   const { teamService, tournamentService } = useContext(AppContext);
   const [teams, setTeams] = useState<Team[]>();
   const [tournaments, setTournaments] = useState<Tournament[]>();
-  const { t, i18n } = useTranslation('common');
-
-  const changeLanguage = (language: string) => () => {
-    i18n.changeLanguage(language);
-  };
+  const { t } = useTranslation('common');
 
   const goToTeamPage = (id: number) => {
     router.push({ pathname: `/teams/${id}` });
@@ -53,11 +49,12 @@ export const PrivateHeader: React.FC = () => {
   const logout = () => {
     localStorage.setItem('access_token', '');
     setUserToken('');
+    setUser(null);
     router.push({ pathname: '/' });
   };
 
   const getUser = async () => {
-    if (!user) {
+    if (!user && userToken) {
       setUser(await userService.getUser());
     }
   };
@@ -66,6 +63,12 @@ export const PrivateHeader: React.FC = () => {
     getUser();
     axios.all([getTeams(), getTournaments()]);
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      getUser();
+    }
+  }, [userToken]);
 
   return (
     <Popover className="relative bg-white">
@@ -90,17 +93,17 @@ export const PrivateHeader: React.FC = () => {
               items={tournaments || []}
               title={t('header.tournaments.title')}
               goToItem={(id: number) => goToTournament(id)}
-              addTitle={t('header.tournaments.add')}
+              addTitle={user ? t('header.tournaments.add') : undefined}
               announcement="Este Jueves 23 de Junio se realizará la reunión del próximo torneo a partir de las 8PM."
-              goToAdd={goToAddTournament}
+              goToAdd={user ? goToAddTournament : undefined}
             />
 
             <MenuPopover
               items={teams || []}
               title={t('header.teams.title')}
               goToItem={(id: number) => goToTeamPage(id)}
-              addTitle={t('header.teams.add')}
-              goToAdd={goToAddTeam}
+              addTitle={user ? t('header.teams.add') : undefined}
+              goToAdd={user ? goToAddTeam : undefined}
             />
             <Link href="/gallery" className="text-base font-medium text-gray-500 hover:text-gray-900">
               {t('header.gallery')}
@@ -113,9 +116,22 @@ export const PrivateHeader: React.FC = () => {
               {t('header.contact')}
             </Link>
           </Popover.Group>
-          <div className='flex flex-row items-center justify-end'>
+          <div className="flex flex-row items-center justify-end">
             <LanguageDropdown />
-            <UserDropdown user={user} logout={logout} />
+            {user ? (
+              <UserDropdown user={user} logout={logout} />
+            ) : (
+              <div className="flex items-center md:ml-12">
+                <Link href="/signup" className="text-base font-medium text-gray-600 hover:text-gray-900">
+                  {t('header.signup')}
+                </Link>
+                <Link href="/signin">
+                  <button className="ml-8 inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-sky-500 hover:bg-sky-600">
+                    {t('header.signin')}
+                  </button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

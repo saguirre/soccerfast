@@ -1,6 +1,5 @@
 export * from "./DotsDivider";
 export * from "./Footer";
-export * from "./PublicHeader";
 export * from "./PrivateHeader";
 export * from "./TeamGallery";
 export * from "./ImageGallery";

@@ -4,7 +4,7 @@ import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { appWithTranslation } from 'next-i18next';
 import { LoadingWrapper } from '@components';
-import { AdminLayout, PublicLayout, UserLayout } from '@layouts';
+import { UserLayout } from '@layouts';
 import { AppContext, AuthContext, UserContext } from '@contexts';
 import { AuthService, TeamService, ContactInfoService, RuleService, TournamentService, UserService } from '@services';
 import { User } from '@models';
@@ -41,21 +41,9 @@ const SoccerFast = ({ Component, pageProps }: AppProps) => {
       <AuthContext.Provider value={authContextProps}>
         <UserContext.Provider value={userContextProps}>
           <AppContext.Provider value={appContextProps}>
-            {userToken ? (
-              userIsAdmin ? (
-                <AdminLayout>
-                  <Component {...pageProps} />
-                </AdminLayout>
-              ) : (
-                <UserLayout>
-                  <Component {...pageProps} />
-                </UserLayout>
-              )
-            ) : (
-              <PublicLayout>
-                <Component {...pageProps} />
-              </PublicLayout>
-            )}
+            <UserLayout>
+              <Component {...pageProps} />
+            </UserLayout>
           </AppContext.Provider>
         </UserContext.Provider>
       </AuthContext.Provider>

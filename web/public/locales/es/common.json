@@ -17,6 +17,8 @@
     "subscribe": "Notificarme"
   },
   "header": {
+    "signup": "Registrarme",
+    "signin": "Ingresar",
     "tournaments": { "title": "Torneos", "add": "Agregar Torneo" },
     "teams": { "title": "Equipos", "add": "Agregar Equipo" },
     "gallery": "Galería",

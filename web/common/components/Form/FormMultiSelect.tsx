@@ -11,23 +11,23 @@ export interface SelectItem {
   name: string;
 }
 
-interface Props {
+export interface FormMultiSelectProps {
   handleMouseLeave: (event: MouseEvent) => void;
   handleMouseEnter: (event: MouseEvent) => void;
-  toggleDropdown: (value?: boolean) => void;
+  toggleSelectOpen: () => void;
   handleRemove: (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, id: number) => void;
   handleItemSelection: (id: number) => void;
-  open: boolean;
+  selectOpen: boolean;
   selectedItems: SelectItem[];
   items: SelectItem[];
   searchString: string;
   handleSearchStringChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const FormMultiSelect = forwardRef<HTMLDivElement, Props>(
+export const FormMultiSelect = forwardRef<HTMLDivElement, FormMultiSelectProps>(
   (
     {
-      open,
+      selectOpen,
       selectedItems,
       items,
       searchString,
@@ -35,7 +35,7 @@ export const FormMultiSelect = forwardRef<HTMLDivElement, Props>(
       handleMouseLeave,
       handleItemSelection,
       handleSearchStringChange,
-      toggleDropdown,
+      toggleSelectOpen,
       handleRemove,
     },
     ref
@@ -52,7 +52,7 @@ export const FormMultiSelect = forwardRef<HTMLDivElement, Props>(
             <div className="w-full">
               <div
                 ref={ref}
-                onClick={() => toggleDropdown(!open)}
+                onClick={() => toggleSelectOpen()}
                 className="my-2 p-1 flex border border-gray-300 shadow-sm bg-white rounded-md"
               >
                 <div className="flex flex-auto flex-wrap">
@@ -80,8 +80,11 @@ export const FormMultiSelect = forwardRef<HTMLDivElement, Props>(
                   </div>
                 </div>
                 <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200">
-                  <button className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none">
-                    {open ? (
+                  <button
+                    type="button"
+                    className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none"
+                  >
+                    {selectOpen ? (
                       <ChevronUpIcon className="feather feather-chevron-up w-4 h-4" />
                     ) : (
                       <ChevronDownIcon className="feather feather-chevron-up w-4 h-4" />
@@ -90,7 +93,7 @@ export const FormMultiSelect = forwardRef<HTMLDivElement, Props>(
                 </div>
               </div>
             </div>
-            {open && (
+            {selectOpen && (
               <div className="relative max-h-32 -mt-1 overflow-y-scroll shadow bg-white z-50 w-full left-0 rounded">
                 <div className="flex flex-col w-full overflow-y-scroll">
                   {items?.map((item: SelectItem, index: number) => (

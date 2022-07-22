@@ -1,3 +1,4 @@
+export * from './FormImageUploadAndRender';
 export * from './FormInput';
 export * from './FormInputField';
 export * from './FormInputLarge';

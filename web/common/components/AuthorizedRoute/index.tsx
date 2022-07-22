@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 
 import { LoadingWrapper } from '@components/LoadingWrapper';
 import { AuthContext } from '@contexts';
-import { RoleEnum } from '@enums';
+import { RoleEnum } from 'common/enums';
 
 export const authorizedRoute = (Component: React.FC<any>, role: RoleEnum) => {
   return (props: any) => {

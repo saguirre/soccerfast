@@ -7,6 +7,7 @@ import { FormLabel, FormLabelProps } from './FormLabel';
 interface Props extends FormInputProps, FormLabelProps {
   className?: string;
   optional?: boolean;
+  defaultValue?: string;
   optionalDescription?: boolean;
   errors?: any;
 }

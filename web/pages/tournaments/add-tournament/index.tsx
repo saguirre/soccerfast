@@ -16,7 +16,7 @@ import {
 } from '@components';
 import { AppContext } from '@contexts';
 import { RoleEnum } from '@enums';
-import { useNotification } from '@hooks';
+import { useNotification, useSelect } from '@hooks';
 import { AddTournamentModel, Team } from '@models';
 
 interface FormValues {
@@ -28,15 +28,11 @@ const AddTournamentPage: NextPage = () => {
   const { t } = useTranslation(['common', 'pages']);
   const { teamService, tournamentService } = useContext(AppContext);
   const [teams, setTeams] = useState<Team[] | null>(null);
-  const [filteredTeams, setFilteredTeams] = useState<Team[] | null>(null);
-  const [selectedTeams, setSelectedTeams] = useState<Team[]>([]);
-  const [searchString, setSearchString] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingAddRequest, setLoadingAddRequest] = useState<boolean>(false);
-  const [selectOpen, setSelectOpen] = useState<boolean>(false);
-  const [isOverSelect, setIsOverSelect] = useState<boolean>(false);
   const notificationHandler = useNotification();
   const selectRef = useRef<HTMLDivElement>(null);
+  const select = useSelect(teamService.getFilteredTeams);
   const {
     register,
     handleSubmit,
@@ -46,7 +42,7 @@ const AddTournamentPage: NextPage = () => {
 
   const resetFormAndValues = () => {
     reset();
-    setSelectedTeams([]);
+    select.setSelectedItems([]);
   };
 
   const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {
@@ -54,7 +50,7 @@ const AddTournamentPage: NextPage = () => {
     const body: AddTournamentModel = {
       name: data.name,
       description: data.description,
-      teamIds: selectedTeams.map((team: Team) => team.id),
+      teamIds: select.selectedItems.map((team: Team) => team.id),
     };
 
     const addTournamentResult = await tournamentService.addTournament(body);
@@ -80,61 +76,7 @@ const AddTournamentPage: NextPage = () => {
       return;
     }
     setTeams(teams);
-    setFilteredTeams(teams);
-  };
-
-  const handleSearchStringChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearchString(event.target.value);
-  };
-
-  const handleRemoveTeam = (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, id: number) => {
-    event.preventDefault();
-    event.stopPropagation();
-    removeTeam(id);
-  };
-
-  const removeTeam = (id: number) => {
-    setSelectedTeams((current) => {
-      return current.filter((currentTeam: Team) => currentTeam.id !== id);
-    });
-  };
-
-  const getFilteredTeams = async (searchString?: string) => {
-    if (!searchString?.length) {
-      setFilteredTeams(teams);
-    } else {
-      setSelectOpen(true);
-      setFilteredTeams(await teamService.getFilteredTeams(searchString));
-    }
-  };
-
-  const handleTeamSelection = (id: number) => {
-    if (selectedTeams.some((selectedTeam: Team) => selectedTeam.id === id)) {
-      removeTeam(id);
-    } else {
-      const team = teams?.find((teamInArray: Team) => teamInArray.id === id);
-      if (team) {
-        setSelectedTeams((current) => [...current, team]);
-      }
-    }
-  };
-
-  const handleMouseEnter = (event: MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setIsOverSelect(true);
-  };
-
-  const handleMouseLeave = (event: MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setIsOverSelect(false);
-  };
-
-  const handleFocus = (event: MouseEvent) => {
-    if (!isOverSelect) {
-      setSelectOpen(false);
-    }
+    select.setFilteredItems(teams);
   };
 
   useEffect(() => {
@@ -142,16 +84,12 @@ const AddTournamentPage: NextPage = () => {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    getFilteredTeams(searchString);
-  }, [searchString]);
-
   return (
     <div className="h-full w-full bg-white flex flex-col justify-center pt-4 pb-20 sm:px-6 lg:px-8">
       <Title title={t('pages:addTournament.title')} subtitle={t('pages:addTournament.subtitle')} />
       <LoadingWrapper loading={loading}>
         <div className="sm:mx-auto max-w-2xl">
-          <div onClick={handleFocus} className="p-8 mt-4 sm:px-10 border border-slate-200 shadow-md rounded-lg">
+          <div onClick={select.handleFocus} className="p-8 mt-4 sm:px-10 border border-slate-200 shadow-md rounded-lg">
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="sm:overflow-hidden">
                 <div className="bg-white py-6 px-4 space-y-6 sm:p-6">
@@ -214,21 +152,7 @@ const AddTournamentPage: NextPage = () => {
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                       {t('pages:addTournament.form.teams')}
                     </label>
-                    <FormMultiSelect
-                      handleMouseLeave={handleMouseLeave}
-                      handleMouseEnter={handleMouseEnter}
-                      ref={selectRef}
-                      toggleDropdown={(value: boolean | undefined) => setSelectOpen(value || false)}
-                      handleRemove={(event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, id: number) =>
-                        handleRemoveTeam(event, id)
-                      }
-                      handleItemSelection={(id: number) => handleTeamSelection(id)}
-                      open={selectOpen}
-                      selectedItems={selectedTeams}
-                      items={filteredTeams || []}
-                      searchString={searchString}
-                      handleSearchStringChange={handleSearchStringChange}
-                    />
+                    <FormMultiSelect ref={selectRef} {...select} items={select.filteredItems || []} />
                   </div>
                 </div>
                 <div className="flex flex-row justify-end items-end px-4 py-3 text-right sm:px-6">

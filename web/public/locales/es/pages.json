@@ -94,6 +94,8 @@
       "name": "Nombre",
       "namePlaceholder": "C.A. Cerro",
       "photo": "Escudo",
+      "teams": "Equipos",
+      "owners": "Dueños o representantes",
       "changePhoto": "Cambiar",
       "description": "Descripción",
       "descriptionPlaceholder": "Descripción del equipo",

@@ -7,6 +7,7 @@ import { FormTextArea, FormTextAreaProps } from './FormTextArea';
 interface Props extends FormTextAreaProps, FormLabelProps {
   className?: string;
   optional?: boolean;
+  defaultValue?: string;
   optionalDescription?: boolean;
   errors?: any;
 }

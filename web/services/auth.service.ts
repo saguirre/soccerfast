@@ -1,7 +1,7 @@
 import { AddUserModel, Role, User, UserLoginModel } from '@models';
 import { HttpService } from './http-abstract.service';
 import axios from 'axios';
-import { RoleEnum } from '@enums';
+import { RoleEnum } from 'common/enums';
 
 export interface IAuthService {
   signUp(user: AddUserModel): Promise<User | null>;

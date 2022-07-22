@@ -8,8 +8,8 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { authorizedRoute, LoadingWrapper, FormMultiSelect, NotificationAlert, SubmitButton, Title } from '@components';
 import { AppContext, UserContext } from '@contexts';
 import { RoleEnum } from '@enums';
-import { useNotification } from '@hooks';
-import { AddTeamModel, User } from '@models';
+import { useNotification, useSelect } from '@hooks';
+import { AddTeamModel } from '@models';
 
 interface FormValues {
   name: string;
@@ -21,19 +21,14 @@ const AddTeamPage: NextPage = () => {
   const { t } = useTranslation(['common', 'pages']);
   const { teamService } = useContext(AppContext);
   const { userService } = useContext(UserContext);
-  const [users, setUsers] = useState<User[] | null>(null);
-  const [filteredUsers, setFilteredUsers] = useState<User[] | null>(null);
-  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
-  const [searchString, setSearchString] = useState<string>('');
   const [newlyUploadedLogo, setNewlyUploadedLogo] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingImageUpload, setLoadingImageUpload] = useState<boolean>(false);
   const [loadingAddRequest, setLoadingAddRequest] = useState<boolean>(false);
-  const [selectOpen, setSelectOpen] = useState<boolean>(false);
-  const [isOverSelect, setIsOverSelect] = useState<boolean>(false);
   const inputFileRef = useRef<HTMLInputElement>(null);
   const notificationHandler = useNotification();
   const selectRef = useRef<HTMLDivElement>(null);
+  const select = useSelect(teamService.getFilteredTeams);
   const {
     register,
     handleSubmit,
@@ -56,7 +51,7 @@ const AddTeamPage: NextPage = () => {
 
   const resetFormAndValues = () => {
     reset();
-    setSelectedUsers([]);
+    select.setSelectedItems([]);
     setNewlyUploadedLogo(null);
   };
 
@@ -66,7 +61,7 @@ const AddTeamPage: NextPage = () => {
       name: data.name,
       description: data.description,
       logo: newlyUploadedLogo || '',
-      ownerId: selectedUsers[0].id,
+      ownerId: select.selectedItems[0].id,
     };
     const addTeamResult = await teamService.addTeam(body);
     setLoadingAddRequest(false);
@@ -94,62 +89,8 @@ const AddTeamPage: NextPage = () => {
     if (!users?.length) {
       return;
     }
-    setUsers(users);
-    setFilteredUsers(users);
-  };
-
-  const handleSearchStringChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearchString(event.target.value);
-  };
-
-  const handleRemoveUser = (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, id: number) => {
-    event.preventDefault();
-    event.stopPropagation();
-    removeUser(id);
-  };
-
-  const removeUser = (id: number) => {
-    setSelectedUsers((current) => {
-      return current.filter((currentUser: User) => currentUser.id !== id);
-    });
-  };
-
-  const getFilteredUsers = async (searchString?: string) => {
-    if (!searchString?.length) {
-      setFilteredUsers(users);
-    } else {
-      setSelectOpen(true);
-      setFilteredUsers(await userService.getFilteredUsers(searchString));
-    }
-  };
-
-  const handleUserSelection = (id: number) => {
-    if (selectedUsers.some((selectedUser: User) => selectedUser.id === id)) {
-      removeUser(id);
-    } else {
-      const user = users?.find((userInArray: User) => userInArray.id === id);
-      if (user) {
-        setSelectedUsers((current) => [...current, user]);
-      }
-    }
-  };
-
-  const handleMouseEnter = (event: MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setIsOverSelect(true);
-  };
-
-  const handleMouseLeave = (event: MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setIsOverSelect(false);
-  };
-
-  const handleFocus = (event: MouseEvent) => {
-    if (!isOverSelect) {
-      setSelectOpen(false);
-    }
+    select.setItems(users);
+    select.setFilteredItems(users);
   };
 
   useEffect(() => {
@@ -157,16 +98,12 @@ const AddTeamPage: NextPage = () => {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    getFilteredUsers(searchString);
-  }, [searchString]);
-
   return (
     <div className="h-full w-full bg-white flex flex-col justify-center pt-4 pb-20 sm:px-6 lg:px-8">
       <Title title={t('pages:addTeam.title')} subtitle={t('pages:addTeam.subtitle')} />
       <LoadingWrapper loading={loading}>
         <div className="sm:mx-auto max-w-2xl">
-          <div onClick={handleFocus} className="p-8 mt-4 sm:px-10 border border-slate-200 shadow-md rounded-lg">
+          <div onClick={select.handleFocus} className="p-8 mt-4 sm:px-10 border border-slate-200 shadow-md rounded-lg">
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="sm:overflow-hidden">
                 <div className="bg-white py-6 px-4 space-y-6 sm:p-6">
@@ -289,21 +226,7 @@ const AddTeamPage: NextPage = () => {
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                       {t('pages:addTeam.form.owner')}
                     </label>
-                    <FormMultiSelect
-                      handleMouseLeave={handleMouseLeave}
-                      handleMouseEnter={handleMouseEnter}
-                      ref={selectRef}
-                      toggleDropdown={(value: boolean | undefined) => setSelectOpen(value || false)}
-                      handleRemove={(event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, id: number) =>
-                        handleRemoveUser(event, id)
-                      }
-                      handleItemSelection={(id: number) => handleUserSelection(id)}
-                      open={selectOpen}
-                      selectedItems={selectedUsers}
-                      items={filteredUsers || []}
-                      searchString={searchString}
-                      handleSearchStringChange={handleSearchStringChange}
-                    />
+                    <FormMultiSelect ref={selectRef} {...select} items={select.filteredItems || []} />
                   </div>
                 </div>
                 <div className="flex flex-row justify-end items-end px-4 py-3 text-right sm:px-6">

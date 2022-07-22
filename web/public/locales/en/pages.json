@@ -110,6 +110,7 @@
       "name": "Name",
       "namePlaceholder": "C.A. Cerro",
       "photo": "Logo",
+      "owners": "Owners or representatives",
       "changePhoto": "Change",
       "description": "Description",
       "descriptionPlaceholder": "Team description",

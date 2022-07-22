@@ -2,7 +2,9 @@ import '../styles/globals.css';
 import { useEffect, useState } from 'react';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
+
 import { appWithTranslation } from 'next-i18next';
+
 import { LoadingWrapper } from '@components';
 import { UserLayout } from '@layouts';
 import { AppContext, AuthContext, UserContext } from '@contexts';

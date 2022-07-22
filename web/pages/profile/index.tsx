@@ -1,14 +1,12 @@
+import { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
-
-import { authenticatedRoute, LoadingWrapper, Title } from '@components';
-import { ChangeEvent, useContext, useRef, useState } from 'react';
-import { UserContext } from 'contexts/user.context';
-import { useEffect } from 'react';
-import { User } from '@models';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+
+import { authenticatedRoute, LoadingWrapper, Title } from '@components';
+import { UserContext } from '@contexts';
 
 interface FormValues {
   about: string;

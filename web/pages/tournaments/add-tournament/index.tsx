@@ -1,6 +1,9 @@
+import { ChangeEvent, MouseEvent, useContext, useRef, useEffect, useState } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import {
   authenticatedRoute,
@@ -11,18 +14,10 @@ import {
   SubmitButton,
   Title,
 } from '@components';
-import { ChangeEvent, useContext, useRef, useState } from 'react';
-import { useEffect } from 'react';
+import { AppContext } from '@contexts';
+import { RoleEnum } from '@enums';
+import { useNotification } from '@hooks';
 import { AddTournamentModel, Team } from '@models';
-import { AppContext } from 'contexts/app.context';
-import { ChevronUpIcon, XIcon } from '@heroicons/react/solid';
-import { ChevronDownIcon } from '@heroicons/react/outline';
-import { MouseEvent } from 'react';
-import { classNames } from '@utils/*';
-import { useNotification } from 'hooks/useNotification.hook';
-import { RoleEnum } from 'enums/role.enum';
-import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 interface FormValues {
   name: string;

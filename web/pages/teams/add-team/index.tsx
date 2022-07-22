@@ -1,21 +1,15 @@
+import { ChangeEvent, MouseEvent, useContext, useEffect, useRef, useState } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
-
-import { authorizedRoute, LoadingWrapper, FormMultiSelect, NotificationAlert, SubmitButton, Title } from '@components';
-import { ChangeEvent, useContext, useRef, useState } from 'react';
-import { UserContext } from 'contexts/user.context';
-import { useEffect } from 'react';
-import { AddTeamModel, User } from '@models';
-import { AppContext } from 'contexts/app.context';
-import { ChevronUpIcon, XIcon } from '@heroicons/react/solid';
-import { ChevronDownIcon } from '@heroicons/react/outline';
-import { MouseEvent } from 'react';
-import { classNames } from '@utils/*';
-import { useNotification } from 'hooks/useNotification.hook';
-import { RoleEnum } from 'enums/role.enum';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+
+import { authorizedRoute, LoadingWrapper, FormMultiSelect, NotificationAlert, SubmitButton, Title } from '@components';
+import { AppContext, UserContext } from '@contexts';
+import { RoleEnum } from '@enums';
+import { useNotification } from '@hooks';
+import { AddTeamModel, User } from '@models';
 
 interface FormValues {
   name: string;

@@ -2,9 +2,11 @@ import { useEffect } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-import { ImageGallery, Title } from '@components';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+
+import { ImageGallery } from '@features';
+import { Title } from '@components';
 
 const images = [
   '/escudo-furiosos.png',

@@ -2,10 +2,10 @@ import { GetServerSideProps, NextPage } from 'next';
 
 import { AnnotationIcon, ChevronDownIcon, GlobeAltIcon, LightningBoltIcon, ScaleIcon } from '@heroicons/react/outline';
 import { Disclosure } from '@headlessui/react';
-
-import { DotsDivider } from '@components';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
+
+import { DotsDivider } from '@components';
 
 const articles = [
   {

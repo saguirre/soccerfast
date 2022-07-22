@@ -1,6 +1,10 @@
+import { ChangeEvent, MouseEvent, useContext, useRef, useState, useEffect } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
 
+import axios from 'axios';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 import {
   authenticatedRoute,
@@ -11,16 +15,10 @@ import {
   SubmitButton,
   Title,
 } from '@components';
-import { ChangeEvent, useContext, useRef, useState } from 'react';
-import { useEffect } from 'react';
+import { AppContext } from '@contexts';
+import { RoleEnum } from '@enums';
+import { useNotification } from '@hooks';
 import { Team, Tournament, UpdateTournamentModel } from '@models';
-import { AppContext } from 'contexts/app.context';
-import { MouseEvent } from 'react';
-import { useNotification } from 'hooks/useNotification.hook';
-import { RoleEnum } from 'enums/role.enum';
-import axios from 'axios';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useTranslation } from 'next-i18next';
 
 interface FormValues {
   name: string;

@@ -1,9 +1,11 @@
+import { Fragment, SVGProps } from 'react';
+
+import { useTranslation } from 'next-i18next';
 import { Popover, Transition } from '@headlessui/react';
 import { ChevronDownIcon, LightningBoltIcon, PlusIcon } from '@heroicons/react/solid';
 import { ExclamationIcon } from '@heroicons/react/outline';
+
 import { classNames } from '@utils';
-import { Fragment, SVGProps } from 'react';
-import { useTranslation } from 'next-i18next';
 
 export interface PopoverItem {
   id: number;

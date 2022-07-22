@@ -1,17 +1,18 @@
-import { useContext, useState } from 'react';
+import { useEffect, useContext, useState } from 'react';
+import { useRouter } from 'next/router';
 import Image from 'next/image';
+import Link from 'next/link';
 
+import { useTranslation } from 'next-i18next';
+import axios from 'axios';
 import { Popover } from '@headlessui/react';
 import { MenuIcon } from '@heroicons/react/outline';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
+
 import { AppContext, AuthContext, UserContext } from '@contexts';
-import { useEffect } from 'react';
-import { Team, Tournament } from '@models/*';
+import { RoleEnum } from '@enums';
+import { Team, Tournament } from '@models';
 import { MenuPopover } from '../MenuPopover';
-import axios from 'axios';
 import { UserDropdown } from '../UserDropdown';
-import { useTranslation } from 'next-i18next';
 import { LanguageDropdown } from '../LanguageDropdown';
 
 export const PrivateHeader: React.FC = () => {
@@ -90,20 +91,28 @@ export const PrivateHeader: React.FC = () => {
         <div className="hidden md:flex-1 md:flex md:items-center md:justify-between">
           <Popover.Group as="nav" className="flex space-x-10">
             <MenuPopover
-              items={tournaments || []}
+              items={
+                !user || !authService.userHasRole(RoleEnum.Admin)
+                  ? tournaments?.filter((tournament) => tournament.active) || []
+                  : tournaments || []
+              }
               title={t('header.tournaments.title')}
               goToItem={(id: number) => goToTournament(id)}
-              addTitle={user ? t('header.tournaments.add') : undefined}
+              addTitle={user && authService.userHasRole(RoleEnum.Admin) ? t('header.tournaments.add') : undefined}
               announcement="Este Jueves 23 de Junio se realizará la reunión del próximo torneo a partir de las 8PM."
-              goToAdd={user ? goToAddTournament : undefined}
+              goToAdd={user && authService.userHasRole(RoleEnum.Admin) ? goToAddTournament : undefined}
             />
 
             <MenuPopover
-              items={teams || []}
+              items={
+                !user || !authService.userHasRole(RoleEnum.Admin)
+                  ? teams?.filter((team) => team.active) || []
+                  : teams || []
+              }
               title={t('header.teams.title')}
               goToItem={(id: number) => goToTeamPage(id)}
-              addTitle={user ? t('header.teams.add') : undefined}
-              goToAdd={user ? goToAddTeam : undefined}
+              addTitle={user && authService.userHasRole(RoleEnum.Admin) ? t('header.teams.add') : undefined}
+              goToAdd={user && authService.userHasRole(RoleEnum.Admin) ? goToAddTeam : undefined}
             />
             <Link href="/gallery" className="text-base font-medium text-gray-500 hover:text-gray-900">
               {t('header.gallery')}

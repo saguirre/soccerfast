@@ -1,10 +1,11 @@
 import { Fragment, useState } from 'react';
+
 import { Listbox, Transition } from '@headlessui/react';
 import Flag from 'react-world-flags';
-
-import { classNames } from '@utils';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
+
+import { classNames } from '@utils';
 
 const flagOptions = [
   { language: 'es', code: 'ESP', description: 'common:languages.spanish', current: false },

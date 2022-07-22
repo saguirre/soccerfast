@@ -3,7 +3,7 @@ import { TeamScore } from '@models';
 import { AppContext } from 'contexts/app.context';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 interface PositionsTableProps {
   isAdmin?: boolean;
@@ -82,6 +82,10 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournam
     });
   };
 
+  useEffect(() => {
+    setTeams(mapTeams());
+  }, [tournamentTeamScore]);
+
   return (
     <div className="w-full px-24">
       <div className="flex flex-row justify-between items-center">
@@ -132,8 +136,8 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournam
                       <td className="whitespace-nowrap pl-6 py-4 text-sm text-gray-500">{index + 1}</td>
                       <td className="whitespace-nowrap py-4 pr-3 text-sm sm:pl-6">
                         <div className="flex items-center">
-                          <div className="h-10 w-10 flex-shrink-0">
-                            <img className="h-10 w-10 rounded-full" src={team.logo as string} alt="" />
+                          <div className="h-12 w-10 flex-shrink-0">
+                            <img className="h-12 w-10 rounded-sm" src={team.logo as string} alt="" />
                           </div>
                           <div className="ml-4">
                             <div className="font-medium text-base text-gray-900">{team.name}</div>

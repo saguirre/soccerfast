@@ -35,6 +35,10 @@ const Tournament: NextPage<PageProps> = (props) => {
     }
   }, []);
 
+  useEffect(() => {
+    getTournament(Number(props.tournamentId));
+  }, [props.tournamentId]);
+
   return (
     <LoadingWrapper loading={loading}>
       <div className="bg-white h-full w-screen p-8">

@@ -1,8 +1,10 @@
 import { GetServerSideProps, NextPage } from 'next';
 
-import { TeamGallery, Title } from '@components';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
+
+import { Title } from '@components';
+import { TeamGallery } from '@features';
 
 const TeamGalleryPage: NextPage = () => {
   const { t } = useTranslation('pages');

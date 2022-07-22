@@ -1,10 +1,12 @@
+import { Fragment } from 'react';
+import Link from 'next/link';
+
+import { useTranslation } from 'next-i18next';
 import { Menu, Transition } from '@headlessui/react';
 import { UserIcon } from '@heroicons/react/solid';
-import { classNames } from '@utils';
+
 import { User } from '@models';
-import Link from 'next/link';
-import { Fragment } from 'react';
-import { useTranslation } from 'next-i18next';
+import { classNames } from '@utils';
 
 const userNavigation = [
   { name: 'profile', href: '/profile' },

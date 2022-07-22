@@ -24,3 +24,4 @@ export * from "./AuthenticatedRoute";
 export * from "./AuthorizedRoute";
 export * from "./MenuPopover";
 export * from "./UserDropdown";
+export * from "./LanguageDropdown";

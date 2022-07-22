@@ -1,4 +1,8 @@
 {
+  "languages": {
+    "english": "Inglés",
+    "spanish": "Español"
+  },
   "company": {
     "slogan": "Tu lugar para jugar al fútbol en Miami",
     "copyright": "SoccerFast 2022. Todos los derechos reservados."

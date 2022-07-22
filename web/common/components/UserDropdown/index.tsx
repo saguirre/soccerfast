@@ -20,7 +20,7 @@ export const UserDropdown: React.FC<Props> = ({ user, logout }) => {
   const { t } = useTranslation('common');
 
   return (
-    <div className="flex items-center md:ml-12">
+    <div className="flex items-center">
       <Menu as="div" className="ml-4 relative flex-shrink-0">
         <div>
           <Menu.Button className="flex flex-row items-center justify-between hover:ring-2 hover:ring-offset-2 hover:ring-offset-sky-500 rounded-xl hover:ring-white hover:cursor-pointer p-2">

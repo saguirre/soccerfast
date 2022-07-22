@@ -12,6 +12,7 @@ import { MenuPopover } from '../MenuPopover';
 import axios from 'axios';
 import { UserDropdown } from '../UserDropdown';
 import { useTranslation } from 'next-i18next';
+import { LanguageDropdown } from '../LanguageDropdown';
 
 export const PrivateHeader: React.FC = () => {
   const router = useRouter();
@@ -112,7 +113,10 @@ export const PrivateHeader: React.FC = () => {
               {t('header.contact')}
             </Link>
           </Popover.Group>
-          <UserDropdown user={user} logout={logout} />
+          <div className='flex flex-row items-center justify-end'>
+            <LanguageDropdown />
+            <UserDropdown user={user} logout={logout} />
+          </div>
         </div>
       </div>
     </Popover>

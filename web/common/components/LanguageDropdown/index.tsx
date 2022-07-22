@@ -4,6 +4,7 @@ import Flag from 'react-world-flags';
 
 import { classNames } from '@utils';
 import { useTranslation } from 'next-i18next';
+import { useRouter } from 'next/router';
 
 const flagOptions = [
   { language: 'es', code: 'ESP', description: 'common:languages.spanish', current: false },
@@ -12,10 +13,12 @@ const flagOptions = [
 
 export const LanguageDropdown: React.FC = () => {
   const { t, i18n } = useTranslation('common');
+  const router = useRouter();
   const [selected, setSelected] = useState(flagOptions.find((option) => option.language === i18n.language));
 
   const changeLanguage = (language: string) => {
     i18n.changeLanguage(language);
+    router.push(`/${language}${router.asPath}`, `/${language}${router.asPath}`, { locale: language });
   };
 
   return (
@@ -45,14 +48,14 @@ export const LanguageDropdown: React.FC = () => {
                     className={({ active }) =>
                       classNames(
                         active ? 'text-white bg-sky-500' : 'text-gray-900',
-                        'cursor-default select-none relative px-6 py-2 text-sm'
+                        'cursor-default select-none relative px-6 py-2 text-sm hover:cursor-pointer'
                       )
                     }
                     value={option}
                     onClick={() => changeLanguage(option.language)}
                   >
                     {({ active }) => (
-                      <div className="flex flex-row gap-3 items-center justify-center hover:cursor-pointer">
+                      <div className="flex flex-row gap-3 items-center justify-end">
                         <div className="flex flex-row gap-3 items-center justify-between">
                           <p className={classNames(active ? 'text-sky-300' : 'text-gray-500', '')}>
                             {t(option.description)}

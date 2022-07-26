@@ -96,6 +96,7 @@
       "photo": "Escudo",
       "teams": "Equipos",
       "owners": "Dueños o representantes",
+      "players": "Jugadores",
       "changePhoto": "Cambiar",
       "description": "Descripción",
       "descriptionPlaceholder": "Descripción del equipo",
@@ -110,7 +111,8 @@
       "subtitle": "Para agregar el equipo presiona Guardar",
       "name": "Nombre",
       "namePlaceholder": "C.A. Cerro",
-      "owner": "Dueños o representantes",
+      "owners": "Dueños o representantes",
+      "players": "Jugadores",
       "photo": "Escudo",
       "changePhoto": "Cambiar",
       "description": "Descripción",
@@ -121,8 +123,19 @@
   "tournament": {
     "title": "Torneo",
     "subtitle": "Aquí se puede ver toda la información relacionada al Torneo",
+    "goalKeepers": {
+      "title": "Tabla de Arqueros",
+      "subtitle": "A continuación se listan los mejores arqueros del Torneo",
+      "goalsAgainst": "Goles en Contra"
+    },
+    "topScorers": {
+      "title": "Tabla de Goleadores",
+      "subtitle": "A continuación se listan los mejores goleadores del Torneo",
+      "player": "Jugador",
+      "goals": "Goles"
+    },
     "positions": {
-      "title": "Tabla de posiciones",
+      "title": "Tabla de Posiciones",
       "subtitle": "Visualiza las posiciones y puntos hasta la fecha.",
       "matchesPlayed": "PJ",
       "matchesWon": "PG",

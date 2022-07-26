@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useContext, useRef, useState, useEffect } from 'react';
+import { useContext, useRef, useState, useEffect } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
 
 import axios from 'axios';

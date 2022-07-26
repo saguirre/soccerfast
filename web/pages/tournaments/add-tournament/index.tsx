@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useContext, useRef, useEffect, useState } from 'react';
+import { useContext, useRef, useEffect, useState } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -76,6 +76,7 @@ const AddTournamentPage: NextPage = () => {
       return;
     }
     setTeams(teams);
+    select.setItems(teams);
     select.setFilteredItems(teams);
   };
 
@@ -152,7 +153,7 @@ const AddTournamentPage: NextPage = () => {
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                       {t('pages:addTournament.form.teams')}
                     </label>
-                    <FormMultiSelect ref={selectRef} {...select} items={select.filteredItems || []} />
+                    <FormMultiSelect ref={selectRef} {...select} items={select.filteredItems} />
                   </div>
                 </div>
                 <div className="flex flex-row justify-end items-end px-4 py-3 text-right sm:px-6">

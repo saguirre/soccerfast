@@ -4,7 +4,8 @@ import {
   Tournament,
   Prisma,
   Team,
-  Tournament_Team_Score,
+  TournamentTeamScore,
+  TournamentFixture,
 } from '@prisma/client';
 
 export type TournamentWithTeamScores = Prisma.TournamentGetPayload<{
@@ -29,15 +30,29 @@ export class TournamentService {
     });
   }
 
-  async tournamentTeamScores(): Promise<Tournament_Team_Score[]> {
-    return this.prisma.tournament_Team_Score.findMany({
+  async updateTournamentFixture(
+    tournamentId: number,
+    fixture: Prisma.TournamentFixtureUpdateInput,
+  ): Promise<TournamentFixture> {
+    const tournament = await this.prisma.tournament.findFirst({
+      where: { id: tournamentId },
+    });
+
+    return this.prisma.tournamentFixture.update({
+      where: { id: tournament.tournamentFixtureId },
+      data: { ...fixture },
+    });
+  }
+
+  async tournamentTeamScores(): Promise<TournamentTeamScore[]> {
+    return this.prisma.tournamentTeamScore.findMany({
       where: {},
     });
   }
 
   async tournamentTeamsAndTeamScores(
     tournamentWhereUniqueInput: Prisma.TournamentWhereUniqueInput,
-  ): Promise<{ teams: Team[] | null; teamsScores: Tournament_Team_Score[] }> {
+  ): Promise<{ teams: Team[] | null; teamsScores: TournamentTeamScore[] }> {
     const tournamentWithTeams = await this.prisma.tournament.findUnique({
       where: tournamentWhereUniqueInput,
       include: {

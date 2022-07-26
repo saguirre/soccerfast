@@ -2,5 +2,6 @@ export interface UpdateTeamModel {
   name?: string;
   description?: string;
   logo?: string;
-  ownerId?: number;
+  ownerIds?: number[];
+  playerIds?: number[];
 }

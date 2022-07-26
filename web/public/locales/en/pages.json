@@ -96,7 +96,8 @@
       "photo": "Logo",
       "changePhoto": "Change",
       "description": "Description",
-      "owner": "Owners or representatives",
+      "owners": "Owners or representatives",
+      "players": "Players",
       "descriptionPlaceholder": "Team description",
       "submit": "Save"
     }
@@ -111,6 +112,7 @@
       "namePlaceholder": "C.A. Cerro",
       "photo": "Logo",
       "owners": "Owners or representatives",
+      "players": "Players",
       "changePhoto": "Change",
       "description": "Description",
       "descriptionPlaceholder": "Team description",
@@ -120,6 +122,17 @@
   "tournament": {
     "title": "Tournament",
     "subtitle": "Here you can review all the information related to the Tournament",
+    "goalKeepers": {
+      "title": "Goalkeepers Table",
+      "subtitle": "Here you can view the best goalkeepers of the Tournament",
+      "goalsAgainst": "Goals Against"
+    },
+    "topScorers": {
+      "title": "Top Scorers Table",
+      "subtitle": "Here you can view the best scorers of the Tournament",
+      "player": "Player",
+      "goals": "Goals"
+    },
     "positions": {
       "title": "Positions Table",
       "subtitle": "Review positions and points.",

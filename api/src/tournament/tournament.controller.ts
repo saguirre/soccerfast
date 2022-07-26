@@ -7,8 +7,14 @@ import {
   Put,
   Delete,
   UseGuards,
+  Logger,
 } from '@nestjs/common';
-import { PostTournament, PutTournament, Tournament } from '@dtos';
+import {
+  PostTournament,
+  PutTournament,
+  Tournament,
+  UpdateTournamentFixture,
+} from '@dtos';
 import {
   TournamentService,
   TournamentWithTeamScores,
@@ -16,7 +22,7 @@ import {
 import { Roles } from 'src/auth/auth.decorator';
 import { RoleEnum } from '@enums';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Team } from '@prisma/client';
+import { Prisma, Team } from '@prisma/client';
 
 @Controller('tournament')
 export class TournamentController {
@@ -68,6 +74,9 @@ export class TournamentController {
           return { teamId };
         }),
       },
+      tournamentFixture: { create: {} },
+      tournamentTopGoalkeepers: { create: {} },
+      tournamentTopScorers: { create: {} },
     });
   }
 
@@ -110,6 +119,12 @@ export class TournamentController {
       id,
     }));
 
+    const teamScoresToCreate = updateTournamentData.teamIds
+      .filter((teamId: number) => {
+        return !allTeamScores.some((teamScore) => teamScore.teamId === teamId);
+      })
+      .map((id) => ({ teamId: id }));
+
     const teamScoresToConnect = allTeamScores
       .filter((teamScore) =>
         teamsToConnect.some((id) => id === teamScore.teamId),
@@ -137,6 +152,10 @@ export class TournamentController {
       tournamentTeamScore.connect = teamScoresToConnect;
     }
 
+    if (teamScoresToCreate.length) {
+      tournamentTeamScore.create = teamScoresToCreate;
+    }
+
     if (teamScoresToDisconnect.length) {
       tournamentTeamScore.disconnect = teamScoresToDisconnect;
     }
@@ -148,6 +167,18 @@ export class TournamentController {
         teams,
         tournamentTeamScore,
       },
+    });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
+  @Put('/:id/fixture')
+  async name(
+    @Param('id') id: string,
+    @Body() fixture: Prisma.TournamentFixtureUpdateInput,
+  ) {
+    return this.tournamentService.updateTournamentFixture(Number(id), {
+      ...fixture,
     });
   }
 

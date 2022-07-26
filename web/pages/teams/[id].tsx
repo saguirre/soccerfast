@@ -1,18 +1,17 @@
-import { ChangeEvent, MouseEvent, useContext, useRef, useEffect, useState } from 'react';
+import { useContext, useRef, useEffect, useState } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
-import { useRouter } from 'next/router';
 
 import axios from 'axios';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { SubmitHandler } from 'react-hook-form';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
-import { authorizedRoute, LoadingWrapper, FormMultiSelect, NotificationAlert, SubmitButton, Title } from '@components';
+import { authorizedRoute, LoadingWrapper, NotificationAlert, Title } from '@components';
 import { AppContext, UserContext } from '@contexts';
 import { RoleEnum } from '@enums';
 import { useFileUpload, useNotification, useSelect } from '@hooks';
 import { Team, UpdateTeamModel, User } from '@models';
-import { TeamForm } from 'features/teams';
+import { EditTeamForm } from '@features';
 
 interface FormValues {
   name: string;
@@ -30,18 +29,20 @@ const TeamPage: NextPage<PageProps> = (props) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingAddRequest, setLoadingAddRequest] = useState<boolean>(false);
   const notificationHandler = useNotification();
-  const inputFileRef = useRef<HTMLInputElement>(null);
   const [team, setTeam] = useState<Team | null>(null);
-  const select = useSelect(userService.getFilteredUsers);
-  const fileUpload = useFileUpload(teamService.uploadLogo);
+  const inputFileRef = useRef<HTMLInputElement>(null);
+  const selectOwners = useSelect(userService.getFilteredUsers);
+  const selectPlayers = useSelect(userService.getFilteredUsers);
+  const fileUpload = useFileUpload(teamService.uploadLogo, inputFileRef);
 
   const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {
     setLoadingAddRequest(true);
     const body: UpdateTeamModel = {
       name: data.name,
       description: data.description,
-      logo: fileUpload.newlyUploadedLogo ? fileUpload.newlyUploadedLogo : team?.logo,
-      ownerId: select.selectedItems[0].id,
+      logo: fileUpload.uploadedImage ? fileUpload.uploadedImage : team?.logo,
+      ownerIds: selectOwners.selectedItems.map((owner: User) => owner.id),
+      playerIds: selectPlayers.selectedItems.map((player: User) => player.id),
     };
 
     if (team?.id) {
@@ -56,7 +57,7 @@ const TeamPage: NextPage<PageProps> = (props) => {
         return;
       }
       setTeam(updateTeamResult);
-      fileUpload.setNewlyUploadedLogo(null);
+      fileUpload.setUploadedImage(undefined);
       notificationHandler.createNotification({
         title: t('common:notification.updateSuccessTitle', { entity: t('common:entity.team') }),
         message: t('common:notification.updateSuccessMessage', { entity: body.name }),
@@ -69,12 +70,10 @@ const TeamPage: NextPage<PageProps> = (props) => {
     if (!users?.length) {
       return;
     }
-    select.setItems(users);
-    select.setFilteredItems(users);
-  };
-
-  const openFileExplorer = () => {
-    inputFileRef?.current?.click();
+    selectOwners.setItems(users);
+    selectOwners.setFilteredItems(users);
+    selectPlayers.setItems(users);
+    selectPlayers.setFilteredItems(users);
   };
 
   const getTeam = async () => {
@@ -93,8 +92,8 @@ const TeamPage: NextPage<PageProps> = (props) => {
   }, [props.teamId]);
 
   useEffect(() => {
-    const owner = select.items?.find((user: User) => user.id === team?.ownerId);
-    if (owner) select.setSelectedItems([owner]);
+    selectOwners.setSelectedItems(team?.owners);
+    selectPlayers.setSelectedItems(team?.players);
   }, [team]);
 
   return (
@@ -102,16 +101,20 @@ const TeamPage: NextPage<PageProps> = (props) => {
       <Title title={t('team.title')} subtitle={t('team.subtitle')} />
       <LoadingWrapper loading={loading}>
         <div className="sm:mx-auto max-w-2xl">
-          <div onClick={select.handleFocus} className="p-8 mt-4 sm:px-10 border border-slate-200 shadow-md rounded-lg">
-            <TeamForm
-              inputFileRef={inputFileRef}
+          <div
+            onClick={() => {
+              selectOwners.handleFocus();
+              selectPlayers.handleFocus();
+            }}
+            className="p-8 mt-4 sm:px-10 border border-slate-200 shadow-md rounded-lg"
+          >
+            <EditTeamForm
               loadingSubmit={loadingAddRequest}
               submit={onSubmit}
               team={team}
-              openFileExplorer={openFileExplorer}
-              {...select}
+              selectOwners={selectOwners}
+              selectPlayers={selectPlayers}
               {...fileUpload}
-              items={select.filteredItems}
             />
           </div>
           <NotificationAlert {...notificationHandler}></NotificationAlert>

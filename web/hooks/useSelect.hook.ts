@@ -19,6 +19,10 @@ export const useSelect = (getFilteredItemsFromService: any) => {
   };
 
   const handleItemSelection = (id: number) => {
+    console.log('Handleselectionnn', id)
+
+    console.log("selectedItems: ", selectedItems)
+    console.log("items: ", items)
     if (selectedItems.some((selectedItem: any) => selectedItem.id === id)) {
       removeItem(id);
     } else {

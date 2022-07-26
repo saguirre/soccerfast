@@ -15,7 +15,7 @@ import { MenuPopover } from '../MenuPopover';
 import { UserDropdown } from '../UserDropdown';
 import { LanguageDropdown } from '../LanguageDropdown';
 
-export const PrivateHeader: React.FC = () => {
+export const Header: React.FC = () => {
   const router = useRouter();
   const { user, setUser, userService } = useContext(UserContext);
   const { setUserToken, userToken, authService } = useContext(AuthContext);
@@ -97,6 +97,7 @@ export const PrivateHeader: React.FC = () => {
                   : tournaments || []
               }
               title={t('header.tournaments.title')}
+              noItemsText={t('header.tournaments.noItems')}
               goToItem={(id: number) => goToTournament(id)}
               addTitle={user && authService.userHasRole(RoleEnum.Admin) ? t('header.tournaments.add') : undefined}
               announcement="Este Jueves 23 de Junio se realizará la reunión del próximo torneo a partir de las 8PM."
@@ -110,6 +111,7 @@ export const PrivateHeader: React.FC = () => {
                   : teams || []
               }
               title={t('header.teams.title')}
+              noItemsText={t('header.teams.noItems')}
               goToItem={(id: number) => goToTeamPage(id)}
               addTitle={user && authService.userHasRole(RoleEnum.Admin) ? t('header.teams.add') : undefined}
               goToAdd={user && authService.userHasRole(RoleEnum.Admin) ? goToAddTeam : undefined}

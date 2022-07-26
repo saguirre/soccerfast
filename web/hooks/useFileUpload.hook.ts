@@ -1,8 +1,11 @@
 import { ChangeEvent, useState } from 'react';
 
-export const useFileUpload = (upload: any) => {
-  const [newlyUploadedLogo, setNewlyUploadedLogo] = useState<string | null>(null);
+export const useFileUpload = (upload: any, inputFileRef: any) => {
   const [loadingImageUpload, setLoadingImageUpload] = useState<boolean>(false);
+  const [uploadedImage, setUploadedImage] = useState();
+  const openFileExplorer = () => {
+    inputFileRef?.current?.click();
+  };
 
   const handleSetImage = async (event: ChangeEvent<HTMLInputElement>) => {
     const { files } = event?.target;
@@ -12,7 +15,7 @@ export const useFileUpload = (upload: any) => {
       if (!uploadedImage) {
         return;
       }
-      setNewlyUploadedLogo(uploadedImage);
+      setUploadedImage(uploadedImage);
       setLoadingImageUpload(false);
     }
   };
@@ -20,8 +23,10 @@ export const useFileUpload = (upload: any) => {
   return {
     loadingImageUpload,
     setLoadingImageUpload,
-    newlyUploadedLogo,
-    setNewlyUploadedLogo,
+    uploadedImage,
+    setUploadedImage,
+    inputFileRef,
+    openFileExplorer,
     handleSetImage,
   };
 };

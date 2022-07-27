@@ -7,14 +7,8 @@ import {
   Put,
   Delete,
   UseGuards,
-  Logger,
 } from '@nestjs/common';
-import {
-  PostTournament,
-  PutTournament,
-  Tournament,
-  UpdateTournamentFixture,
-} from '@dtos';
+import { PostTournament, PutTournament, Tournament } from '@dtos';
 import {
   TournamentService,
   TournamentWithTeamScores,

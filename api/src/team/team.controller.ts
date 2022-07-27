@@ -9,7 +9,6 @@ import {
   UseGuards,
   UploadedFile,
   UseInterceptors,
-  Logger,
 } from '@nestjs/common';
 import { PostTeam, PutTeam, Team } from '@dtos';
 import { TeamService, TeamWithOwnersAndPlayers } from './team.service';
@@ -97,62 +96,64 @@ export class TeamController {
     @Param('id') id: string,
     @Body() updateTeamData: PutTeam,
   ): Promise<TeamWithOwnersAndPlayers> {
-    const owners = await this.userService.users({
+    const currentTeamOwners = await this.userService.users({
       where: { ownedTeams: { some: { id: Number(id) } } },
     });
-    Logger.log(
-      'owners: ',
-      owners.map((owner) => owner.id),
-    );
 
-    const players = await this.userService.users({
+    const currentTeamPlayers = await this.userService.users({
       where: { playingTeams: { some: { id: Number(id) } } },
     });
-
-    Logger.log(
-      'players: ',
-      players.map((player) => player.id),
-    );
 
     const allUsers = await this.userService.users({
       where: {},
     });
 
-    Logger.log(
-      'allUsers: ',
-      allUsers.map((user) => user.id),
-    );
-
     const { ownerIds, playerIds, ...data } = updateTeamData;
 
-    Logger.log(ownerIds);
-    Logger.log(playerIds);
-    const playersToDisconnect = players
-      .filter((player) => !playerIds.some((playerId) => player.id === playerId))
-      .map((player) => ({ id: player.id }));
+    const newPlayerIds = playerIds.filter(
+      (playerId) =>
+        !currentTeamPlayers.some((player) => player.id === playerId),
+    );
 
-    Logger.log('playersToDisconnect: ', JSON.stringify(playersToDisconnect));
+    const newOwnerIds = ownerIds.filter(
+      (ownerId) => !currentTeamOwners.some((owner) => owner.id === ownerId),
+    );
+
+    const ownersToCreateOrConnect = allUsers.filter((owner) =>
+      newOwnerIds.some((newOwnerId) => owner.id === newOwnerId),
+    );
+
+    const playersToCreateOrConnect = allUsers.filter((player) =>
+      newPlayerIds.some((newPlayerId) => player.id === newPlayerId),
+    );
+
     return this.teamService.updateTeam({
       where: { id: Number(id) },
       data: {
         ...data,
         owners: {
-          connectOrCreate: owners.map((owner) => ({
+          connectOrCreate: [
+            ...currentTeamOwners,
+            ...ownersToCreateOrConnect,
+          ].map((owner) => ({
             where: { id: owner.id },
             create: { ...owner },
           })),
-          disconnect: owners
+          disconnect: currentTeamOwners
             .filter(
               (owner) => !ownerIds.some((ownerId) => owner.id === ownerId),
             )
             .map((owner) => ({ id: owner.id })),
         },
         players: {
-          connectOrCreate: players.map((player) => ({
+          connectOrCreate: [
+            ...currentTeamPlayers,
+            ...playersToCreateOrConnect,
+          ].map((player) => ({
             where: { id: player.id },
             create: { ...player },
           })),
-          disconnect: players
+          disconnect: currentTeamPlayers
             .filter(
               (player) => !playerIds.some((playerId) => player.id === playerId),
             )

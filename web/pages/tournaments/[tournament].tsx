@@ -35,34 +35,8 @@ const Tournament: NextPage<PageProps> = (props) => {
           leftTeam: { team: tournament?.tournamentTeamScore?.[0].team, goals: 3 },
           rightTeam: { team: tournament?.tournamentTeamScore?.[1].team, goals: 2 },
         },
-        {
-          time: '7:30PM',
-          leftTeam: { team: tournament?.tournamentTeamScore?.[2].team, goals: 2 },
-          rightTeam: { team: tournament?.tournamentTeamScore?.[3].team, goals: 2 },
-        },
       ],
     },
-    // {
-    //   title: 'Segunda Fecha',
-    //   date: '31/07/2022',
-    //   teamBrackets: [
-    //     {
-    //       time: '6PM',
-    //       leftTeam: { team: tournament?.tournamentTeamScore?.[2].team, goals: 1 },
-    //       rightTeam: { team: tournament?.tournamentTeamScore?.[0].team, goals: 3 },
-    //     },
-    //     {
-    //       time: '7:30PM',
-    //       leftTeam: { team: tournament?.tournamentTeamScore?.[1].team, goals: 3 },
-    //       rightTeam: { team: tournament?.tournamentTeamScore?.[4].team, goals: 1 },
-    //     },
-    //     {
-    //       time: '9PM',
-    //       leftTeam: { team: tournament?.tournamentTeamScore?.[3].team, goals: 1 },
-    //       rightTeam: { team: tournament?.tournamentTeamScore?.[5].team, goals: 1 },
-    //     },
-    //   ],
-    // },
   ];
 
   const getTournament = async (id: number) => {

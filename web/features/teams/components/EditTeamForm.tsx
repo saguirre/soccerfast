@@ -18,36 +18,40 @@ interface FormValues {
   description?: string;
 }
 
-interface Props extends FormMultiSelectProps {
+interface Props {
   submit: (data: FormValues) => void;
   team: Team | null;
   loadingSubmit?: boolean;
   loadingImageUpload?: boolean;
-  newlyUploadedLogo: string | null;
   inputFileRef: any;
   handleSetImage: (e: any) => void;
   openFileExplorer: () => void;
+  selectOwners: FormMultiSelectProps;
+  selectPlayers: FormMultiSelectProps;
 }
 
-export const TeamForm: React.FC<Props> = ({
+export const EditTeamForm: React.FC<Props> = ({
   submit,
   team,
   loadingSubmit,
   loadingImageUpload,
-  newlyUploadedLogo,
   inputFileRef,
   handleSetImage,
   openFileExplorer,
-  ...props
+  selectOwners,
+  selectPlayers,
 }) => {
   const { t } = useTranslation('pages');
-  const selectRef = useRef(null);
+  const ownersRef = useRef(null);
+  const playersRef = useRef(null);
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({ mode: 'all' });
 
+  setValue('name', team?.name || '');
   const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
     submit(data);
   };
@@ -67,7 +71,7 @@ export const TeamForm: React.FC<Props> = ({
               <FormInputField
                 className="w-1/2"
                 htmlFor="name"
-                defaultValue={team?.name || ''}
+                defaultValue={team?.name}
                 labelText={t('pages:team.form.name')}
                 id="name"
                 type="name"
@@ -88,8 +92,7 @@ export const TeamForm: React.FC<Props> = ({
                 changeButtonText={t('team.form.changePhoto')}
                 openFileExplorer={openFileExplorer}
                 loadingImageUpload={loadingImageUpload}
-                newlyUploadedLogo={newlyUploadedLogo}
-                image={team?.logo}
+                uploadedImage={team?.logo}
                 inputFileRef={inputFileRef}
                 handleSetImage={handleSetImage}
               />
@@ -113,7 +116,11 @@ export const TeamForm: React.FC<Props> = ({
           </div>
           <div>
             <FormLabel labelText={t('team.form.owners')} />
-            <FormMultiSelect ref={selectRef} {...props} />
+            <FormMultiSelect ref={ownersRef} {...selectOwners} />
+          </div>
+          <div>
+            <FormLabel labelText={t('team.form.players')} />
+            <FormMultiSelect ref={playersRef} {...selectPlayers} />
           </div>
         </div>
         <div className="flex flex-row justify-end items-end px-4 py-3 text-right sm:px-6">

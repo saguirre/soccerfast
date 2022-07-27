@@ -1,8 +1,11 @@
+import { User } from '../user/user.model';
+
 export interface Team {
   id: number;
   name: string;
   description?: string;
   logo: string;
-  ownerId: number;
+  owners: User[];
+  players: User[];
   active?: boolean;
 }

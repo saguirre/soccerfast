@@ -1,5 +1,5 @@
 import jwtDecode from 'jwt-decode';
-import { DecodedUserToken } from 'models/decoded-user-token.model';
+import { DecodedUserToken } from 'models/user/decoded-user-token.model';
 
 export abstract class HttpService {
   private serviceUrl: string = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1`;

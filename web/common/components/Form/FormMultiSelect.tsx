@@ -45,7 +45,7 @@ export const FormMultiSelect = forwardRef<HTMLDivElement, FormMultiSelectProps>(
       <div
         onMouseLeave={handleMouseLeave}
         onMouseEnter={handleMouseEnter}
-        className="col-span-12 flex flex-col items-center h-52 mx-auto"
+        className="col-span-12 flex flex-col items-center h-12 mx-auto"
       >
         <div className="w-full">
           <div className="flex flex-col items-center relative">
@@ -94,7 +94,7 @@ export const FormMultiSelect = forwardRef<HTMLDivElement, FormMultiSelectProps>(
               </div>
             </div>
             {selectOpen && (
-              <div className="relative max-h-32 -mt-1 overflow-y-scroll shadow bg-white z-50 w-full left-0 rounded">
+              <div className="absolute max-h-64 mt-14 overflow-y-scroll shadow-lg bg-white z-50 w-full left-0 rounded">
                 <div className="flex flex-col w-full overflow-y-scroll">
                   {items?.map((item: SelectItem, index: number) => (
                     <div
@@ -107,11 +107,11 @@ export const FormMultiSelect = forwardRef<HTMLDivElement, FormMultiSelectProps>(
                           selectedItems.some((selectedItem: SelectItem) => item.id === selectedItem.id)
                             ? 'border-l-4 border-sky-500'
                             : '',
-                          'flex w-full items-center p-2 pl-2 border-transparent  relative '
+                          'flex w-full items-center p-2 pl-2 border-transparent relative'
                         )}
                       >
                         <div className="w-full items-center flex">
-                          <div className="mx-2 leading-6  ">{item?.name} </div>
+                          <div className="mx-2 leading-6">{item?.name} </div>
                         </div>
                       </div>
                     </div>

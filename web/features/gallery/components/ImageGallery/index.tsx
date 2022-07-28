@@ -5,7 +5,7 @@ interface ImageGalleryProps {
   images: string[];
 }
 
-export const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
+export const TeamImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);

@@ -1,8 +1,9 @@
+import { SelectItem } from 'models/select-item.model';
 import { MouseEvent, ChangeEvent, useState, useEffect } from 'react';
 
 export const useSelect = (getFilteredItemsFromService: any) => {
   const [items, setItems] = useState<any>(null);
-  const [selectedItems, setSelectedItems] = useState<any>([]);
+  const [selectedItem, setSelectedItem] = useState<any>();
   const [filteredItems, setFilteredItems] = useState<any>(null);
   const [isOverSelect, setIsOverSelect] = useState<boolean>(false);
   const [selectOpen, setSelectOpen] = useState<boolean>(false);
@@ -19,20 +20,19 @@ export const useSelect = (getFilteredItemsFromService: any) => {
   };
 
   const handleItemSelection = (id: number) => {
-    if (selectedItems.some((selectedItem: any) => selectedItem.id === id)) {
-      removeItem(id);
+    if (selectedItem?.id === id) {
+      removeItem();
     } else {
       const item = items?.find((itemInArray: any) => itemInArray.id === id);
       if (item) {
-        setSelectedItems((current: any) => [...current, item]);
+        setSelectedItem(item);
       }
+      setSelectOpen(false);
     }
   };
 
-  const removeItem = (id: number) => {
-    setSelectedItems((current: any) => {
-      return current.filter((currentTeam: any) => currentTeam.id !== id);
-    });
+  const removeItem = () => {
+    setSelectedItem(undefined);
   };
 
   const handleSearchStringChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +42,7 @@ export const useSelect = (getFilteredItemsFromService: any) => {
   const handleRemove = (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, id: number) => {
     event.preventDefault();
     event.stopPropagation();
-    removeItem(id);
+    removeItem();
   };
 
   const handleMouseLeave = (event: any) => {
@@ -62,8 +62,8 @@ export const useSelect = (getFilteredItemsFromService: any) => {
       setFilteredItems(items);
     } else {
       setSelectOpen(true);
-      console.log('searchString: ', searchString);
-      setFilteredItems(await getFilteredItemsFromService(searchString));
+      const filteredItems = await getFilteredItemsFromService(searchString);
+      setFilteredItems(filteredItems);
     }
   };
 
@@ -85,8 +85,8 @@ export const useSelect = (getFilteredItemsFromService: any) => {
     handleSearchStringChange,
     filteredItems,
     setFilteredItems,
-    selectedItems,
-    setSelectedItems,
+    selectedItem,
+    setSelectedItem,
     items,
     setItems,
     handleItemSelection,

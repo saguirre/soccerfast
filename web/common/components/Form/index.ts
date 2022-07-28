@@ -5,4 +5,6 @@ export * from './FormInputLarge';
 export * from './FormLabel';
 export * from './FormTextArea';
 export * from './FormTextAreaField';
+export * from './FormSelect';
 export * from './FormMultiSelect';
+export * from './FormCheckbox';

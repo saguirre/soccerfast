@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { PostTeam, PutTeam, Team } from '@dtos';
-import { TeamService, TeamWithOwners } from './team.service';
+import { TeamService, TeamWithOwnersAndPlayers } from './team.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/auth.decorator';
 import { RoleEnum, SpacesFolderEnum } from '@enums';
@@ -21,16 +21,21 @@ import { existsSync, mkdirSync, readFileSync, unlinkSync } from 'fs';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { FileService } from 'src/file/file.service';
+import { Prisma } from '@prisma/client';
+import { UserService } from 'src/user/user.service';
 
 @Controller('team')
 export class TeamController {
   constructor(
     private readonly teamService: TeamService,
-    private fileService: FileService,
+    private readonly fileService: FileService,
+    private readonly userService: UserService,
   ) {}
 
   @Get('/:id')
-  async getUserById(@Param('id') id: string): Promise<TeamWithOwners> {
+  async getTeamById(
+    @Param('id') id: string,
+  ): Promise<TeamWithOwnersAndPlayers> {
     return this.teamService.team({ id: Number(id) });
   }
 
@@ -57,8 +62,31 @@ export class TeamController {
   @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Admin)
   @Post()
-  async createTeam(@Body() teamData: PostTeam): Promise<Team> {
-    return this.teamService.createTeam(teamData);
+  async createTeam(
+    @Body() teamData: PostTeam,
+  ): Promise<TeamWithOwnersAndPlayers> {
+    const owners = await this.userService.users({
+      where: { OR: teamData.ownerIds?.map((id) => ({ id })) },
+    });
+    const players = await this.userService.users({
+      where: { OR: teamData.playerIds?.map((id) => ({ id })) },
+    });
+    const { ownerIds, playerIds, ...data } = teamData;
+    return this.teamService.createTeam({
+      ...data,
+      owners: {
+        connectOrCreate: owners.map((owner) => ({
+          where: { id: owner.id },
+          create: { ...owner },
+        })),
+      },
+      players: {
+        connectOrCreate: players.map((player) => ({
+          where: { id: player.id },
+          create: { ...player },
+        })),
+      },
+    });
   }
 
   @UseGuards(JwtAuthGuard)
@@ -67,20 +95,71 @@ export class TeamController {
   async updateTeamProfile(
     @Param('id') id: string,
     @Body() updateTeamData: PutTeam,
-  ): Promise<Team> {
-    const data: PutTeam = {};
+  ): Promise<TeamWithOwnersAndPlayers> {
+    const currentTeamOwners = await this.userService.users({
+      where: { ownedTeams: { some: { id: Number(id) } } },
+    });
 
-    if (updateTeamData.name) data.name = updateTeamData.name;
-    if (updateTeamData.description)
-      data.description = updateTeamData.description;
-    if (updateTeamData.logo) data.logo = updateTeamData.logo;
-    if (updateTeamData.ownerId) data.ownerId = updateTeamData.ownerId;
-    if (updateTeamData.tournamentId)
-      data.tournamentId = updateTeamData.tournamentId;
+    const currentTeamPlayers = await this.userService.users({
+      where: { playingTeams: { some: { id: Number(id) } } },
+    });
+
+    const allUsers = await this.userService.users({
+      where: {},
+    });
+
+    const { ownerIds, playerIds, ...data } = updateTeamData;
+
+    const newPlayerIds = playerIds.filter(
+      (playerId) =>
+        !currentTeamPlayers.some((player) => player.id === playerId),
+    );
+
+    const newOwnerIds = ownerIds.filter(
+      (ownerId) => !currentTeamOwners.some((owner) => owner.id === ownerId),
+    );
+
+    const ownersToCreateOrConnect = allUsers.filter((owner) =>
+      newOwnerIds.some((newOwnerId) => owner.id === newOwnerId),
+    );
+
+    const playersToCreateOrConnect = allUsers.filter((player) =>
+      newPlayerIds.some((newPlayerId) => player.id === newPlayerId),
+    );
 
     return this.teamService.updateTeam({
       where: { id: Number(id) },
-      data,
+      data: {
+        ...data,
+        owners: {
+          connectOrCreate: [
+            ...currentTeamOwners,
+            ...ownersToCreateOrConnect,
+          ].map((owner) => ({
+            where: { id: owner.id },
+            create: { ...owner },
+          })),
+          disconnect: currentTeamOwners
+            .filter(
+              (owner) => !ownerIds.some((ownerId) => owner.id === ownerId),
+            )
+            .map((owner) => ({ id: owner.id })),
+        },
+        players: {
+          connectOrCreate: [
+            ...currentTeamPlayers,
+            ...playersToCreateOrConnect,
+          ].map((player) => ({
+            where: { id: player.id },
+            create: { ...player },
+          })),
+          disconnect: currentTeamPlayers
+            .filter(
+              (player) => !playerIds.some((playerId) => player.id === playerId),
+            )
+            .map((player) => ({ id: player.id })),
+        },
+      },
     });
   }
 

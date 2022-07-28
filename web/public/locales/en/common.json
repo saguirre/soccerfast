@@ -19,8 +19,12 @@
   "header": {
     "signup": "Sign up",
     "signin": "Sign in",
-    "tournaments": { "title": "Tournaments", "add": "Add Tournament" },
-    "teams": { "title": "Teams", "add": "Add Team" },
+    "tournaments": {
+      "title": "Tournaments",
+      "add": "Add Tournament",
+      "noItems": "No Tournaments have been added yet."
+    },
+    "teams": { "title": "Teams", "add": "Add Team", "noItems": "No Teams have been added yet."},
     "gallery": "Gallery",
     "rules": "Rules",
     "contact": "Contact",
@@ -39,7 +43,9 @@
     "tournament": "Tournament",
     "rule": "Rules",
     "contact": "Contact",
-    "user": "User"
+    "user": "User",
+    "matchDate": "Match Date",
+    "teamBracket": "Bracket"
   },
   "notification": {
     "successTitle": "Success",

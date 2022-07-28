@@ -71,7 +71,7 @@ const ProfilePage: NextPage = () => {
         <div className="sm:mx-auto max-w-2xl">
           <div className="p-8 mt-4 sm:px-10 border border-slate-200 shadow-md rounded-lg">
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="sm:overflow-hidden">
+              <div>
                 <div className="bg-white py-6 px-4 space-y-6 sm:p-6">
                   <div>
                     <h3 className="text-lg leading-6 font-medium text-gray-900 my-2">{t('profile.info.title')}</h3>

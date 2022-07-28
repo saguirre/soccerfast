@@ -3,7 +3,7 @@ import { Fragment, SVGProps } from 'react';
 import { useTranslation } from 'next-i18next';
 import { Popover, Transition } from '@headlessui/react';
 import { ChevronDownIcon, LightningBoltIcon, PlusIcon } from '@heroicons/react/solid';
-import { ExclamationIcon } from '@heroicons/react/outline';
+import { BanIcon, ExclamationCircleIcon, ExclamationIcon, InformationCircleIcon } from '@heroicons/react/outline';
 
 import { classNames } from '@utils';
 
@@ -19,13 +19,22 @@ export interface PopoverItem {
 interface Props {
   title: string;
   addTitle?: string;
+  noItemsText?: string;
   announcement?: string;
   goToAdd?: () => void;
   goToItem: (id: number) => void;
   items: PopoverItem[];
 }
 
-export const MenuPopover: React.FC<Props> = ({ announcement, title, addTitle, goToAdd, goToItem, items }) => {
+export const MenuPopover: React.FC<Props> = ({
+  announcement,
+  title,
+  addTitle,
+  goToAdd,
+  noItemsText,
+  goToItem,
+  items,
+}) => {
   const { t } = useTranslation('common');
 
   return (
@@ -55,7 +64,7 @@ export const MenuPopover: React.FC<Props> = ({ announcement, title, addTitle, go
             leaveTo="opacity-0 translate-y-1"
           >
             <Popover.Panel className="absolute z-10 -ml-4 mt-3 transform w-screen max-w-md lg:max-w-3xl">
-              <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-y-scroll overflow-x-hidden">
+              <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 max-h-96 overflow-y-scroll overflow-x-hidden">
                 <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8 lg:grid-cols-2">
                   {addTitle && addTitle?.length > 0 && (
                     <button
@@ -66,53 +75,57 @@ export const MenuPopover: React.FC<Props> = ({ announcement, title, addTitle, go
                       <PlusIcon className="w-6 h-6 text-sky-600" />
                     </button>
                   )}
-                  {items.map((item) => (
-                    <div
-                      key={item.name}
-                      onClick={() => goToItem(item.id)}
-                      className="-m-3 p-3 rounded-lg hover:bg-gray-50 hover:cursor-pointer"
-                    >
-                      <div className=" flex items-start">
-                        <div
-                          className={classNames(
-                            item.icon || !item.logo ? 'bg-sky-500' : '',
-                            'flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md  text-white sm:h-12 sm:w-12'
-                          )}
-                        >
-                          {item.icon ? (
-                            <item.icon className="h-6 w-6" aria-hidden="true" />
-                          ) : (
-                            <>
-                              {item.logo ? (
-                                <img src={item.logo} />
-                              ) : (
-                                <LightningBoltIcon className="h-6 w-6" aria-hidden="true" />
-                              )}
-                            </>
-                          )}
+                  {items.length > 0 ? (
+                    items.map((item) => (
+                      <div
+                        key={item.name}
+                        onClick={() => goToItem(item.id)}
+                        className="-m-3 p-3 rounded-lg hover:bg-gray-50 hover:cursor-pointer"
+                      >
+                        <div className="flex items-start">
+                          <div
+                            className={classNames(
+                              item.icon || !item.logo ? 'bg-sky-500' : '',
+                              'flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md  text-white sm:h-12 sm:w-12'
+                            )}
+                          >
+                            {item.icon ? (
+                              <item.icon className="h-6 w-6" aria-hidden="true" />
+                            ) : (
+                              <>
+                                {item.logo ? (
+                                  <img src={item.logo} />
+                                ) : (
+                                  <LightningBoltIcon className="h-6 w-6" aria-hidden="true" />
+                                )}
+                              </>
+                            )}
+                          </div>
+                          <div className="ml-4">
+                            <p className="text-base font-medium text-gray-900">{item.name}</p>
+                            <p className="mt-1 text-sm text-gray-500">{item.description}</p>
+                          </div>
                         </div>
-                        <div className="ml-4">
-                          <p className="text-base font-medium text-gray-900">{item.name}</p>
-                          <p className="mt-1 text-sm text-gray-500">{item.description}</p>
-                        </div>
+                        {!item.active && (
+                          <div className="flex flex-row items-center justify-start mt-2">
+                            <ExclamationIcon className="h-5 w-5 text-amber-400 mr-1" />
+                            <span className="text-sm text-gray-400">{t('header.inactive')}</span>
+                          </div>
+                        )}
                       </div>
-                      {!item.active && (
-                        <div className="flex flex-row items-center justify-start mt-2">
-                          <ExclamationIcon className="h-5 w-5 text-amber-400 mr-1" />
-                          <span className="text-sm text-gray-400">{t('header.inactive')}</span>
-                        </div>
-                      )}
+                    ))
+                  ) : (
+                    <div className="text-slate-500 flex flex-row justify-center items-center text-center w-full">
+                      <ExclamationCircleIcon className="text-blue-400 h-6 w-6 mr-2" />
+                      {noItemsText}
                     </div>
-                  ))}
+                  )}
                 </div>
                 {announcement && announcement?.length > 0 && (
                   <div className="p-5 bg-gray-50 sm:p-8">
                     <div className="-m-3 p-3 flow-root rounded-md">
                       <div className="flex items-center">
                         <div className="text-base font-medium text-gray-900">{t('header.announcement')}</div>
-                        <span className="ml-1 inline-flex items-center py-0.5 px-2.5 rounded-full text-xs font-medium leading-5 bg-sky-100 text-sky-800">
-                          !
-                        </span>
                       </div>
                       <p className="mt-1 text-sm text-gray-500">{announcement}</p>
                     </div>

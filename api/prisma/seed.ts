@@ -31,7 +31,7 @@ const main = async () => {
   });
 
   // Create Contact Info
-  await prisma.contact_Info.create({
+  await prisma.contactInfo.create({
     data: {
       id: 1,
       companyName: 'SoccerFast',
@@ -41,7 +41,7 @@ const main = async () => {
     },
   });
 
-  await prisma.contact_Email.create({
+  await prisma.contactEmail.create({
     data: {
       id: 1,
       email: 'urucalv13@gmail.com',
@@ -49,7 +49,7 @@ const main = async () => {
     },
   });
 
-  await prisma.contact_Phone.create({
+  await prisma.contactPhone.create({
     data: {
       id: 1,
       number: '+1 (754) 231-5401',
@@ -57,7 +57,7 @@ const main = async () => {
     },
   });
 
-  await prisma.contact_Phone.create({
+  await prisma.contactPhone.create({
     data: {
       id: 2,
       number: '+1 (786) 306-8818',
@@ -65,7 +65,7 @@ const main = async () => {
     },
   });
 
-  await prisma.contact_Social_Media.create({
+  await prisma.contactSocialMedia.create({
     data: {
       id: 1,
       name: 'Facebook',
@@ -75,7 +75,7 @@ const main = async () => {
     },
   });
 
-  await prisma.contact_Social_Media.create({
+  await prisma.contactSocialMedia.create({
     data: {
       id: 2,
       name: 'Instagram',
@@ -85,7 +85,7 @@ const main = async () => {
     },
   });
 
-  await prisma.contact_Social_Media.create({
+  await prisma.contactSocialMedia.create({
     data: {
       id: 3,
       name: 'Twitter',

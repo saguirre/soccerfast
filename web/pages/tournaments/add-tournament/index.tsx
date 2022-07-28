@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useContext, useRef, useEffect, useState } from 'react';
+import { useContext, useRef, useEffect, useState } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -16,7 +16,7 @@ import {
 } from '@components';
 import { AppContext } from '@contexts';
 import { RoleEnum } from '@enums';
-import { useNotification, useSelect } from '@hooks';
+import { useNotification, useMultiSelect } from '@hooks';
 import { AddTournamentModel, Team } from '@models';
 
 interface FormValues {
@@ -32,7 +32,7 @@ const AddTournamentPage: NextPage = () => {
   const [loadingAddRequest, setLoadingAddRequest] = useState<boolean>(false);
   const notificationHandler = useNotification();
   const selectRef = useRef<HTMLDivElement>(null);
-  const select = useSelect(teamService.getFilteredTeams);
+  const select = useMultiSelect(teamService.getFilteredTeams);
   const {
     register,
     handleSubmit,
@@ -76,6 +76,7 @@ const AddTournamentPage: NextPage = () => {
       return;
     }
     setTeams(teams);
+    select.setItems(teams);
     select.setFilteredItems(teams);
   };
 
@@ -91,7 +92,7 @@ const AddTournamentPage: NextPage = () => {
         <div className="sm:mx-auto max-w-2xl">
           <div onClick={select.handleFocus} className="p-8 mt-4 sm:px-10 border border-slate-200 shadow-md rounded-lg">
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="sm:overflow-hidden">
+              <div className="sm:overflow-visible">
                 <div className="bg-white py-6 px-4 space-y-6 sm:p-6">
                   <div>
                     <h3 className="text-lg leading-6 font-medium text-gray-900 my-2">
@@ -152,7 +153,7 @@ const AddTournamentPage: NextPage = () => {
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                       {t('pages:addTournament.form.teams')}
                     </label>
-                    <FormMultiSelect ref={selectRef} {...select} items={select.filteredItems || []} />
+                    <FormMultiSelect ref={selectRef} {...select} items={select.filteredItems} />
                   </div>
                 </div>
                 <div className="flex flex-row justify-end items-end px-4 py-3 text-right sm:px-6">

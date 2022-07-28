@@ -8,7 +8,12 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { PostTournament, PutTournament, Tournament } from '@dtos';
+import {
+  PostMatchDateBracket,
+  PostTournament,
+  PutTournament,
+  Tournament,
+} from '@dtos';
 import {
   TournamentService,
   TournamentWithTeamScores,
@@ -16,7 +21,7 @@ import {
 import { Roles } from 'src/auth/auth.decorator';
 import { RoleEnum } from '@enums';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Team } from '@prisma/client';
+import { Prisma, Team } from '@prisma/client';
 
 @Controller('tournament')
 export class TournamentController {
@@ -50,6 +55,42 @@ export class TournamentController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
+  @Post('/:fixtureId')
+  async addMatchDate(@Param('fixtureId') fixtureId: number, @Body() bracket) {
+    return this.tournamentService.addMatchDate(fixtureId, bracket);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
+  @Post('/:fixtureId/:matchDateId')
+  async addBracketToMatchDate(
+    @Param('fixtureId') fixtureId: number,
+    @Param('matchDateId') matchDateId: number,
+    @Body() match: PostMatchDateBracket,
+  ) {
+    const data: Prisma.MatchDateBracketCreateInput = {
+      time: match.time,
+      matchDate: { connect: { id: Number(matchDateId) } },
+      firstTeam: {
+        create: {
+          goals: Number(match.firstTeam.goals),
+          team: { connect: { id: Number(match.firstTeam.team.id) } },
+          scorers: { create: { ...match.firstTeam.scorers } },
+        },
+      },
+      secondTeam: {
+        create: {
+          goals: Number(match.secondTeam.goals),
+          team: { connect: { id: Number(match.secondTeam.team.id) } },
+          scorers: { create: { ...match.secondTeam.scorers } },
+        },
+      },
+    };
+    return this.tournamentService.addBracketToMatchDate(matchDateId, data);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post()
   @Roles(RoleEnum.Admin)
   async createTournament(
@@ -68,6 +109,9 @@ export class TournamentController {
           return { teamId };
         }),
       },
+      tournamentFixture: { create: {} },
+      tournamentTopGoalkeepers: { create: {} },
+      tournamentTopScorers: { create: {} },
     });
   }
 
@@ -110,6 +154,12 @@ export class TournamentController {
       id,
     }));
 
+    const teamScoresToCreate = updateTournamentData.teamIds
+      .filter((teamId: number) => {
+        return !allTeamScores.some((teamScore) => teamScore.teamId === teamId);
+      })
+      .map((id) => ({ teamId: id }));
+
     const teamScoresToConnect = allTeamScores
       .filter((teamScore) =>
         teamsToConnect.some((id) => id === teamScore.teamId),
@@ -137,6 +187,10 @@ export class TournamentController {
       tournamentTeamScore.connect = teamScoresToConnect;
     }
 
+    if (teamScoresToCreate.length) {
+      tournamentTeamScore.create = teamScoresToCreate;
+    }
+
     if (teamScoresToDisconnect.length) {
       tournamentTeamScore.disconnect = teamScoresToDisconnect;
     }
@@ -148,6 +202,18 @@ export class TournamentController {
         teams,
         tournamentTeamScore,
       },
+    });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
+  @Put('/:id/fixture')
+  async name(
+    @Param('id') id: string,
+    @Body() fixture: Prisma.TournamentFixtureUpdateInput,
+  ) {
+    return this.tournamentService.updateTournamentFixture(Number(id), {
+      ...fixture,
     });
   }
 

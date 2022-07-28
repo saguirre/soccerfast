@@ -1,15 +1,21 @@
-import { ChangeEvent, forwardRef, MouseEvent } from 'react';
+import {
+  ChangeEvent,
+  ForwardedRef,
+  forwardRef,
+  MouseEvent,
+  MutableRefObject,
+  Ref,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { useTranslation } from 'next-i18next';
 import { ChevronUpIcon } from '@heroicons/react/outline';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 
 import { classNames } from '@utils';
-
-export interface SelectItem {
-  id: number;
-  name: string;
-}
+import { SelectItem } from '@models/*';
 
 export interface FormMultiSelectProps {
   handleMouseLeave: (event: MouseEvent) => void;
@@ -23,6 +29,18 @@ export interface FormMultiSelectProps {
   searchString: string;
   handleSearchStringChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
+
+const assignRefs = <T extends unknown>(...refs: Ref<T | null>[]) => {
+  return (node: T | null) => {
+    refs.forEach((r) => {
+      if (typeof r === 'function') {
+        r(node);
+      } else if (r) {
+        (r as MutableRefObject<T | null>).current = node;
+      }
+    });
+  };
+};
 
 export const FormMultiSelect = forwardRef<HTMLDivElement, FormMultiSelectProps>(
   (
@@ -41,17 +59,24 @@ export const FormMultiSelect = forwardRef<HTMLDivElement, FormMultiSelectProps>(
     ref
   ) => {
     const { t } = useTranslation('common');
+    const localRef = useRef<HTMLDivElement | null>(null);
+    const [dropdownMarginTop, setDropdownMarginTop] = useState<number | undefined>(56);
+
+    useLayoutEffect(() => {
+      setDropdownMarginTop(localRef?.current?.getBoundingClientRect()?.height);
+    }, [selectedItems]);
+
     return (
       <div
         onMouseLeave={handleMouseLeave}
         onMouseEnter={handleMouseEnter}
-        className="col-span-12 flex flex-col items-center h-52 mx-auto"
+        className="col-span-12 mb-6 flex flex-col items-center h-12 mx-auto"
       >
         <div className="w-full">
           <div className="flex flex-col items-center relative">
             <div className="w-full">
               <div
-                ref={ref}
+                ref={assignRefs(localRef, ref)}
                 onClick={() => toggleSelectOpen()}
                 className="my-2 p-1 flex border border-gray-300 shadow-sm bg-white rounded-md"
               >
@@ -94,7 +119,10 @@ export const FormMultiSelect = forwardRef<HTMLDivElement, FormMultiSelectProps>(
               </div>
             </div>
             {selectOpen && (
-              <div className="relative max-h-32 -mt-1 overflow-y-scroll shadow bg-white z-50 w-full left-0 rounded">
+              <div
+                style={{ marginTop: (dropdownMarginTop || 56) + 10 }}
+                className="absolute max-h-64 overflow-y-scroll shadow-lg bg-white z-50 w-full left-0 rounded"
+              >
                 <div className="flex flex-col w-full overflow-y-scroll">
                   {items?.map((item: SelectItem, index: number) => (
                     <div
@@ -107,11 +135,11 @@ export const FormMultiSelect = forwardRef<HTMLDivElement, FormMultiSelectProps>(
                           selectedItems.some((selectedItem: SelectItem) => item.id === selectedItem.id)
                             ? 'border-l-4 border-sky-500'
                             : '',
-                          'flex w-full items-center p-2 pl-2 border-transparent  relative '
+                          'flex w-full items-center p-2 pl-2 border-transparent relative'
                         )}
                       >
                         <div className="w-full items-center flex">
-                          <div className="mx-2 leading-6  ">{item?.name} </div>
+                          <div className="mx-2 leading-6">{item?.name} </div>
                         </div>
                       </div>
                     </div>

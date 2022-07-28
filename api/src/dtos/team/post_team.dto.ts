@@ -2,6 +2,7 @@ export interface PostTeam {
   name: string;
   description?: string;
   logo?: string;
-  ownerId?: number;
+  ownerIds?: number[];
+  playerIds?: number[];
   tournamentId?: number;
 }

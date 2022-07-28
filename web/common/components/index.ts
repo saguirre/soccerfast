@@ -1,7 +1,8 @@
 export * from './DotsDivider';
 export * from './Footer';
 export * from './ContactInfo';
-export * from './PrivateHeader';
+export * from './Calendar';
+export * from './Header';
 export * from './LoadingWrapper';
 export * from './Title';
 export * from './Buttons/CancelButton';
@@ -10,6 +11,7 @@ export * from './Buttons/SubmitButton';
 export * from './Modals/Base';
 export * from './Modals/Base/ModalTitle';
 export * from './Modals/Base/ModalBackground';
+export * from './Modals/Wrapper';
 export * from './NotificationAlert';
 export * from './Logos';
 export * from './Logos/FacebookLogo';

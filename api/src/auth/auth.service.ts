@@ -2,9 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserService, UserWithRoles } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserModel } from '@dtos';
-import { JwtVerifyOptions } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { ExtractJwt } from 'passport-jwt';
 
 @Injectable()
 export class AuthService {

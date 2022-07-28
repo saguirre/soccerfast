@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-import { Footer, PrivateHeader } from "@components";
+import { Footer, Header } from "@components";
 
 interface UserLayoutProps {
   children: React.ReactNode;
@@ -16,7 +16,7 @@ export const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
       </Head>
       <main>
-        <PrivateHeader />
+        <Header />
         {children}
         <Footer />
       </main>

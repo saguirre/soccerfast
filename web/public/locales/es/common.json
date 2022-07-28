@@ -19,8 +19,8 @@
   "header": {
     "signup": "Registrarme",
     "signin": "Ingresar",
-    "tournaments": { "title": "Torneos", "add": "Agregar Torneo" },
-    "teams": { "title": "Equipos", "add": "Agregar Equipo" },
+    "tournaments": { "title": "Torneos", "add": "Agregar Torneo", "noItems": "No se han agregado Torneos todavía." },
+    "teams": { "title": "Equipos", "add": "Agregar Equipo", "noItems": "No se han agregado Equipos todavía." },
     "gallery": "Galería",
     "rules": "Reglamento",
     "contact": "Contacto",
@@ -39,9 +39,10 @@
     "tournament": "Torneo",
     "rule": "Reglamento",
     "contact": "Contacto",
-    "user": "Usuario"
+    "user": "Usuario",
+    "matchDate": "Fecha",
+    "teamBracket": "Partido"
   },
-
   "notification": {
     "successTitle": "Éxito",
     "errorTitle": "Error",

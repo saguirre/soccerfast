@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Team, Prisma } from '@prisma/client';
 
-export type TeamWithOwners = Prisma.TeamGetPayload<{
-  include: { owner: true };
+export type TeamWithOwnersAndPlayers = Prisma.TeamGetPayload<{
+  include: { owners: true; players: true };
 }>;
 
 @Injectable()
@@ -12,10 +12,10 @@ export class TeamService {
 
   async team(
     teamWhereUniqueInput: Prisma.TeamWhereUniqueInput,
-  ): Promise<TeamWithOwners | null> {
+  ): Promise<TeamWithOwnersAndPlayers | null> {
     return this.prisma.team.findUnique({
       where: teamWhereUniqueInput,
-      include: { owner: true },
+      include: { owners: true, players: true },
     });
   }
 
@@ -36,20 +36,30 @@ export class TeamService {
     });
   }
 
-  async createTeam(data: Prisma.TeamCreateInput): Promise<Team> {
+  async createTeam(
+    data: Prisma.TeamCreateInput,
+  ): Promise<TeamWithOwnersAndPlayers> {
     return this.prisma.team.create({
       data,
+      include: {
+        owners: true,
+        players: true,
+      },
     });
   }
 
   async updateTeam(params: {
     where: Prisma.TeamWhereUniqueInput;
     data: Prisma.TeamUpdateInput;
-  }): Promise<Team> {
+  }): Promise<TeamWithOwnersAndPlayers> {
     const { where, data } = params;
     return this.prisma.team.update({
       data,
       where,
+      include: {
+        owners: true,
+        players: true,
+      },
     });
   }
 

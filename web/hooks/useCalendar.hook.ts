@@ -19,13 +19,15 @@ import enLocale from 'date-fns/locale/en-US';
 import esLocale from 'date-fns/locale/es';
 
 import { Day } from '@models';
+import { useRouter } from 'next/router';
 
 export const useCalendar = (language: string) => {
   const today = new Date();
+  const router = useRouter();
   const [currentMonthName, setCurrentMonthName] = useState<string>();
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedDay, setSelectedDay] = useState<Day>();
-  const [locale, setLocale] = useState<Locale>();
+  const [locale, setLocale] = useState<Locale>(esLocale);
   const [weekdays, setWeekdays] = useState<string[]>([]);
   const [days, setDays] = useState<Day[]>([]);
 
@@ -86,8 +88,15 @@ export const useCalendar = (language: string) => {
     }
   };
 
+  const getMonthName = () => {
+    const formattedCurrrentMonth = format(currentMonth, 'LLLL', { locale });
+    return (
+      formattedCurrrentMonth.at(0)?.toLocaleUpperCase() + formattedCurrrentMonth.slice(1, formattedCurrrentMonth.length)
+    );
+  };
+
   const populateCalendar = () => {
-    setCurrentMonthName(format(currentMonth, 'LLLL', { locale }));
+    setCurrentMonthName(getMonthName());
     const daysInMonth = getDaysInMonth(currentMonth);
     const firstDayInMonth = startOfMonth(currentMonth);
     const lastDayInMonth = endOfMonth(currentMonth);
@@ -111,9 +120,11 @@ export const useCalendar = (language: string) => {
   };
 
   useEffect(() => {
-    initLocale();
-    initWeekdays();
-    populateCalendar();
+    if (router.isReady) {
+      initLocale();
+      initWeekdays();
+      populateCalendar();
+    }
   }, []);
 
   useEffect(() => {

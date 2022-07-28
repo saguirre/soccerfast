@@ -77,7 +77,7 @@ export const SignInForm: React.FC<Props> = ({ submit, loadingSubmit }) => {
       </div>
 
       <div>
-        <SubmitButton loading={loadingSubmit} text={t('pages:signin.form.submit')} errors={errors} />
+        <SubmitButton loading={loadingSubmit} text={t('pages:signin.form.submit')} readonly={!errors} />
       </div>
     </form>
   );

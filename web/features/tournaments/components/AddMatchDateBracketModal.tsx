@@ -60,7 +60,7 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
   } = useForm<FormValues>({ defaultValues: { time: '6PM', firstTeamGoals: undefined, secondTeamGoals: undefined } });
 
   const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {
-    if (isDirty && isFormValid()) {
+    if (isFormValid()) {
       setLoadingAddRequest(true);
       const body: AddMatchDateBracketModel = {
         time: data.time,

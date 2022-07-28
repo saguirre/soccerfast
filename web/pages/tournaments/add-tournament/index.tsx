@@ -16,7 +16,7 @@ import {
 } from '@components';
 import { AppContext } from '@contexts';
 import { RoleEnum } from '@enums';
-import { useNotification, useSelect } from '@hooks';
+import { useNotification, useMultiSelect } from '@hooks';
 import { AddTournamentModel, Team } from '@models';
 
 interface FormValues {
@@ -32,7 +32,7 @@ const AddTournamentPage: NextPage = () => {
   const [loadingAddRequest, setLoadingAddRequest] = useState<boolean>(false);
   const notificationHandler = useNotification();
   const selectRef = useRef<HTMLDivElement>(null);
-  const select = useSelect(teamService.getFilteredTeams);
+  const select = useMultiSelect(teamService.getFilteredTeams);
   const {
     register,
     handleSubmit,

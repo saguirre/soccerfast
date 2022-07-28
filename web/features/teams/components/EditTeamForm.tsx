@@ -58,7 +58,7 @@ export const EditTeamForm: React.FC<Props> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="sm:overflow-hidden">
+      <div>
         <div className="bg-white py-6 px-4 space-y-6 sm:p-6">
           <div>
             <h3 className="text-lg leading-6 font-medium text-gray-900 my-2">
@@ -125,7 +125,11 @@ export const EditTeamForm: React.FC<Props> = ({
         </div>
         <div className="flex flex-row justify-end items-end px-4 py-3 text-right sm:px-6">
           <div className="w-1/4">
-            <SubmitButton text={t('team.form.submit')} loading={loadingSubmit} errors={errors} />
+            <SubmitButton
+              text={t('team.form.submit')}
+              loading={loadingSubmit}
+              readonly={!errors || !Object.entries(errors)}
+            />
           </div>
         </div>
       </div>

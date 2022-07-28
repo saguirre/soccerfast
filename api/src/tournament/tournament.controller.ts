@@ -8,7 +8,12 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { PostTournament, PutTournament, Tournament } from '@dtos';
+import {
+  PostMatchDateBracket,
+  PostTournament,
+  PutTournament,
+  Tournament,
+} from '@dtos';
 import {
   TournamentService,
   TournamentWithTeamScores,
@@ -47,6 +52,43 @@ export class TournamentController {
         ],
       },
     });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
+  @Post('/:fixtureId')
+  async addMatchDate(@Param('fixtureId') fixtureId: number, @Body() bracket) {
+    console.log(fixtureId, bracket);
+    return this.tournamentService.addMatchDate(fixtureId, bracket);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
+  @Post('/:fixtureId/:matchDateId')
+  async addBracketToMatchDate(
+    @Param('fixtureId') fixtureId: number,
+    @Param('matchDateId') matchDateId: number,
+    @Body() match: PostMatchDateBracket,
+  ) {
+    const data: Prisma.MatchDateBracketCreateInput = {
+      time: match.time,
+      matchDate: { connect: { id: Number(matchDateId) } },
+      firstTeam: {
+        create: {
+          goals: Number(match.firstTeam.goals),
+          team: { connect: { id: Number(match.firstTeam.team.id) } },
+          scorers: { create: { ...match.firstTeam.scorers } },
+        },
+      },
+      secondTeam: {
+        create: {
+          goals: Number(match.secondTeam.goals),
+          team: { connect: { id: Number(match.secondTeam.team.id) } },
+          scorers: { create: { ...match.secondTeam.scorers } },
+        },
+      },
+    };
+    return this.tournamentService.addBracketToMatchDate(matchDateId, data);
   }
 
   @UseGuards(JwtAuthGuard)

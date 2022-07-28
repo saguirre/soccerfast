@@ -155,6 +155,34 @@
       "editTournament": "Edit Tournament",
       "addTeam": "Add Team",
       "tableUpdate": "The table is updated every wednesday."
+    },
+    "fixture": {
+      "title": "Fixture",
+      "subtitle": "View the previous match results and the matches to come!",
+      "addMatchDate": "Add Match Date",
+      "addMatch": "Add Bracket",
+      "matchTitle": "{{number, format}} Match Date",
+      "noMatchDates": "There are still no Match Dates added for this Tournament. Click Add Match Date to create one!",
+      "noBrackets": "There are still no Brackets added for this Match Date. Click Add Bracket to create one!",
+      "addMatchModal": {
+        "title": "Add Match Date",
+        "subtitle": "Enter the required information and press Add!",
+        "confirm": "Add",
+        "cancel": "Cancel",
+        "date": "Date"
+      },
+      "addMatchBracketModal": {
+        "title": "Add Bracket",
+        "subtitle": "Enter the required information and press Add!",
+        "firstTeam": "First Team",
+        "secondTeam": "Second Team",
+        "confirm": "Add",
+        "time": "Time",
+        "matchAlreadyHappened": "Match already happened?",
+        "teamGoals": "{{team}} goals",
+        "addResult": "Add Result",
+        "cancel": "Cancel"
+      }
     }
   },
   "addTournament": {

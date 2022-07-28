@@ -12,7 +12,7 @@ import {
   SubmitButton,
 } from '@components';
 import { AppContext } from '@contexts';
-import { useFileUpload, useNotification, useSelect } from '@hooks';
+import { useFileUpload, useMultiSelect, useNotification } from '@hooks';
 import { AddTeamModel, User } from '@models';
 import { useRouter } from 'next/router';
 
@@ -36,8 +36,8 @@ export const AddTeamForm: React.FC<Props> = ({ users }) => {
   const playerSelectRef = useRef<HTMLDivElement>(null);
   const ownerSelectRef = useRef<HTMLDivElement>(null);
   const fileUpload = useFileUpload(teamService.uploadLogo, inputFileRef);
-  const playerSelect = useSelect(teamService.getFilteredTeams);
-  const ownerSelect = useSelect(teamService.getFilteredTeams);
+  const playerSelect = useMultiSelect(teamService.getFilteredTeams);
+  const ownerSelect = useMultiSelect(teamService.getFilteredTeams);
   const {
     register,
     handleSubmit,
@@ -96,7 +96,7 @@ export const AddTeamForm: React.FC<Props> = ({ users }) => {
       className="p-8 mt-4 sm:px-10 border border-slate-200 shadow-md rounded-lg"
     >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="sm:overflow-hidden">
+        <div>
           <div className="bg-white py-6 px-4 space-y-6 sm:p-6">
             <div>
               <h3 className="text-lg leading-6 font-medium text-gray-900 my-2">{t('pages:addTeam.form.title')}</h3>
@@ -161,7 +161,7 @@ export const AddTeamForm: React.FC<Props> = ({ users }) => {
           </div>
           <div className="flex flex-row justify-end items-end px-4 py-3 text-right sm:px-6">
             <div className="w-1/4">
-              <SubmitButton text={t('pages:addTeam.form.submit')} loading={loadingAddRequest} errors={errors} />
+              <SubmitButton text={t('pages:addTeam.form.submit')} loading={loadingAddRequest} readonly={!errors || !Object.entries(errors)} />
             </div>
           </div>
         </div>

@@ -9,7 +9,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { authorizedRoute, LoadingWrapper, NotificationAlert, Title } from '@components';
 import { AppContext, UserContext } from '@contexts';
 import { RoleEnum } from '@enums';
-import { useFileUpload, useNotification, useSelect } from '@hooks';
+import { useFileUpload, useNotification, useMultiSelect } from '@hooks';
 import { Team, UpdateTeamModel, User } from '@models';
 import { EditTeamForm } from '@features';
 
@@ -31,8 +31,8 @@ const TeamPage: NextPage<PageProps> = (props) => {
   const notificationHandler = useNotification();
   const [team, setTeam] = useState<Team | null>(null);
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const selectOwners = useSelect(userService.getFilteredUsers);
-  const selectPlayers = useSelect(userService.getFilteredUsers);
+  const selectOwners = useMultiSelect(userService.getFilteredUsers);
+  const selectPlayers = useMultiSelect(userService.getFilteredUsers);
   const fileUpload = useFileUpload(teamService.uploadLogo, inputFileRef);
 
   const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {

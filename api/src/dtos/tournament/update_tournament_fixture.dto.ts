@@ -1,8 +1,8 @@
-import { Prisma, TeamBracket, Tournament } from '@prisma/client';
+import { Prisma, TournamentFixture, Tournament } from '@prisma/client';
 
 export interface UpdateTournamentFixture {
   title?: string;
   date?: string;
-  teamBrackets?: Prisma.TeamBracketUpdateInput;
+  tournamentFixture?: Prisma.TournamentFixtureCreateInput;
   tournament?: Tournament;
 }

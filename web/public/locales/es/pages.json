@@ -156,6 +156,34 @@
       "editTournament": "Editar Torneo",
       "addTeam": "Agregar Equipo",
       "tableUpdate": "La tabla se actualiza todos los miércoles"
+    },
+    "fixture": {
+      "title": "Fixture",
+      "subtitle": "Visualiza los resultados de partidos anteriores y los partidos que están por venir!",
+      "addMatchDate": "Agregar Fecha",
+      "addMatch": "Agregar Partido",
+      "matchTitle": "{{number, format}} Fecha",
+      "noMatchDates": "Todavía no hay ninguna Fecha creada para este Torneo. Haz click en Agregar Fecha para crear una nueva!",
+      "noBrackets": "Todavía no hay ningún partido para esta Fecha. Haz click en Agregar Partido para crear uno nuevo!",
+      "addMatchModal": {
+        "title": "Agregar Fecha",
+        "subtitle": "Ingresa la información requerida y presiona Agregar!",
+        "confirm": "Agregar",
+        "cancel": "Cancelar",
+        "date": "Fecha"
+      },
+      "addMatchBracketModal": {
+        "title": "Agregar Partido",
+        "subtitle": "Ingresa la información requerida y presiona Agregar!",
+        "confirm": "Agregar",
+        "time": "Hora",
+        "cancel": "Cancelar",
+        "matchAlreadyHappened": "El partido ya ocurrió?",
+        "addResult": "Agregar resultado",
+        "teamGoals": "Goles {{team}}",
+        "firstTeam": "Primer Equipo",
+        "secondTeam": "Segundo Equipo"
+      }
     }
   },
   "addTournament": {

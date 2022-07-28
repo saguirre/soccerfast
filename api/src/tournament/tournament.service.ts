@@ -9,7 +9,7 @@ import {
 } from '@prisma/client';
 
 export type TournamentWithTeamScores = Prisma.TournamentGetPayload<{
-  include: { tournamentTeamScore: { include: { team: true } } };
+  include: { teams: true; tournamentTeamScore: { include: { team: true } } };
 }>;
 @Injectable()
 export class TournamentService {
@@ -21,9 +21,96 @@ export class TournamentService {
     return this.prisma.tournament.findUnique({
       where: tournamentWhereUniqueInput,
       include: {
+        teams: true,
         tournamentTeamScore: {
           include: {
             team: true,
+          },
+        },
+        tournamentFixture: {
+          include: {
+            matchDates: {
+              include: {
+                teamBrackets: {
+                  include: {
+                    firstTeam: {
+                      include: {
+                        team: true,
+                        scorers: {
+                          include: { scorer: true, tournamentTopScore: true },
+                        },
+                      },
+                    },
+                    secondTeam: {
+                      include: {
+                        team: true,
+                        scorers: {
+                          include: { scorer: true, tournamentTopScore: true },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async addMatchDate(
+    fixtureId: number,
+    data: Prisma.MatchDateCreateInput,
+  ): Promise<any> {
+    console.log('fixtureId: ', fixtureId);
+    const tournamentFixture = await this.prisma.tournamentFixture.findUnique({
+      where: { id: Number(fixtureId) },
+    });
+    const newMatchDate = await this.prisma.matchDate.create({
+      data: {
+        title: data.title,
+        date: data.date,
+        tournamentFixture: { connect: { id: Number(tournamentFixture.id) } },
+      },
+    });
+
+    return this.prisma.tournamentFixture.update({
+      where: { id: Number(fixtureId) },
+      data: { matchDates: { connect: { id: Number(newMatchDate.id) } } },
+    });
+  }
+
+  async addBracketToMatchDate(
+    matchDateId: number,
+    data: Prisma.MatchDateBracketCreateInput,
+  ): Promise<any> {
+    const newBracket = await this.prisma.matchDateBracket.create({
+      data,
+    });
+
+    return this.prisma.matchDate.update({
+      where: { id: Number(matchDateId) },
+      data: { teamBrackets: { connect: { id: Number(newBracket.id) } } },
+      include: {
+        teamBrackets: {
+          include: {
+            firstTeam: {
+              include: {
+                team: true,
+                scorers: {
+                  include: { scorer: true, tournamentTopScore: true },
+                },
+              },
+            },
+            secondTeam: {
+              include: {
+                team: true,
+                scorers: {
+                  include: { scorer: true, tournamentTopScore: true },
+                },
+              },
+            },
           },
         },
       },
@@ -87,7 +174,10 @@ export class TournamentService {
     data: Prisma.TournamentCreateInput,
   ): Promise<Tournament> {
     return this.prisma.tournament.create({
-      data,
+      data: {
+        ...data,
+        tournamentFixture: { create: { matchDates: { create: [] } } },
+      },
     });
   }
 

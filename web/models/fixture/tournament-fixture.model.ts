@@ -1,7 +1,8 @@
-import { TeamBracket } from './team-bracket.model';
+import { MatchDate } from './match-date.model';
 
 export interface TournamentFixture {
+  id: number;
   title: string;
   date?: string;
-  teamBrackets: TeamBracket[];
+  matchDates: MatchDate[];
 }

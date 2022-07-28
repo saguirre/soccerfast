@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 
+import nextI18NextConfig from '../next-i18next.config.js';
 import { appWithTranslation } from 'next-i18next';
 
 import { LoadingWrapper } from '@components';
@@ -53,4 +54,4 @@ const SoccerFast = ({ Component, pageProps }: AppProps) => {
   );
 };
 
-export default appWithTranslation(SoccerFast);
+export default appWithTranslation(SoccerFast, nextI18NextConfig);

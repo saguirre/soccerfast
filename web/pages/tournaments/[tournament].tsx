@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 
+import nextI18NextConfig from '../../next-i18next.config.js';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 
@@ -24,20 +25,6 @@ const Tournament: NextPage<PageProps> = (props) => {
   const { authService } = useContext(AuthContext);
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const isAdmin = authService.userHasRole(RoleEnum.Admin);
-
-  const fixture = [
-    {
-      title: 'Primera Fecha',
-      date: '30/07/2022',
-      teamBrackets: [
-        {
-          time: '6PM',
-          leftTeam: { team: tournament?.tournamentTeamScore?.[0].team, goals: 3 },
-          rightTeam: { team: tournament?.tournamentTeamScore?.[1].team, goals: 2 },
-        },
-      ],
-    },
-  ];
 
   const getTournament = async (id: number) => {
     setTournament(await tournamentService.getTournament(id));
@@ -81,12 +68,7 @@ const Tournament: NextPage<PageProps> = (props) => {
                 <p className="my-4 max-w-2xl text-sm text-gray-500 lg:mx-auto">
                   {t('tournament.positions.tableUpdate')}
                 </p>
-                <h2 className="text-base text-sky-600 font-semibold tracking-wide uppercase mt-4">Fixture</h2>
-                <p className="mt-4 max-w-2xl text-lg text-gray-500 lg:mx-auto">
-                  Visualiza los resultados de partidos anteriores y los partidos que están por venir!
-                </p>
-                <DotsDivider />
-                <FixtureGrid fixture={fixture} />
+                <FixtureGrid teams={tournament?.teams} fixtureProps={tournament?.tournamentFixture} />
                 <DotsDivider />
               </div>
             )}
@@ -128,7 +110,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       tournamentId: context.params?.tournament,
-      ...(await serverSideTranslations(context.locale || 'es', ['common', 'pages'])),
+      ...(await serverSideTranslations(context.locale || 'es', ['common', 'pages'], nextI18NextConfig)),
     },
   };
 };

@@ -17,7 +17,7 @@ import {
 } from '@components';
 import { AppContext } from '@contexts';
 import { RoleEnum } from '@enums';
-import { useNotification, useSelect } from '@hooks';
+import { useMultiSelect, useNotification } from '@hooks';
 import { Team, Tournament, UpdateTournamentModel } from '@models';
 
 interface FormValues {
@@ -44,7 +44,7 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
     formState: { errors },
   } = useForm<FormValues>({ mode: 'all' });
 
-  const select = useSelect(teamService.getFilteredTeams);
+  const select = useMultiSelect(teamService.getFilteredTeams);
 
   const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {
     setLoadingAddRequest(true);
@@ -105,7 +105,7 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
         <div className="sm:mx-auto max-w-2xl">
           <div onClick={select.handleFocus} className="p-8 mt-4 sm:px-10 border border-slate-200 shadow-md rounded-lg">
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="sm:overflow-hidden">
+              <div>
                 <div className="bg-white py-6 px-4 space-y-6 sm:p-6">
                   <div>
                     <h3 className="text-lg leading-6 font-medium text-gray-900 my-2">
@@ -172,7 +172,11 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
                 </div>
                 <div className="flex flex-row justify-end items-end px-4 py-3 text-right sm:px-6">
                   <div className="w-1/4">
-                    <SubmitButton text={t('editTournament.form.submit')} loading={loadingAddRequest} errors={{}} />
+                    <SubmitButton
+                      text={t('editTournament.form.submit')}
+                      loading={loadingAddRequest}
+                      readonly={!errors || !Object.entries(errors)}
+                    />
                   </div>
                 </div>
               </div>

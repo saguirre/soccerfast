@@ -1,7 +1,5 @@
 import { useContext, useRef, useState } from 'react';
 
-import { Dialog } from '@headlessui/react';
-import { PlusIcon } from '@heroicons/react/outline';
 import { useTranslation } from 'next-i18next';
 
 import {
@@ -12,15 +10,15 @@ import {
   FormSelect,
   ModalWrapper,
   ModalWrapperProps,
-  NotificationAlert,
   SubmitButton,
 } from '@components';
-import { AddMatchDateBracketModel, MatchDate, SelectItem, Team } from '@models';
+import { AddMatchDateBracketModel, MatchDate, Notification, SelectItem, Team } from '@models';
 import { useSelect } from 'hooks/useSelect.hook';
 import { AppContext } from 'contexts/app.context';
 import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useNotification } from 'hooks/useNotification.hook';
+import { Dialog } from '@headlessui/react';
+import { PlusIcon } from '@heroicons/react/solid';
 
 interface FormValues {
   time?: string;
@@ -32,7 +30,8 @@ interface AddMatchDateBracketModalProps extends ModalWrapperProps {
   fixtureId?: number;
   matchDateId?: number;
   teams?: Team[];
-  onSuccess?: (matchDate: MatchDate) => void;
+  onSuccess: (matchDate: MatchDate) => void;
+  onError: (notification: Notification) => void;
 }
 
 export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> = ({
@@ -40,6 +39,7 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
   setOpen,
   fixtureId,
   onSuccess,
+  onError,
   matchDateId,
   teams,
 }) => {
@@ -52,7 +52,6 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
   const secondTeamRef = useRef(null);
   const firstTeamSelect = useSelect(teamService.getFilteredTeams);
   const secondTeamSelect = useSelect(teamService.getFilteredTeams);
-  const notification = useNotification();
   const {
     register,
     handleSubmit,
@@ -69,12 +68,10 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
         secondTeam: { team: secondTeamSelect.selectedItem, goals: data.secondTeamGoals, scorers: [] },
       };
 
-      console.log({ matchDateId, body });
       if (!fixtureId || !matchDateId) {
-        notification.createNotification({
-          title: 'Error creating Bracket',
-          message:
-            'An error occurred while requesting data from the server. Please reload the page and try again later.',
+        onError({
+          title: t('common:notification.addErrorTitle'),
+          message: t('common:notification.addErrorMessage', { entity: t('common:entity.teamBracket') }),
           isError: true,
         });
         setLoadingAddRequest(false);
@@ -83,22 +80,16 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
 
       const addResponse = await tournamentService.addBracketToMatchDate(fixtureId, matchDateId, body);
       if (!addResponse) {
-        notification.createNotification({
-          title: 'Error creating Bracket',
-          message:
-            'An error occurred while attempting to add the bracket. Please check your information and try again later.',
+        onError({
+          title: t('common:notification.addErrorTitle'),
+          message: t('common:notification.addErrorMessage', { entity: t('common:entity.teamBracket') }),
           isError: true,
         });
         setLoadingAddRequest(false);
         return;
       }
-      notification.createNotification({
-        title: 'Success creating Bracket',
-        message: 'Bracket successfully created!',
-      });
       if (onSuccess) onSuccess(addResponse);
 
-      console.log(addResponse);
       setLoadingAddRequest(false);
       resetForm();
       setOpen(false);
@@ -263,7 +254,6 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
             />
           </div>
         </form>
-        <NotificationAlert {...notification} />
       </Dialog.Panel>
     </ModalWrapper>
   );

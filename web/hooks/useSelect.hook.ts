@@ -63,7 +63,6 @@ export const useSelect = (getFilteredItemsFromService: any) => {
     } else {
       setSelectOpen(true);
       const filteredItems = await getFilteredItemsFromService(searchString);
-      console.log(filteredItems);
       setFilteredItems(filteredItems);
     }
   };

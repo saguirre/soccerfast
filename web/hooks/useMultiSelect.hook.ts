@@ -19,10 +19,6 @@ export const useMultiSelect = (getFilteredItemsFromService: any) => {
   };
 
   const handleItemSelection = (id: number) => {
-    console.log('Handleselectionnn', id)
-
-    console.log("selectedItems: ", selectedItems)
-    console.log("items: ", items)
     if (selectedItems.some((selectedItem: any) => selectedItem.id === id)) {
       removeItem(id);
     } else {
@@ -66,7 +62,6 @@ export const useMultiSelect = (getFilteredItemsFromService: any) => {
       setFilteredItems(items);
     } else {
       setSelectOpen(true);
-      console.log('searchString: ', searchString);
       setFilteredItems(await getFilteredItemsFromService(searchString));
     }
   };

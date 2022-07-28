@@ -1,15 +1,15 @@
 import { MatchDate, MatchDateBracket } from '@models';
 
 interface Props {
-  key: number;
+  matchDateBracketKey: number;
   matchDate?: MatchDate;
   bracket?: MatchDateBracket;
 }
 
-export const MatchDateBracketComponent: React.FC<Props> = ({ key, matchDate, bracket }) => {
+export const MatchDateBracketComponent: React.FC<Props> = ({ matchDateBracketKey, matchDate, bracket }) => {
   return (
     <div
-      key={key}
+      key={matchDateBracketKey}
       className="flex flex-col items-center justify-center shadow-md rounded-lg bg-white border border-gray-200 pt-4 pb-5 px-3"
     >
       {matchDate?.date ? (

@@ -63,7 +63,6 @@ export class TournamentService {
     fixtureId: number,
     data: Prisma.MatchDateCreateInput,
   ): Promise<any> {
-    console.log('fixtureId: ', fixtureId);
     const tournamentFixture = await this.prisma.tournamentFixture.findUnique({
       where: { id: Number(fixtureId) },
     });
@@ -75,10 +74,15 @@ export class TournamentService {
       },
     });
 
-    return this.prisma.tournamentFixture.update({
+    await this.prisma.tournamentFixture.update({
       where: { id: Number(fixtureId) },
       data: { matchDates: { connect: { id: Number(newMatchDate.id) } } },
+      include: {
+        matchDates: true,
+      },
     });
+    console.log('End add: ', newMatchDate);
+    return newMatchDate;
   }
 
   async addBracketToMatchDate(

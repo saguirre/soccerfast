@@ -2,11 +2,12 @@ import { useState } from 'react';
 
 import { useTranslation } from 'next-i18next';
 
-import { DotsDivider } from '@components';
-import { MatchDate, Team, TournamentFixture } from '@models';
+import { DotsDivider, NotificationAlert } from '@components';
+import { MatchDate, Notification, Team, TournamentFixture } from '@models';
 import { AddMatchDateBracketModal } from '../AddMatchDateBracketModal';
 import { AddMatchDateModal } from '../AddMatchDateModal';
 import { MatchDateList } from './MatchDateList';
+import { useNotification } from 'hooks/useNotification.hook';
 
 interface Props {
   teams?: Team[];
@@ -14,11 +15,12 @@ interface Props {
 }
 
 export const FixtureGrid: React.FC<Props> = ({ fixtureProps, teams }) => {
-  const { t, i18n } = useTranslation('pages');
+  const { t } = useTranslation('pages');
   const [fixture, setFixture] = useState(fixtureProps);
   const [addMatchDateModalOpen, setAddMatchDateModalOpen] = useState(false);
   const [addMatchDateBracketModalOpen, setAddMatchDateBracketModalOpen] = useState(false);
   const [currentMatchDate, setCurrentMatchDate] = useState<number>();
+  const notification = useNotification();
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
@@ -35,12 +37,31 @@ export const FixtureGrid: React.FC<Props> = ({ fixtureProps, teams }) => {
           setAddMatchDateBracketModalOpen((current) => !current);
         }}
       />
-      <AddMatchDateModal fixtureId={fixture?.id} open={addMatchDateModalOpen} setOpen={setAddMatchDateModalOpen} />
+      <AddMatchDateModal
+        fixtureId={fixture?.id}
+        open={addMatchDateModalOpen}
+        setOpen={setAddMatchDateModalOpen}
+        onSuccess={(matchDate: MatchDate) => {
+          setFixture((current) => {
+            if (current) {
+              return {
+                ...current,
+                matchDates: [...current.matchDates, matchDate],
+              };
+            }
+          });
+          notification.createNotification({
+            title: t('common:notification.addSuccessTitle', { entity: t('common:entity.matchDate') }),
+            message: t('common:notification.addSuccessMessage', { entity: t('common:entity.matchDate') }),
+          });
+        }}
+        onError={(modalNotification: Notification) => notification.createNotification(modalNotification)}
+      />
       <AddMatchDateBracketModal
         fixtureId={fixture?.id}
         matchDateId={currentMatchDate}
         teams={teams}
-        onSuccess={(modalMatchDate: MatchDate) =>
+        onSuccess={(modalMatchDate: MatchDate) => {
           setFixture((current) => {
             if (current) {
               return {
@@ -53,11 +74,17 @@ export const FixtureGrid: React.FC<Props> = ({ fixtureProps, teams }) => {
                 }),
               };
             }
-          })
-        }
+          });
+          notification.createNotification({
+            title: t('common:notification.addSuccessTitle', { entity: t('common:entity.teamBracket') }),
+            message: t('common:notification.addSuccessMessage', { entity: t('common:entity.teamBracket') }),
+          });
+        }}
+        onError={(modalNotification: Notification) => notification.createNotification(modalNotification)}
         open={addMatchDateBracketModalOpen}
         setOpen={setAddMatchDateBracketModalOpen}
       />
+      <NotificationAlert {...notification} />
     </div>
   );
 };

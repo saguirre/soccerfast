@@ -4,12 +4,12 @@ import { MatchDateBracketComponent } from './MatchDateBracket';
 import { MatchDatePlaceholder } from './MatchDatePlaceholder';
 
 interface Props {
-  key: any;
+  bracketKey: any;
   onAddMatch: (matchDateId?: number) => void;
   matchDate?: MatchDate;
 }
 
-export const MatchDateBracketContainer: React.FC<Props> = ({ key, matchDate, onAddMatch }) => {
+export const MatchDateBracketContainer: React.FC<Props> = ({ bracketKey, matchDate, onAddMatch }) => {
   const { t } = useTranslation('pages');
   return (
     <div>
@@ -19,11 +19,11 @@ export const MatchDateBracketContainer: React.FC<Props> = ({ key, matchDate, onA
       >
         {t('tournament.fixture.addMatch')}
       </button>
-      <div key={key} className="flex flex-col items-center justify-center">
+      <div key={bracketKey} className="flex flex-col items-center justify-center">
         {matchDate?.teamBrackets && matchDate?.teamBrackets?.length > 0 ? (
           <div className="grid grid-cols-3 gap-y-6 gap-x-8 w-full mb-6">
             {matchDate.teamBrackets?.map((bracket, index) => (
-              <MatchDateBracketComponent key={index} matchDate={matchDate} bracket={bracket} />
+              <MatchDateBracketComponent key={index} matchDateBracketKey={index} matchDate={matchDate} bracket={bracket} />
             ))}
           </div>
         ) : (

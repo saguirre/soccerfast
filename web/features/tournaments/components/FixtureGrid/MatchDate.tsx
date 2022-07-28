@@ -5,15 +5,15 @@ import { getLastDigit, getLastTwoDigits, getOrdinalNumberSuffix } from '@utils';
 import { MatchDateBracketContainer } from './MatchDateBracketContainer';
 
 interface Props {
-  key: any;
+  matchDateKey: any;
   index: number;
   matchDate?: MatchDate;
   onAddMatch: (id?: number) => void;
 }
-export const MatchDateComponent: React.FC<Props> = ({ key, index, matchDate, onAddMatch }) => {
+export const MatchDateComponent: React.FC<Props> = ({ matchDateKey, index, matchDate, onAddMatch }) => {
   const { t, i18n } = useTranslation('pages');
   return (
-    <div key={key} className="flex flex-col justify-center w-full my-4">
+    <div key={matchDateKey} className="flex flex-col justify-center w-full my-4">
       <span className="mb-4 text-lg text-center text-sky-600">
         {t('tournament.fixture.matchTitle', {
           number: `${index + 1}${getOrdinalNumberSuffix(
@@ -23,7 +23,11 @@ export const MatchDateComponent: React.FC<Props> = ({ key, index, matchDate, onA
           )}`,
         })}
       </span>
-      <MatchDateBracketContainer key={index} matchDate={matchDate} onAddMatch={(id?: number) => onAddMatch(id)} />
+      <MatchDateBracketContainer
+        bracketKey={index}
+        matchDate={matchDate}
+        onAddMatch={(id?: number) => onAddMatch(id)}
+      />
     </div>
   );
 };

@@ -58,7 +58,6 @@ export class TournamentController {
   @Roles(RoleEnum.Admin)
   @Post('/:fixtureId')
   async addMatchDate(@Param('fixtureId') fixtureId: number, @Body() bracket) {
-    console.log(fixtureId, bracket);
     return this.tournamentService.addMatchDate(fixtureId, bracket);
   }
 

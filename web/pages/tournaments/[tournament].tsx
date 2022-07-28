@@ -54,7 +54,6 @@ const Tournament: NextPage<PageProps> = (props) => {
           <div className="w-full flex flex-col items-center px-24">
             <TableTabs
               selectedTab={(tab) => {
-                console.log(tab);
                 setSelectedTab(tab);
               }}
             />

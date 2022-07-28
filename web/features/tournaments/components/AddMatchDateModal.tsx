@@ -5,9 +5,9 @@ import { PlusIcon } from '@heroicons/react/outline';
 import { useTranslation } from 'next-i18next';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { Calendar, FormInput, ModalWrapper, ModalWrapperProps, SubmitButton } from '@components';
+import { Calendar, ModalWrapper, ModalWrapperProps, SubmitButton } from '@components';
 import { AppContext } from '@contexts';
-import { AddMatchDateModel, Team } from '@models';
+import { AddMatchDateModel, Day, MatchDate, Notification } from '@models';
 
 interface FormValues {
   date?: string;
@@ -15,39 +15,62 @@ interface FormValues {
 
 interface AddMatchDateModalProps extends ModalWrapperProps {
   fixtureId?: number;
+  onSuccess: (newMatchDate: MatchDate) => void;
+  onError: (notification: Notification) => void;
 }
 
-export const AddMatchDateModal: React.FC<AddMatchDateModalProps> = ({ open, setOpen, fixtureId }) => {
+export const AddMatchDateModal: React.FC<AddMatchDateModalProps> = ({
+  open,
+  setOpen,
+  fixtureId,
+  onSuccess,
+  onError,
+}) => {
   const { tournamentService } = useContext(AppContext);
   const cancelButtonRef = useRef(null);
   const [loadingAddRequest, setLoadingAddRequest] = useState(false);
   const { t } = useTranslation('pages');
 
   const {
-    register,
     handleSubmit,
     reset,
     watch,
-    formState: { errors, isDirty, isValid },
+    setValue,
+    formState: { isValid },
   } = useForm<FormValues>({ defaultValues: { date: '' } });
 
   const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {
-    if (isDirty && isFormValid()) {
+    if (isFormValid()) {
       setLoadingAddRequest(true);
       const body: AddMatchDateModel = {
         title: 'Match',
-        date: '31/07/2022',
+        date: data.date,
       };
 
-      console.log({ fixtureId, body });
       if (!fixtureId) {
+        onError({
+          title: t('common:notification.addErrorTitle'),
+          message: t('common:notification.addErrorMessage', { entity: t('common:entity.matchDate') }),
+          isError: true,
+        });
         setLoadingAddRequest(false);
         return;
       }
 
       const addResponse = await tournamentService.addMatchDate(fixtureId, body);
-      console.log(addResponse);
+      if (!addResponse) {
+        onError({
+          title: t('common:notification.addErrorTitle'),
+          message: t('common:notification.addErrorMessage', { entity: t('common:entity.matchDate') }),
+          isError: true,
+        });
+        setLoadingAddRequest(false);
+        return;
+      }
+      onSuccess(addResponse);
       setLoadingAddRequest(false);
+      resetForm();
+      setOpen(false);
     }
   };
 
@@ -76,12 +99,12 @@ export const AddMatchDateModal: React.FC<AddMatchDateModalProps> = ({ open, setO
               </div>
             </div>
             <div className="mt-3">
-              <Calendar />
+              <Calendar
+                onSelectDate={(day: Day) => {
+                  setValue('date', day.formattedDate);
+                }}
+              />
             </div>
-            {/* <div className="mt-3">
-              <FormInput type="number" placeholder="0" {...register('date', { min: 0, max: 99 })} />
-              {errors && errors.date && <span className="text-sm text-rose-500 mt-1">{errors.date?.message}</span>}
-            </div> */}
           </div>
           <div className="mt-8 flex flex-row items-center justify-between gap-3">
             <button

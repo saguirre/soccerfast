@@ -81,7 +81,6 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
 
   const getTournament = async (id: number) => {
     const tournament = await tournamentService.getTournament(id);
-    console.log(tournament);
     setTournament(await tournamentService.getTournament(id));
   };
 

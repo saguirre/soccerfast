@@ -43,7 +43,9 @@
     "tournament": "Tournament",
     "rule": "Rules",
     "contact": "Contact",
-    "user": "User"
+    "user": "User",
+    "matchDate": "Match Date",
+    "teamBracket": "Bracket"
   },
   "notification": {
     "successTitle": "Success",

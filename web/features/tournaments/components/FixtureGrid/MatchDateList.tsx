@@ -13,7 +13,7 @@ interface Props {
 export const MatchDateList: React.FC<Props> = ({ fixture, onAddMatch, onSubmit }) => {
   const { t } = useTranslation('pages');
   return (
-    <div className='w-full'>
+    <div className="w-full">
       <div className="w-full flex flex-row justify-end items-center">
         <SubmitButton onClick={onSubmit} className="w-1/6" text={t('tournament.fixture.addMatchDate')} />
       </div>
@@ -23,6 +23,7 @@ export const MatchDateList: React.FC<Props> = ({ fixture, onAddMatch, onSubmit }
             <MatchDateComponent
               index={index}
               key={index}
+              matchDateKey={index}
               matchDate={matchDate}
               onAddMatch={(id?: number) => onAddMatch(id)}
             />

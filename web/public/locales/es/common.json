@@ -39,9 +39,10 @@
     "tournament": "Torneo",
     "rule": "Reglamento",
     "contact": "Contacto",
-    "user": "Usuario"
+    "user": "Usuario",
+    "matchDate": "Fecha",
+    "teamBracket": "Partido"
   },
-
   "notification": {
     "successTitle": "Éxito",
     "errorTitle": "Error",

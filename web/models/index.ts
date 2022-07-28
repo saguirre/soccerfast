@@ -6,3 +6,4 @@ export * from './team';
 export * from './tournament';
 export * from './user';
 export * from './select-item.model';
+export * from './day.model';

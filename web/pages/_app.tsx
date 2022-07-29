@@ -10,12 +10,14 @@ import { LoadingWrapper } from '@components';
 import { UserLayout } from '@layouts';
 import { AppContext, AuthContext, UserContext } from '@contexts';
 import { AuthService, TeamService, ContactInfoService, RuleService, TournamentService, UserService } from '@services';
-import { User } from '@models';
+import { Team, Tournament, User } from '@models';
 
 const SoccerFast = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [userToken, setUserToken] = useState('');
+  const [tournaments, setTournaments] = useState<Tournament[]>();
+  const [teams, setTeams] = useState<Team[]>();
   const [user, setUser] = useState<User | null>(null);
   const authService = new AuthService();
   const authContextProps = { userToken, setUserToken, authService };
@@ -26,7 +28,16 @@ const SoccerFast = ({ Component, pageProps }: AppProps) => {
   const teamService = new TeamService();
   const ruleService = new RuleService();
   const contactInfoService = new ContactInfoService();
-  const appContextProps = { tournamentService, teamService, ruleService, contactInfoService };
+  const appContextProps = {
+    tournaments,
+    setTournaments,
+    teams,
+    setTeams,
+    tournamentService,
+    teamService,
+    ruleService,
+    contactInfoService,
+  };
 
   useEffect(() => {
     if (router.isReady) {

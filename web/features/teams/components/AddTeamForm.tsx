@@ -29,7 +29,7 @@ interface Props {
 export const AddTeamForm: React.FC<Props> = ({ users }) => {
   const { t } = useTranslation(['common', 'pages']);
   const router = useRouter();
-  const { teamService } = useContext(AppContext);
+  const { setTeams, teamService } = useContext(AppContext);
   const [loadingAddRequest, setLoadingAddRequest] = useState<boolean>(false);
   const notificationHandler = useNotification();
   const inputFileRef = useRef<HTMLInputElement>(null);
@@ -64,6 +64,11 @@ export const AddTeamForm: React.FC<Props> = ({ users }) => {
       });
       return;
     }
+
+    setTeams((current) => {
+      if (current) return [...current, addTeamResult];
+    });
+
     resetFormAndValues();
     notificationHandler.createNotification({
       title: t('common:notification.addSuccessTitle', { entity: t('common:entity.team') }),
@@ -161,7 +166,11 @@ export const AddTeamForm: React.FC<Props> = ({ users }) => {
           </div>
           <div className="flex flex-row justify-end items-end px-4 py-3 text-right sm:px-6">
             <div className="w-1/4">
-              <SubmitButton text={t('pages:addTeam.form.submit')} loading={loadingAddRequest} readonly={!errors || !Object.entries(errors)} />
+              <SubmitButton
+                text={t('pages:addTeam.form.submit')}
+                loading={loadingAddRequest}
+                readonly={!errors || !Object.entries(errors)}
+              />
             </div>
           </div>
         </div>

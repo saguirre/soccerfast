@@ -31,7 +31,7 @@ interface PageProps {
 
 const EditTournamentPage: NextPage<PageProps> = (props) => {
   const { t } = useTranslation('pages');
-  const { teamService, tournamentService } = useContext(AppContext);
+  const { setTournaments, teamService, tournamentService } = useContext(AppContext);
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingAddRequest, setLoadingAddRequest] = useState<boolean>(false);
@@ -54,9 +54,9 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
       teamIds: select.selectedItems.map((team: Team) => team.id),
     };
 
-    const addTournamentResult = await tournamentService.updateTournament(props.tournamentId, body);
+    const updateTournamentResult = await tournamentService.updateTournament(props.tournamentId, body);
     setLoadingAddRequest(false);
-    if (!addTournamentResult) {
+    if (!updateTournamentResult) {
       notificationHandler.createNotification({
         title: t('common:notification.updateErrorTitle'),
         message: t('common:notification.updateErrorMessage', { entity: body.name }),
@@ -64,6 +64,14 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
       });
       return;
     }
+    setTournaments((current) => {
+      if (current)
+        return current.map((tournament: Tournament) => {
+          if (tournament.id === updateTournamentResult.id) {
+            return updateTournamentResult;
+          } else return tournament;
+        });
+    });
     notificationHandler.createNotification({
       title: t('common:notification.updateSuccessTitle', { entity: t('common:entity.tournament') }),
       message: t('common:notification.updateSuccessMessage', { entity: body.name }),

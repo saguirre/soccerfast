@@ -10,7 +10,6 @@ import { MenuIcon } from '@heroicons/react/outline';
 
 import { AppContext, AuthContext, UserContext } from '@contexts';
 import { RoleEnum } from '@enums';
-import { Team, Tournament } from '@models';
 import { MenuPopover } from '../MenuPopover';
 import { UserDropdown } from '../UserDropdown';
 import { LanguageDropdown } from '../LanguageDropdown';
@@ -19,9 +18,8 @@ export const Header: React.FC = () => {
   const router = useRouter();
   const { user, setUser, userService } = useContext(UserContext);
   const { setUserToken, userToken, authService } = useContext(AuthContext);
-  const { teamService, tournamentService } = useContext(AppContext);
-  const [teams, setTeams] = useState<Team[]>();
-  const [tournaments, setTournaments] = useState<Tournament[]>();
+  const { teams, setTeams, tournaments, setTournaments, teamService, tournamentService } = useContext(AppContext);
+
   const { t } = useTranslation('common');
 
   const goToTeamPage = (id: number) => {
@@ -60,9 +58,19 @@ export const Header: React.FC = () => {
     }
   };
 
+  const getHeaderEntities = () => {
+    if (!teams && !tournaments) {
+      axios.all([getTeams(), getTournaments()]);
+    } else if (!teams) {
+      getTeams();
+    } else {
+      getTournaments();
+    }
+  };
+
   useEffect(() => {
     getUser();
-    axios.all([getTeams(), getTournaments()]);
+    getHeaderEntities();
   }, []);
 
   useEffect(() => {

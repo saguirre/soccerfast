@@ -208,6 +208,8 @@
       "title": "Edit Tournament",
       "subtitle": "In order to update the information, press Save",
       "name": "Name",
+      "active": "Active",
+      "inactive": "Inactive",
       "namePlaceholder": "Tournament name",
       "photo": "Photo",
       "teams": "Teams",

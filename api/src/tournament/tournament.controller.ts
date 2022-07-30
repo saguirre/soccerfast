@@ -128,6 +128,8 @@ export class TournamentController {
     if (updateTournamentData.description)
       data.description = updateTournamentData.description;
     if (updateTournamentData.logo) data.logo = updateTournamentData.logo;
+    if (updateTournamentData.active !== undefined)
+      data.active = updateTournamentData.active;
 
     const tournamentTeams =
       await this.tournamentService.tournamentTeamsAndTeamScores({

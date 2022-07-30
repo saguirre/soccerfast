@@ -210,6 +210,8 @@
       "subtitle": "Para actualizar la información presiona Guardar",
       "name": "Nombre",
       "namePlaceholder": "Nombre del torneo",
+      "active": "Activo",
+      "inactive": "Inactivo",
       "teams": "Equipos",
       "photo": "Foto",
       "changePhoto": "Cambiar",

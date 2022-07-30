@@ -81,7 +81,6 @@ export class TournamentService {
         matchDates: true,
       },
     });
-    console.log('End add: ', newMatchDate);
     return newMatchDate;
   }
 

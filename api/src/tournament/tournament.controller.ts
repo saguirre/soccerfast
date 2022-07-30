@@ -87,7 +87,10 @@ export class TournamentController {
         },
       },
     };
-    return this.tournamentService.addBracketToMatchDate(matchDateId, data);
+    return this.tournamentService.addBracketToMatchDate(
+      matchDateId,
+      data,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

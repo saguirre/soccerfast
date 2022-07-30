@@ -75,11 +75,7 @@ const Tournament: NextPage<PageProps> = (props) => {
               <div className="flex flex-col items-center w-full px-12 py-4">
                 <div className="w-full gap-6 flex flex-row items-center justify-center">
                   <div className="w-1/2">
-                    <GoalKeepersTable
-                      tournamentId={props.tournamentId}
-                      isAdmin={isAdmin}
-                      tournamentTeamScore={tournament?.tournamentTeamScore}
-                    />
+                    <GoalKeepersTable tournamentTeamScore={tournament?.tournamentTeamScore} />
                   </div>
                 </div>
                 <p className="my-4 max-w-2xl text-sm text-gray-500 lg:mx-auto">

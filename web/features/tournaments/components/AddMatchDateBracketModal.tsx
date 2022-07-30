@@ -16,12 +16,13 @@ import { AddMatchDateBracketModel, MatchDate, Notification, SelectItem, Team } f
 import { useSelect } from 'hooks/useSelect.hook';
 import { AppContext } from 'contexts/app.context';
 import { useEffect } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Dialog } from '@headlessui/react';
 import { PlusIcon } from '@heroicons/react/solid';
 
 interface FormValues {
   time?: string;
+  matchAlreadyHappened?: boolean;
   firstTeamGoals?: number;
   secondTeamGoals?: number;
 }
@@ -55,15 +56,20 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
   const {
     register,
     handleSubmit,
+    control,
     reset,
+    watch,
     formState: { errors, isDirty, isValid },
-  } = useForm<FormValues>({ defaultValues: { time: '6PM', firstTeamGoals: undefined, secondTeamGoals: undefined } });
+  } = useForm<FormValues>({
+    defaultValues: { time: '6PM', matchAlreadyHappened: false, firstTeamGoals: undefined, secondTeamGoals: undefined },
+  });
 
   const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {
     if (isFormValid()) {
       setLoadingAddRequest(true);
       const body: AddMatchDateBracketModel = {
         time: data.time,
+        matchAlreadyHappened: data.matchAlreadyHappened || false,
         firstTeam: { team: firstTeamSelect.selectedItem, goals: data.firstTeamGoals, scorers: [] },
         secondTeam: { team: secondTeamSelect.selectedItem, goals: data.secondTeamGoals, scorers: [] },
       };
@@ -192,17 +198,21 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
             </div>
             <div className="mt-3">
               <div className="flex flex-row w-full justify-end items-center">
-                <FormCheckbox
-                  id="matchAlreadyHappened"
+                <Controller
+                  control={control}
                   name="matchAlreadyHappened"
-                  checked={matchAlreadyHappened}
-                  setChecked={setMatchAlreadyHappened}
-                  label={t('tournament.fixture.addMatchBracketModal.matchAlreadyHappened')}
-                  description={''}
+                  render={({ field: { ref, ...field } }) => (
+                    <FormCheckbox
+                      id="matchAlreadyHappened"
+                      {...field}
+                      label={t('tournament.fixture.addMatchBracketModal.matchAlreadyHappened')}
+                      description={''}
+                    />
+                  )}
                 />
               </div>
             </div>
-            {matchAlreadyHappened && (
+            {watch('matchAlreadyHappened') && (
               <div className="mt-3">
                 <FormLabel labelText={t('tournament.fixture.addMatchBracketModal.addResult')} />
                 <div className="mt-3 flex flex-row items-center justify-between">

@@ -69,28 +69,37 @@ export class TournamentController {
     @Param('matchDateId') matchDateId: number,
     @Body() match: PostMatchDateBracket,
   ) {
+    const createFirstTeam: any = {
+      team: { connect: { id: Number(match.firstTeam.team.id) } },
+    };
+
+    if (match.firstTeam.goals)
+      createFirstTeam.goals = Number(match.firstTeam.goals);
+    if (match.firstTeam.scorers?.length)
+      createFirstTeam.scorers = { create: { ...match.firstTeam.scorers } };
+
+    const createSecondTeam: any = {
+      team: { connect: { id: Number(match.secondTeam.team.id) } },
+    };
+
+    if (match.secondTeam.goals)
+      createSecondTeam.goals = Number(match.secondTeam.goals);
+    if (match.secondTeam.scorers?.length)
+      createSecondTeam.scorers = { create: { ...match.secondTeam.scorers } };
+
     const data: Prisma.MatchDateBracketCreateInput = {
       time: match.time,
+      matchAlreadyHappened: match.matchAlreadyHappened,
       matchDate: { connect: { id: Number(matchDateId) } },
       firstTeam: {
-        create: {
-          goals: Number(match.firstTeam.goals),
-          team: { connect: { id: Number(match.firstTeam.team.id) } },
-          scorers: { create: { ...match.firstTeam.scorers } },
-        },
+        create: createFirstTeam,
       },
       secondTeam: {
-        create: {
-          goals: Number(match.secondTeam.goals),
-          team: { connect: { id: Number(match.secondTeam.team.id) } },
-          scorers: { create: { ...match.secondTeam.scorers } },
-        },
+        create: createSecondTeam,
       },
     };
-    return this.tournamentService.addBracketToMatchDate(
-      matchDateId,
-      data,
-    );
+
+    return this.tournamentService.addBracketToMatchDate(matchDateId, data);
   }
 
   @UseGuards(JwtAuthGuard)

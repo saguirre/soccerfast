@@ -124,14 +124,15 @@ model MatchDate {
 }
 
 model MatchDateBracket {
-  id           Int                  @id @default(autoincrement())
-  time         String?
-  firstTeam    MatchDateBracketTeam @relation(fields: [firstTeamId], references: [id], name: "firstTeam")
-  secondTeam   MatchDateBracketTeam @relation(fields: [secondTeamId], references: [id], name: "secondTeam")
-  firstTeamId  Int
-  secondTeamId Int
-  matchDate    MatchDate?           @relation(fields: [matchDateId], references: [id])
-  matchDateId  Int?
+  id                   Int                  @id @default(autoincrement())
+  time                 String?
+  matchAlreadyHappened Boolean?             @default(false)
+  firstTeam            MatchDateBracketTeam @relation(fields: [firstTeamId], references: [id], name: "firstTeam")
+  secondTeam           MatchDateBracketTeam @relation(fields: [secondTeamId], references: [id], name: "secondTeam")
+  firstTeamId          Int
+  secondTeamId         Int
+  matchDate            MatchDate?           @relation(fields: [matchDateId], references: [id])
+  matchDateId          Int?
 }
 
 model MatchDateBracketTeam {

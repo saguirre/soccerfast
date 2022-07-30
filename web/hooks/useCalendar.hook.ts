@@ -63,7 +63,7 @@ export const useCalendar = (language: string) => {
       isCurrentMonth: isSameMonth(date, currentMonth),
       isSelected: false,
       isToday: isToday(date),
-      isValid: isToday(date) || isAfter(date, today),
+      isValid: true,
     };
   };
 

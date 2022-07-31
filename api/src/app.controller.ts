@@ -6,8 +6,8 @@ import {
   UseGuards,
   Get,
   Body,
-  Logger,
   Param,
+  Put,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Queue } from 'bull';
@@ -41,11 +41,9 @@ export class AppController {
 
   @Post('auth/change-password')
   async changePassword(@Request() req, @Body() body: { password: string }) {
-    Logger.debug(req.headers.authorization, 'validate-recovery-token');
     if (req.headers.authorization) {
       const token = req.headers.authorization.split(' ')[1];
       const decodedToken = this.jwtService.decode(token);
-      Logger.debug(decodedToken, 'Decoded Token');
       const user = await this.userService.user({
         email: decodedToken['email'],
       });
@@ -67,16 +65,51 @@ export class AppController {
 
   @Get('auth/validate-recovery-token')
   async validateRecoveryToken(@Request() req) {
-    Logger.debug(req.headers.authorization, 'validate-recovery-token');
     if (req.headers.authorization) {
       const token = req.headers.authorization.split(' ')[1];
       const decodedToken = this.jwtService.decode(token);
-      Logger.debug(decodedToken, 'Decoded Token');
       const user = await this.userService.user({
         email: decodedToken['email'],
       });
       if (user) {
         return user.passwordRecoveryToken === token;
+      }
+    }
+    return false;
+  }
+
+  @Get('auth/validate-activation-token')
+  async validateActivationToken(@Request() req) {
+    if (req.headers.authorization) {
+      const token = req.headers.authorization.split(' ')[1];
+      const decodedToken = this.jwtService.decode(token);
+      const user = await this.userService.user({
+        email: decodedToken['email'],
+      });
+      if (user) {
+        return user.activationToken === token;
+      }
+    }
+    return false;
+  }
+
+  @Put('auth/activate-account')
+  async activateAccount(@Request() req) {
+    if (req.headers.authorization) {
+      const token = req.headers.authorization.split(' ')[1];
+      const decodedToken = this.jwtService.decode(token);
+      const user = await this.userService.user({
+        email: decodedToken['email'],
+      });
+      if (user) {
+        const isValidToken = user.activationToken === token;
+        if (isValidToken) {
+          await this.userService.updateUser({
+            where: { email: decodedToken['email'] },
+            data: { activated: true, activationToken: '' },
+          });
+        }
+        return isValidToken;
       }
     }
     return false;
@@ -104,14 +137,12 @@ export class AppController {
           secret: process.env.JWT_SECRET,
         });
 
-        Logger.debug(passwordRecoveryToken, 'sendForgotPassword');
-        Logger.debug(passwordRecoveryToken.length, 'sendForgotPassword');
         await this.userService.updateUser({
           where: { id: Number(user.id) },
           data: { passwordRecoveryToken },
         });
 
-        await this.forgotPasswordQueue.add('forgot-password', {
+        this.forgotPasswordQueue.add('forgot-password', {
           name: user.name,
           email: user.email,
           url: `http://localhost:3000/forgot-password?token=${passwordRecoveryToken}`,

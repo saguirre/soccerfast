@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserService, UserWithRoles } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserModel } from '@dtos';
@@ -22,6 +22,11 @@ export class AuthService {
   }
 
   async login(user: UserModel) {
+    const dbUser = await this.userService.user({ id: Number(user.id) });
+    if (!dbUser || !dbUser.activated) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+
     const payload = {
       id: user.id,
       name: user.name,

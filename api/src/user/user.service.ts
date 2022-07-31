@@ -2,12 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { User, Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 export type UserWithRoles = Prisma.UserGetPayload<{ include: { roles: true } }>;
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly jwtService: JwtService,
+    @InjectQueue('activate-account')
+    private readonly activateAccountQueue: Queue,
+  ) {}
 
   async user(
     userWhereUniqueInput: Prisma.UserWhereUniqueInput,
@@ -35,13 +43,41 @@ export class UserService {
     });
   }
 
-  async createUser(data: Prisma.UserCreateInput): Promise<User> {
+  async createUser(
+    data: Prisma.UserCreateInput,
+    locale: string = 'es',
+  ): Promise<User> {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(data.password, salt);
     data.password = hashedPassword;
-    return this.prisma.user.create({
-      data,
+
+    const user = await this.prisma.user.create({
+      data: { ...data, activated: false },
     });
+
+    if (user) {
+      const payload = {
+        name: user.name,
+        email: user.email,
+      };
+
+      const activationToken = this.jwtService.sign(payload, {
+        secret: process.env.JWT_SECRET,
+      });
+
+      await this.updateUser({
+        where: { id: Number(user.id) },
+        data: { activationToken },
+      });
+
+      this.activateAccountQueue.add('activate-account', {
+        name: user.name,
+        email: user.email,
+        url: `http://localhost:3000/activate-account?token=${activationToken}`,
+        locale,
+      });
+      return user;
+    }
   }
 
   async updateUser(params: {

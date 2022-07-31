@@ -69,7 +69,6 @@ const ForgotPasswordPage: React.FC<PageProps> = (props) => {
 
   const validateToken = async (token: string) => {
     const validationResult = await authService.validateRecoveryToken(token);
-    console.log('validationResult: ', validationResult);
     if (!validationResult) {
       router.push({ pathname: '/' });
       return;

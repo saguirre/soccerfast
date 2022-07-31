@@ -1,21 +1,24 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, Logger } from '@nestjs/common';
-import { ForgotPasswordEmail } from 'src/dtos/email';
+import { ActivateAccountModel, ForgotPasswordEmail } from 'src/dtos/email';
 
 @Injectable()
 export class EmailService {
   constructor(private mailerService: MailerService) {}
 
-  async sendConfirmation(name: string, email: string, url: string) {
+  async sendAccountActivation(
+    model: ActivateAccountModel,
+    locale: string = 'es',
+  ) {
     try {
       this.mailerService.sendMail({
         from: 'saguirrews@gmail.com',
-        to: email,
+        to: model.email,
         subject: 'Confirm Your Email - SoccerFast',
-        template: './en-confirm-email',
+        template: `./${locale}-confirm-email`,
         context: {
-          name,
-          url,
+          name: model.name,
+          url: model.url,
         },
       });
     } catch (error) {

@@ -57,6 +57,12 @@
       "submit": "Send"
     }
   },
+  "activate-account": {
+    "title": "Account activated!",
+    "subtitle": "Your account has been successfully confirmed and activated",
+    "redirect": "If you're not automatically redirected to the sign in page, please click Sign In.",
+    "signin": "Sign In"
+  },
   "contact": {
     "title": "Contact",
     "subtitle": "Send us a message with any questions you have and we'll get back to you shortly!",

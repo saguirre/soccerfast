@@ -57,6 +57,12 @@
       "submit": "Enviar"
     }
   },
+  "activate-account": {
+    "title": "Cuenta activada!",
+    "subtitle": "Tu cuenta ha sido confirmada y activada exitosamente",
+    "redirect": "Si no eres redirigido automáticamente a la página de ingreso, por favor presiona Ingresar",
+    "signin": "Ingresar"
+  },
   "contact": {
     "title": "Contacto",
     "subtitle": "Envianos un mensaje con cualquier consulta y responderemos a la brevedad.",

@@ -45,6 +45,16 @@
       "continueWith": "Or continue with"
     }
   },
+  "forgot-password": {
+    "title": "Recover Password",
+    "subtitle": "Enter your email in order to recover your password",
+    "form": {
+      "email": "Email",
+      "emailPlaceholder": "pablo.bengoechea@gmail.com",
+      "notice": "If your email exists, you'll be sent a password recovery email",
+      "submit": "Send"
+    }
+  },
   "contact": {
     "title": "Contact",
     "subtitle": "Send us a message with any questions you have and we'll get back to you shortly!",

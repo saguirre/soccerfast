@@ -24,7 +24,7 @@
       "add": "Add Tournament",
       "noItems": "No Tournaments have been added yet."
     },
-    "teams": { "title": "Teams", "add": "Add Team", "noItems": "No Teams have been added yet."},
+    "teams": { "title": "Teams", "add": "Add Team", "noItems": "No Teams have been added yet." },
     "gallery": "Gallery",
     "rules": "Rules",
     "contact": "Contact",
@@ -52,6 +52,8 @@
     "errorTitle": "Error",
     "signUpErrorTitle": "Error signin up",
     "signUpSuccessTitle": "Successfully signed up!",
+    "passwordResetSuccessTitle": "Successfully submitted!",
+    "passwordResetSuccessMessage": "Successfully submitted your request for password recovery. If your email exists, then we'll send you a recovery email shortly!",
     "signUpSuccessMessage": "We're redirecting you to the sign in page...",
     "signUpErrorMessage": "An error has occurred while attempting to sign up. Please try again later.",
     "signInErrorTitle": "Error signing in",

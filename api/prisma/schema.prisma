@@ -11,20 +11,24 @@ datasource db {
 }
 
 model User {
-  id                 Int                 @id @default(autoincrement())
-  email              String              @unique
-  password           String
-  name               String
-  phone              String?
-  avatar             String?
-  roles              Role[]
-  type               String
-  active             Boolean?            @default(true)
-  birthday           DateTime?
-  preferredLanguage  String?             @default("en")
-  ownedTeams         Team[]              @relation(name: "owners")
-  playingTeams       Team[]              @relation(name: "players")
-  teamBracketScorers BracketTeamScorer[]
+  id                    Int                 @id @default(autoincrement())
+  email                 String              @unique
+  password              String
+  name                  String
+  phone                 String?
+  avatar                String?
+  roles                 Role[]
+  type                  String
+  active                Boolean?            @default(true)
+  activated             Boolean?            @default(false)
+  activationToken       String?             @db.VarChar(300)
+  passwordRecoveryToken String?             @db.VarChar(300)
+  locked                Boolean?            @default(false)
+  birthday              DateTime?
+  preferredLanguage     String?             @default("en")
+  ownedTeams            Team[]              @relation(name: "owners")
+  playingTeams          Team[]              @relation(name: "players")
+  teamBracketScorers    BracketTeamScorer[]
 }
 
 model Role {

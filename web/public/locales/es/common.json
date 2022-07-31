@@ -48,6 +48,8 @@
     "errorTitle": "Error",
     "signUpErrorTitle": "Error al registrarse",
     "signUpSuccessTitle": "Registro exitoso!",
+    "passwordResetSuccessTitle": "Petición exitosa!",
+    "passwordResetSuccessMessage": "Se envió exitosamente la petición para recuperar tu contraseña. Si tu correo existe, entonces te enviaremos un correo de recuperación inmediatamente!",
     "signUpSuccessMessage": "Te estamos redirigiendo a la página de ingreso...",
     "signUpErrorMessage": "Ha ocurrido un error al registrarse, por favor verifica tus datos e inténtalo de nuevo.",
     "signInErrorTitle": "Error al ingresar",

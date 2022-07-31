@@ -1,3 +1,4 @@
+export * from './auth';
 export * from './contact';
 export * from './fixture';
 export * from './notification';

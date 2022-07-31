@@ -14,9 +14,22 @@ import { PrismaService } from './prisma.service';
 import { FileModule } from './file/file.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/roles.guard';
+import { ForgotPasswordModule } from './forgot-password/forgot-password.module';
+import { ActivateAccountModule } from './activate-account/activate-account.module';
+import { BullModule } from '@nestjs/bull';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+    BullModule.registerQueue({
+      name: 'forgot-password',
+    }),
     UserModule,
     TournamentModule,
     TeamModule,
@@ -26,6 +39,9 @@ import { RolesGuard } from './auth/roles.guard';
     NotificationModule,
     ConfigModule.forRoot({ isGlobal: true }),
     FileModule,
+    ForgotPasswordModule,
+    ActivateAccountModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [

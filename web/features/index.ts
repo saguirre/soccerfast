@@ -1,5 +1,6 @@
 export * from './contact';
 export * from './gallery';
+export * from './forgot-password';
 export * from './landing';
 // export * from './rules';
 export * from './signin';

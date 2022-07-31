@@ -45,6 +45,16 @@
       "continueWith": "O continúa con"
     }
   },
+  "forgot-password": {
+    "title": "Recuperar Contraseña",
+    "subtitle": "Ingresa tu email para recuperar tu contraseña",
+    "form": {
+      "email": "Email",
+      "emailPlaceholder": "pablo.bengoechea@gmail.com",
+      "notice": "Si tu correo existe, se te enviará un correo de recuperación de contraseña.",
+      "submit": "Enviar"
+    }
+  },
   "contact": {
     "title": "Contacto",
     "subtitle": "Envianos un mensaje con cualquier consulta y responderemos a la brevedad.",

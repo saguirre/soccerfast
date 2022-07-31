@@ -7,7 +7,7 @@ export interface IAuthService {
   signUp(user: AddUserModel): Promise<User | null>;
   login(user: UserLoginModel): Promise<User | null>;
   userHasRole(role: RoleEnum): boolean | undefined;
-  recoverPassword(body: PasswordRecoveryModel): void;
+  recoverPassword(body: PasswordRecoveryModel, locale: string): void;
   validateUserToken(): Promise<boolean>;
   validateRecoveryToken(token: string): Promise<boolean>;
   changePassword(token: string, body: ChangePasswordModel): Promise<boolean>;
@@ -26,9 +26,9 @@ export class AuthService extends HttpService implements IAuthService {
     }
   };
 
-  recoverPassword = (body: PasswordRecoveryModel) => {
+  recoverPassword = (body: PasswordRecoveryModel, locale: string = 'es') => {
     try {
-      axios.post(this.getServiceUrl(`${this.endpointPrefix}/forgot-password`), body);
+      axios.post(this.getServiceUrl(`${this.endpointPrefix}/forgot-password/${locale}`), body);
     } catch (error) {
       console.error(error);
     }

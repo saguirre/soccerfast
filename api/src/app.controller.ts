@@ -7,6 +7,7 @@ import {
   Get,
   Body,
   Logger,
+  Param,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Queue } from 'bull';
@@ -75,14 +76,7 @@ export class AppController {
         email: decodedToken['email'],
       });
       if (user) {
-        const isValidToken = user.passwordRecoveryToken === token;
-        // if (isValidToken) {
-        //   await this.userService.updateUser({
-        //     where: { email: decodedToken['email'] },
-        //     data: { passwordRecoveryToken: '' },
-        //   });
-        // }
-        return isValidToken;
+        return user.passwordRecoveryToken === token;
       }
     }
     return false;
@@ -93,8 +87,11 @@ export class AppController {
     return this.userService.createUser(req.body);
   }
 
-  @Post('auth/forgot-password')
-  async sendForgotPassword(@Body() body: { email: string }) {
+  @Post('auth/forgot-password/:locale')
+  async sendForgotPassword(
+    @Param('locale') locale: string = 'es',
+    @Body() body: { email: string },
+  ) {
     if (body.email?.length) {
       const user = await this.userService.user({ email: body.email });
       if (user && !user.locked) {
@@ -118,6 +115,7 @@ export class AppController {
           name: user.name,
           email: user.email,
           url: `http://localhost:3000/forgot-password?token=${passwordRecoveryToken}`,
+          locale,
         });
       }
     }

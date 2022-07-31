@@ -48,6 +48,8 @@
   "forgot-password": {
     "title": "Recuperar Contraseña",
     "subtitle": "Ingresa tu email para recuperar tu contraseña",
+    "changeTitle": "Cambiar contraseña",
+    "changeSubtitle": "Por favor ingresa tu nueva contraseña",
     "form": {
       "email": "Email",
       "emailPlaceholder": "pablo.bengoechea@gmail.com",

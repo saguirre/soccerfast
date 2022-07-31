@@ -1,6 +1,6 @@
-import { Process, Processor } from '@nestjs/bull';
-import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
+import { Logger } from '@nestjs/common';
+import { Process, Processor } from '@nestjs/bull';
 import { EmailService } from 'src/email/email.service';
 
 @Processor('forgot-password')
@@ -13,11 +13,12 @@ export class ForgotPasswordProcessor {
   async handleTranscode(job: Job) {
     this.logger.debug('Start sending forgot password email...');
     this.logger.debug(job.data);
-    await this.emailService.sendForgotPassword(
-      job.data.name,
-      job.data.email,
-      job.data.url,
-    );
+    const model = {
+      name: job.data.name,
+      email: job.data.email,
+      url: job.data.url,
+    };
+    await this.emailService.sendForgotPassword(model, job.data.locale);
     this.logger.debug('Email sending completed!');
   }
 }

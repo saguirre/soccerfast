@@ -17,7 +17,7 @@ interface PageProps {
 
 const ForgotPasswordPage: React.FC<PageProps> = (props) => {
   const router = useRouter();
-  const { t } = useTranslation(['pages', 'common']);
+  const { t, i18n } = useTranslation(['pages', 'common']);
   const { authService } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [loadingRequest, setLoadingRequest] = useState(false);
@@ -30,7 +30,7 @@ const ForgotPasswordPage: React.FC<PageProps> = (props) => {
       email: data.email,
     };
 
-    authService.recoverPassword(body);
+    authService.recoverPassword(body, i18n.language);
     setLoadingRequest(false);
 
     notificationHandler.createNotification({
@@ -59,8 +59,12 @@ const ForgotPasswordPage: React.FC<PageProps> = (props) => {
     notificationHandler.createNotification({
       title: t('common:notification.changePasswordSuccessTitle'),
       message: t('common:notification.changePasswordSuccessMessage'),
-      duration: 10000,
+      duration: 5000,
     });
+
+    setTimeout(() => {
+      router.push({ pathname: '/signin' });
+    }, 2000);
   };
 
   const validateToken = async (token: string) => {

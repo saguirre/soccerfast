@@ -1,5 +1,6 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, Logger } from '@nestjs/common';
+import { ForgotPasswordEmail } from 'src/dtos/email';
 
 @Injectable()
 export class EmailService {
@@ -21,16 +22,17 @@ export class EmailService {
       Logger.error(error);
     }
   }
-  async sendForgotPassword(name: string, email: string, url: string) {
+
+  async sendForgotPassword(model: ForgotPasswordEmail, locale: string = 'es') {
     try {
       this.mailerService.sendMail({
         from: 'saguirrews@gmail.com',
-        to: email,
+        to: model.email,
         subject: 'Recover Password - SoccerFast',
-        template: './en-forgot-password',
+        template: `./${locale}-forgot-password`,
         context: {
-          name,
-          url,
+          name: model.name,
+          url: model.url,
         },
       });
     } catch (error) {

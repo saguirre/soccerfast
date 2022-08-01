@@ -1,22 +1,21 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 import { useTranslation } from 'next-i18next';
 
 import { DotsDivider, NotificationAlert } from '@components';
-import { MatchDate, Notification, Team, TournamentFixture } from '@models';
+import { MatchDate, Notification, Team, Tournament, TournamentFixture } from '@models';
 import { AddMatchDateBracketModal } from '../AddMatchDateBracketModal';
 import { AddMatchDateModal } from '../AddMatchDateModal';
 import { MatchDateList } from './MatchDateList';
 import { useNotification } from 'hooks/useNotification.hook';
+import { TournamentContext } from 'contexts/tournament.context';
 
-interface Props {
-  teams?: Team[];
-  fixtureProps?: TournamentFixture;
-}
+interface Props {}
 
-export const FixtureGrid: React.FC<Props> = ({ fixtureProps, teams }) => {
+export const FixtureGrid: React.FC<Props> = () => {
   const { t } = useTranslation('pages');
-  const [fixture, setFixture] = useState(fixtureProps);
+  const { tournament, setTournament } = useContext(TournamentContext);
+  const [fixture, setFixture] = useState(tournament?.tournamentFixture);
   const [addMatchDateModalOpen, setAddMatchDateModalOpen] = useState(false);
   const [addMatchDateBracketModalOpen, setAddMatchDateBracketModalOpen] = useState(false);
   const [currentMatchDate, setCurrentMatchDate] = useState<number>();
@@ -60,7 +59,6 @@ export const FixtureGrid: React.FC<Props> = ({ fixtureProps, teams }) => {
       <AddMatchDateBracketModal
         fixtureId={fixture?.id}
         matchDateId={currentMatchDate}
-        teams={teams}
         onSuccess={(modalMatchDate: MatchDate) => {
           setFixture((current) => {
             if (current) {
@@ -75,6 +73,13 @@ export const FixtureGrid: React.FC<Props> = ({ fixtureProps, teams }) => {
               };
             }
           });
+          if (setTournament)
+            setTournament((value: Tournament | null) => {
+              if (value) {
+                return { ...value, tournamentFixture: fixture };
+              }
+              return null;
+            });
           notification.createNotification({
             title: t('common:notification.addSuccessTitle', { entity: t('common:entity.teamBracket') }),
             message: t('common:notification.addSuccessMessage', { entity: t('common:entity.teamBracket') }),

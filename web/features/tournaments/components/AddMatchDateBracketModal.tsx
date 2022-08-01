@@ -19,6 +19,7 @@ import { useEffect } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Dialog } from '@headlessui/react';
 import { PlusIcon } from '@heroicons/react/solid';
+import { TournamentContext } from 'contexts/tournament.context';
 
 interface FormValues {
   time?: string;
@@ -30,7 +31,6 @@ interface FormValues {
 interface AddMatchDateBracketModalProps extends ModalWrapperProps {
   fixtureId?: number;
   matchDateId?: number;
-  teams?: Team[];
   onSuccess: (matchDate: MatchDate) => void;
   onError: (notification: Notification) => void;
 }
@@ -42,9 +42,10 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
   onSuccess,
   onError,
   matchDateId,
-  teams,
 }) => {
   const { teamService, tournamentService } = useContext(AppContext);
+  const { tournament } = useContext(TournamentContext);
+  const teams = tournament?.teams;
   const cancelButtonRef = useRef(null);
   const [matchAlreadyHappened, setMatchAlreadyHappened] = useState(false);
   const [loadingAddRequest, setLoadingAddRequest] = useState(false);

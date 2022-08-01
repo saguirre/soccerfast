@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { useTranslation } from 'next-i18next';
 
 import { TeamScore } from '@models';
+import { TournamentContext } from 'contexts/tournament.context';
 
-interface GoalKeepersProps {
-  tournamentTeamScore: TeamScore[] | undefined;
-}
+interface GoalKeepersProps {}
 
 export interface GoalKeepersItem {
   [key: string]: number | string | boolean;
@@ -33,15 +32,16 @@ const mapTeams = (tournamentTeamScore: TeamScore[] | undefined) => {
     });
 };
 
-export const GoalKeepersTable: React.FC<GoalKeepersProps> = ({ tournamentTeamScore }) => {
+export const GoalKeepersTable: React.FC<GoalKeepersProps> = () => {
   const { t } = useTranslation('pages');
+  const { tournament } = useContext(TournamentContext);
   const tableHeaders = ['goalsAgainst'];
-  const mappedTeams = mapTeams(tournamentTeamScore);
+  const mappedTeams = mapTeams(tournament?.tournamentTeamScore);
   const [teams, setTeams] = useState<GoalKeepersItem[] | undefined>(mappedTeams);
 
   useEffect(() => {
-    setTeams(mapTeams(tournamentTeamScore));
-  }, [tournamentTeamScore]);
+    setTeams(mapTeams(tournament?.tournamentTeamScore));
+  }, [tournament?.tournamentTeamScore]);
 
   return (
     <div className="w-full">

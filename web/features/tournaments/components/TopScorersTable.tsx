@@ -1,32 +1,29 @@
-import { CheckIcon, XIcon } from '@heroicons/react/solid';
-import { TeamScore } from '@models';
-import { AppContext } from 'contexts/app.context';
-import { useTranslation } from 'next-i18next';
-import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
+
+import { useTranslation } from 'next-i18next';
+
+import { TournamentContext } from '@contexts';
+import { TeamScore } from '@models';
 
 interface TopScorersProps {
   isAdmin?: boolean;
-  tournamentId: number;
-  tournamentTeamScore: TeamScore[] | undefined;
 }
 
 export interface TopScorersItem {
   [key: string]: number | string | boolean;
 }
 
-export const TopScorersTable: React.FC<TopScorersProps> = ({ isAdmin, tournamentId, tournamentTeamScore }) => {
-  const router = useRouter();
+export const TopScorersTable: React.FC<TopScorersProps> = () => {
   const { t } = useTranslation('pages');
+  const { tournament } = useContext(TournamentContext);
   const tableHeaders = ['player', 'goals'];
-  const { tournamentService } = useContext(AppContext);
 
   const getGoalDiff = (teamScore: TopScorersItem) => {
     return (teamScore.goalsAhead as number) - (teamScore.goalsAgainst as number);
   };
 
   const mapTeams = () => {
-    return tournamentTeamScore
+    return tournament?.tournamentTeamScore
       ?.map((score: TeamScore) => {
         return {
           id: score.teamId,
@@ -53,20 +50,9 @@ export const TopScorersTable: React.FC<TopScorersProps> = ({ isAdmin, tournament
 
   const [teams, setTeams] = useState<TopScorersItem[] | undefined>(mapTeams);
 
-  const handleEdit = (id: number, editable: boolean) => {
-    setTeams((currentTeams) => {
-      return currentTeams?.map((team: TopScorersItem) => {
-        if (team.id === id) {
-          return { ...team, editable };
-        }
-        return team;
-      });
-    });
-  };
-
   useEffect(() => {
     setTeams(mapTeams());
-  }, [tournamentTeamScore]);
+  }, [tournament?.tournamentTeamScore]);
 
   return (
     <div className="w-full">

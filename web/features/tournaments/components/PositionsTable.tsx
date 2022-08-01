@@ -1,22 +1,52 @@
-import { CheckIcon, XIcon } from '@heroicons/react/solid';
 import { TeamScore } from '@models';
 import { AppContext } from 'contexts/app.context';
+import { TournamentContext } from 'contexts/tournament.context';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 
 interface PositionsTableProps {
   isAdmin?: boolean;
-  tournamentId: number;
-  tournamentTeamScore: TeamScore[] | undefined;
 }
 
 export interface PositionsTableItem {
   [key: string]: number | string | boolean;
 }
 
-export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournamentId, tournamentTeamScore }) => {
+const getGoalDiff = (teamScore: PositionsTableItem) => {
+  return (teamScore.goalsAhead as number) - (teamScore.goalsAgainst as number);
+};
+
+const mapTeams = (tournamentTeamScore?: TeamScore[]) => {
+  return tournamentTeamScore
+    ?.map((score: TeamScore) => {
+      return {
+        id: score.teamId,
+        name: score.team.name,
+        logo: score.team.logo,
+        matchesPlayed: score.matchesPlayed,
+        matchesWon: score.matchesWon,
+        matchesTied: score.matchesTied,
+        matchesLost: score.matchesLost,
+        goalsAhead: score.goalsAhead,
+        goalsAgainst: score.goalsAgainst,
+        points: score.points,
+      };
+    })
+    .sort((t1: PositionsTableItem, t2: PositionsTableItem) => {
+      if (t2.points === t1.points) {
+        const t2GoalDiff = getGoalDiff(t2);
+        const t1GoalDiff = getGoalDiff(t1);
+        return t2GoalDiff - t1GoalDiff;
+      }
+      return (t2.points as number) - (t1.points as number);
+    });
+};
+
+export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin }) => {
   const router = useRouter();
+  const { tournament } = useContext(TournamentContext);
+  const { tournamentService } = useContext(AppContext);
   const { t } = useTranslation('pages');
   const tableHeaders = [
     'matchesPlayed',
@@ -27,49 +57,26 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournam
     'goalsAgainst',
     'points',
   ];
-  const { tournamentService } = useContext(AppContext);
 
-  const getGoalDiff = (teamScore: PositionsTableItem) => {
-    return (teamScore.goalsAhead as number) - (teamScore.goalsAgainst as number);
-  };
-
-  const mapTeams = () => {
-    return tournamentTeamScore
-      ?.map((score: TeamScore) => {
-        return {
-          id: score.teamId,
-          name: score.team.name,
-          logo: score.team.logo,
-          matchesPlayed: score.matchesPlayed,
-          matchesWon: score.matchesWon,
-          matchesTied: score.matchesTied,
-          matchesLost: score.matchesLost,
-          goalsAhead: score.goalsAhead,
-          goalsAgainst: score.goalsAgainst,
-          points: score.points,
-        };
-      })
-      .sort((t1: PositionsTableItem, t2: PositionsTableItem) => {
-        if (t2.points === t1.points) {
-          const t2GoalDiff = getGoalDiff(t2);
-          const t1GoalDiff = getGoalDiff(t1);
-          return t2GoalDiff - t1GoalDiff;
-        }
-        return (t2.points as number) - (t1.points as number);
-      });
-  };
-
-  const [teams, setTeams] = useState<PositionsTableItem[] | undefined>(mapTeams);
+  const [teams, setTeams] = useState<PositionsTableItem[] | undefined>(mapTeams(tournament?.tournamentTeamScore));
 
   const goToEditTournament = () => {
     router.push({
-      pathname: `/tournaments/edit/${tournamentId}`,
+      pathname: `/tournaments/edit/${tournament?.id}`,
     });
   };
 
+  const getTeamScore = async () => {
+    if (tournament?.id) {
+      const dbTournament = await tournamentService.getTournament(tournament.id);
+      setTeams(mapTeams(dbTournament?.tournamentTeamScore));
+    }
+  };
+
   useEffect(() => {
+    getTeamScore();
     setTeams(mapTeams());
-  }, [tournamentTeamScore]);
+  }, [tournament?.tournamentFixture, tournament?.tournamentTeamScore]);
 
   return (
     <div className="w-full">

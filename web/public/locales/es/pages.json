@@ -45,6 +45,24 @@
       "continueWith": "O continúa con"
     }
   },
+  "forgot-password": {
+    "title": "Recuperar Contraseña",
+    "subtitle": "Ingresa tu email para recuperar tu contraseña",
+    "changeTitle": "Cambiar contraseña",
+    "changeSubtitle": "Por favor ingresa tu nueva contraseña",
+    "form": {
+      "email": "Email",
+      "emailPlaceholder": "pablo.bengoechea@gmail.com",
+      "notice": "Si tu correo existe, se te enviará un correo de recuperación de contraseña.",
+      "submit": "Enviar"
+    }
+  },
+  "activate-account": {
+    "title": "Cuenta activada!",
+    "subtitle": "Tu cuenta ha sido confirmada y activada exitosamente",
+    "redirect": "Si no eres redirigido automáticamente a la página de ingreso, por favor presiona Ingresar",
+    "signin": "Ingresar"
+  },
   "contact": {
     "title": "Contacto",
     "subtitle": "Envianos un mensaje con cualquier consulta y responderemos a la brevedad.",
@@ -210,6 +228,8 @@
       "subtitle": "Para actualizar la información presiona Guardar",
       "name": "Nombre",
       "namePlaceholder": "Nombre del torneo",
+      "active": "Activo",
+      "inactive": "Inactivo",
       "teams": "Equipos",
       "photo": "Foto",
       "changePhoto": "Cambiar",

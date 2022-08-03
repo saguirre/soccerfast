@@ -24,7 +24,7 @@ interface PageProps {
 
 const TeamPage: NextPage<PageProps> = (props) => {
   const { t } = useTranslation(['pages', 'common']);
-  const { teamService } = useContext(AppContext);
+  const { setTeams, teamService } = useContext(AppContext);
   const { userService } = useContext(UserContext);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingAddRequest, setLoadingAddRequest] = useState<boolean>(false);
@@ -57,6 +57,14 @@ const TeamPage: NextPage<PageProps> = (props) => {
         return;
       }
       setTeam(updateTeamResult);
+      setTeams((current) => {
+        if (current)
+          return current.map((team) => {
+            if (team.id === updateTeamResult.id) {
+              return updateTeamResult;
+            } else return team;
+          });
+      });
       fileUpload.setUploadedImage(undefined);
       notificationHandler.createNotification({
         title: t('common:notification.updateSuccessTitle', { entity: t('common:entity.team') }),

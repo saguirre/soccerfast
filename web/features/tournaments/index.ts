@@ -5,3 +5,5 @@ export * from './components/TableTabs';
 export * from './components/TopScorersTable';
 export * from './components/AddMatchDateBracketModal';
 export * from './components/AddMatchDateModal';
+export * from './components/AddTeamGoals';
+export * from './components/MatchScorerMultiSelect';

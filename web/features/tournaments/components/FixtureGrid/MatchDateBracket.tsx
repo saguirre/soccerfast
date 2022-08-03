@@ -24,9 +24,15 @@ export const MatchDateBracketComponent: React.FC<Props> = ({ matchDateBracketKey
           <span className="px-2">{bracket?.firstTeam?.team?.name}</span>
           <img className="h-12 aspect-square" src={bracket?.firstTeam?.team?.logo} />
         </div>
-        <div className="flex flex-row gap-2 text-semibold text-lg text-center px-12">
-          <span>{bracket?.firstTeam?.goals}</span> - <span>{bracket?.secondTeam?.goals}</span>
-        </div>
+        {bracket?.matchAlreadyHappened ? (
+          <div className="flex flex-row gap-2 text-semibold text-lg text-center px-12">
+            <span>{bracket?.firstTeam?.goals}</span> - <span>{bracket?.secondTeam?.goals}</span>
+          </div>
+        ) : (
+          <div className="flex flex-row gap-2 text-semibold text-lg text-center px-12">
+            <span>vs</span>
+          </div>
+        )}
         <div className="flex flex-row gap-3 items-center justify-end">
           <img className="h-12 aspect-square" src={bracket?.secondTeam?.team?.logo} />
           <span className="px-2">{bracket?.secondTeam?.team?.name}</span>

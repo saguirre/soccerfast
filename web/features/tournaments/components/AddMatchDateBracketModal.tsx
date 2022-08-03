@@ -1,10 +1,13 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 import { useTranslation } from 'next-i18next';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { Dialog } from '@headlessui/react';
+import { PlusIcon } from '@heroicons/react/outline';
+import { ErrorMessage } from '@hookform/error-message';
 
 import {
   FormCheckbox,
-  FormInput,
   FormInputField,
   FormLabel,
   FormSelect,
@@ -12,16 +15,15 @@ import {
   ModalWrapperProps,
   SubmitButton,
 } from '@components';
-import { AddMatchDateBracketModel, MatchDate, Notification, SelectItem, Team } from '@models';
-import { useSelect } from 'hooks/useSelect.hook';
-import { AppContext } from 'contexts/app.context';
-import { useEffect } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { Dialog } from '@headlessui/react';
-import { PlusIcon } from '@heroicons/react/solid';
+import { AppContext, TournamentContext } from '@contexts';
+import { useSelect } from '@hooks';
+import { AddMatchDateBracketModel, BracketScorer, MatchDate, Notification, SelectItem } from '@models';
+import { AddTeamGoals } from './AddTeamGoals';
+import { MatchScorerMultiSelect } from './MatchScorerMultiSelect';
 
 interface FormValues {
   time?: string;
+  matchAlreadyHappened?: boolean;
   firstTeamGoals?: number;
   secondTeamGoals?: number;
 }
@@ -29,7 +31,6 @@ interface FormValues {
 interface AddMatchDateBracketModalProps extends ModalWrapperProps {
   fixtureId?: number;
   matchDateId?: number;
-  teams?: Team[];
   onSuccess: (matchDate: MatchDate) => void;
   onError: (notification: Notification) => void;
 }
@@ -41,31 +42,55 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
   onSuccess,
   onError,
   matchDateId,
-  teams,
 }) => {
   const { teamService, tournamentService } = useContext(AppContext);
+  const { tournament } = useContext(TournamentContext);
+  const teams = tournament?.teams;
   const cancelButtonRef = useRef(null);
-  const [matchAlreadyHappened, setMatchAlreadyHappened] = useState(false);
   const [loadingAddRequest, setLoadingAddRequest] = useState(false);
   const { t } = useTranslation('pages');
   const firstTeamRef = useRef(null);
   const secondTeamRef = useRef(null);
   const firstTeamSelect = useSelect(teamService.getFilteredTeams);
   const secondTeamSelect = useSelect(teamService.getFilteredTeams);
+  const [firstTeamScorers, setFirstTeamScorers] = useState<BracketScorer[]>();
+  const [secondTeamScorers, setSecondTeamScorers] = useState<BracketScorer[]>();
+
   const {
     register,
     handleSubmit,
+    control,
     reset,
-    formState: { errors, isDirty, isValid },
-  } = useForm<FormValues>({ defaultValues: { time: '6PM', firstTeamGoals: undefined, secondTeamGoals: undefined } });
+    setValue,
+    watch,
+    formState: { errors, isValid, isValidating, isDirty, isSubmitting, touchedFields, submitCount },
+  } = useForm<FormValues>({
+    mode: 'all',
+    defaultValues: { time: '6PM', matchAlreadyHappened: false, firstTeamGoals: 0, secondTeamGoals: 0 },
+  });
 
   const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {
     if (isFormValid()) {
       setLoadingAddRequest(true);
       const body: AddMatchDateBracketModel = {
         time: data.time,
-        firstTeam: { team: firstTeamSelect.selectedItem, goals: data.firstTeamGoals, scorers: [] },
-        secondTeam: { team: secondTeamSelect.selectedItem, goals: data.secondTeamGoals, scorers: [] },
+        matchAlreadyHappened: data.matchAlreadyHappened || false,
+        firstTeam: {
+          team: firstTeamSelect.selectedItem,
+          goals: data.firstTeamGoals,
+          scorers:
+            firstTeamScorers && firstTeamScorers?.length > 0
+              ? firstTeamScorers.map((scorer) => ({ scorer: scorer.scorer, goals: scorer.goals }))
+              : [],
+        },
+        secondTeam: {
+          team: secondTeamSelect.selectedItem,
+          goals: data.secondTeamGoals,
+          scorers:
+            secondTeamScorers && secondTeamScorers?.length > 0
+              ? secondTeamScorers.map((scorer) => ({ scorer: scorer.scorer, goals: scorer.goals }))
+              : [],
+        },
       };
 
       if (!fixtureId || !matchDateId) {
@@ -105,7 +130,6 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
     secondTeamSelect.setSelectOpen(false);
     secondTeamSelect.setItems(teams);
     secondTeamSelect.setFilteredItems(teams);
-    setMatchAlreadyHappened(false);
     reset();
   };
 
@@ -119,7 +143,7 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
     }
   };
 
-  const onSecondTeamSelectChange = (selectedItem?: SelectItem) => {
+  const onSecondTeamSelectChange = async (selectedItem?: SelectItem) => {
     if (selectedItem) {
       firstTeamSelect.setItems(teams?.filter((team) => team.id !== selectedItem.id));
       firstTeamSelect.setFilteredItems(teams?.filter((team) => team.id !== selectedItem.id));
@@ -130,7 +154,7 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
   };
 
   const isFormValid = () => {
-    return isValid && firstTeamSelect.selectedItem && secondTeamSelect.selectedItem;
+    return isValid || (firstTeamSelect.selectedItem && secondTeamSelect.selectedItem);
   };
 
   useEffect(() => {
@@ -169,7 +193,6 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
             <div className="mt-3">
               <FormInputField
                 labelText={t('tournament.fixture.addMatchBracketModal.time')}
-                defaultValue="6PM"
                 placeholder="6PM"
                 {...register('time', { required: true })}
               />
@@ -192,33 +215,54 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
             </div>
             <div className="mt-3">
               <div className="flex flex-row w-full justify-end items-center">
-                <FormCheckbox
-                  id="matchAlreadyHappened"
+                <Controller
+                  control={control}
                   name="matchAlreadyHappened"
-                  checked={matchAlreadyHappened}
-                  setChecked={setMatchAlreadyHappened}
-                  label={t('tournament.fixture.addMatchBracketModal.matchAlreadyHappened')}
-                  description={''}
+                  defaultValue={false}
+                  render={({ field: { ref, ...field } }) => (
+                    <FormCheckbox
+                      id="matchAlreadyHappened"
+                      {...field}
+                      label={t('tournament.fixture.addMatchBracketModal.matchAlreadyHappened')}
+                      description={''}
+                    />
+                  )}
                 />
               </div>
             </div>
-            {matchAlreadyHappened && (
-              <div className="mt-3">
+            {watch('matchAlreadyHappened') && (
+              <div className="mt-3 max-w-md">
                 <FormLabel labelText={t('tournament.fixture.addMatchBracketModal.addResult')} />
-                <div className="mt-3 flex flex-row items-center justify-between">
-                  <div className="flex flex-col justify-center items-start">
+                <div className="mt-3 flex flex-col gap-3 items-start">
+                  <div className="flex flex-col gap-1 justify-center items-start">
                     <span className="text-sm font-medium text-sky-500 mb-2">
                       {t('tournament.fixture.addMatchBracketModal.teamGoals', {
                         team:
                           firstTeamSelect.selectedItem?.name || t('tournament.fixture.addMatchBracketModal.firstTeam'),
                       })}
                     </span>
-                    <FormInput type="number" placeholder="0" {...register('firstTeamGoals', { min: 0, max: 99 })} />
-                    {errors && errors.firstTeamGoals && (
-                      <span className="text-sm text-rose-500 mt-1">{errors.firstTeamGoals?.message}</span>
-                    )}
+                    <AddTeamGoals
+                      setValue={(goals: number) =>
+                        setValue('firstTeamGoals', goals, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                          shouldTouch: true,
+                        })
+                      }
+                      teamGoals={watch('firstTeamGoals')}
+                      {...register('firstTeamGoals', {
+                        valueAsNumber: true,
+                        min: 0,
+                        max: 99,
+                      })}
+                    />
+                    <MatchScorerMultiSelect
+                      teamId={firstTeamSelect.selectedItem?.id}
+                      onChange={(firstTeamScorers: BracketScorer[]) => setFirstTeamScorers(firstTeamScorers)}
+                      teamGoals={watch('firstTeamGoals')}
+                    />
                   </div>
-                  <div className="flex flex-col justify-center items-start">
+                  <div className="flex flex-col gap-1 justify-center items-start">
                     <span className="text-sm font-medium text-sky-500 mb-2">
                       {t('tournament.fixture.addMatchBracketModal.teamGoals', {
                         team:
@@ -226,10 +270,26 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
                           t('tournament.fixture.addMatchBracketModal.secondTeam'),
                       })}
                     </span>
-                    <FormInput type="number" placeholder="0" {...register('secondTeamGoals', { min: 0, max: 99 })} />
-                    {errors && errors.secondTeamGoals && (
-                      <span className="text-sm text-rose-500 mt-1">{errors.secondTeamGoals?.message}</span>
-                    )}
+                    <AddTeamGoals
+                      setValue={(goals: number) =>
+                        setValue('secondTeamGoals', goals, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                          shouldTouch: true,
+                        })
+                      }
+                      teamGoals={watch('secondTeamGoals')}
+                      {...register('secondTeamGoals', {
+                        valueAsNumber: true,
+                        min: 0,
+                        max: 99,
+                      })}
+                    />
+                    <MatchScorerMultiSelect
+                      onChange={(secondTeamScorers: BracketScorer[]) => setSecondTeamScorers(secondTeamScorers)}
+                      teamId={secondTeamSelect.selectedItem?.id}
+                      teamGoals={watch('secondTeamGoals')}
+                    />
                   </div>
                 </div>
               </div>

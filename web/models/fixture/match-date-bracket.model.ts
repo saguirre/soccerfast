@@ -4,6 +4,7 @@ import { MatchDateBracketTeam } from './match-date-bracket-team.model';
 export interface MatchDateBracket {
   id: number;
   time?: string;
+  matchAlreadyHappened?: boolean;
   firstTeam?: MatchDateBracketTeam;
   secondTeam?: MatchDateBracketTeam;
   firstTeamId?: number;

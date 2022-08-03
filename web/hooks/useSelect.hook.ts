@@ -1,13 +1,13 @@
-import { SelectItem } from 'models/select-item.model';
 import { MouseEvent, ChangeEvent, useState, useEffect } from 'react';
 
-export const useSelect = (getFilteredItemsFromService: any) => {
+export const useSelect = (getFilteredItemsFromService: any, inputServiceParam?: any) => {
   const [items, setItems] = useState<any>(null);
   const [selectedItem, setSelectedItem] = useState<any>();
   const [filteredItems, setFilteredItems] = useState<any>(null);
   const [isOverSelect, setIsOverSelect] = useState<boolean>(false);
   const [selectOpen, setSelectOpen] = useState<boolean>(false);
   const [searchString, setSearchString] = useState<string>('');
+  const [serviceParam, setServiceParam] = useState(inputServiceParam);
 
   const handleMouseEnter = (event: any) => {
     event.preventDefault();
@@ -62,7 +62,12 @@ export const useSelect = (getFilteredItemsFromService: any) => {
       setFilteredItems(items);
     } else {
       setSelectOpen(true);
-      const filteredItems = await getFilteredItemsFromService(searchString);
+      let filteredItems;
+      if (serviceParam) {
+        filteredItems = await getFilteredItemsFromService(searchString, serviceParam);
+      } else {
+        filteredItems = await getFilteredItemsFromService(searchString);
+      }
       setFilteredItems(filteredItems);
     }
   };
@@ -74,6 +79,8 @@ export const useSelect = (getFilteredItemsFromService: any) => {
   return {
     selectOpen,
     setSelectOpen,
+    serviceParam,
+    setServiceParam,
     isOverSelect,
     toggleSelectOpen,
     setIsOverSelect,

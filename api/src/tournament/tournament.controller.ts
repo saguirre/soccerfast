@@ -7,6 +7,7 @@ import {
   Put,
   Delete,
   UseGuards,
+  Logger,
 } from '@nestjs/common';
 import {
   PostMatchDateBracket,
@@ -19,12 +20,13 @@ import {
   TournamentWithTeamScores,
 } from './tournament.service';
 import { Roles } from 'src/auth/auth.decorator';
-import { RoleEnum } from '@enums';
+import { RoleEnum } from '../enums';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Prisma, Team } from '@prisma/client';
 
 @Controller('tournament')
 export class TournamentController {
+  private logger: Logger = new Logger(TournamentController.name);
   constructor(private readonly tournamentService: TournamentService) {}
 
   @Get('/:id')
@@ -69,24 +71,38 @@ export class TournamentController {
     @Param('matchDateId') matchDateId: number,
     @Body() match: PostMatchDateBracket,
   ) {
-    const data: Prisma.MatchDateBracketCreateInput = {
-      time: match.time,
-      matchDate: { connect: { id: Number(matchDateId) } },
-      firstTeam: {
+    this.logger.debug(JSON.stringify(match));
+
+    const connectOrCreateFirstTeam: Prisma.MatchDateBracketTeamCreateOrConnectWithoutSecondMatchDateBracketInput =
+      {
+        where: { id: Number(match.firstTeam.team.id) },
         create: {
-          goals: Number(match.firstTeam.goals),
           team: { connect: { id: Number(match.firstTeam.team.id) } },
-          scorers: { create: { ...match.firstTeam.scorers } },
+          goals: Number(match.firstTeam.goals),
         },
-      },
-      secondTeam: {
-        create: {
-          goals: Number(match.secondTeam.goals),
-          team: { connect: { id: Number(match.secondTeam.team.id) } },
-          scorers: { create: { ...match.secondTeam.scorers } },
-        },
+      };
+
+    this.logger.warn(JSON.stringify(connectOrCreateFirstTeam));
+    const connectOrCreateSecondTeam = {
+      where: { id: Number(match.secondTeam.team.id) },
+      create: {
+        team: { connect: { id: Number(match.secondTeam.team.id) } },
+        goals: Number(match.secondTeam.goals),
       },
     };
+
+    const data: Prisma.MatchDateBracketCreateInput = {
+      time: match.time,
+      matchAlreadyHappened: match.matchAlreadyHappened,
+      matchDate: { connect: { id: Number(matchDateId) } },
+      firstTeam: {
+        connectOrCreate: connectOrCreateFirstTeam,
+      },
+      secondTeam: {
+        connectOrCreate: connectOrCreateSecondTeam,
+      },
+    };
+
     return this.tournamentService.addBracketToMatchDate(matchDateId, data);
   }
 
@@ -128,6 +144,8 @@ export class TournamentController {
     if (updateTournamentData.description)
       data.description = updateTournamentData.description;
     if (updateTournamentData.logo) data.logo = updateTournamentData.logo;
+    if (updateTournamentData.active !== undefined)
+      data.active = updateTournamentData.active;
 
     const tournamentTeams =
       await this.tournamentService.tournamentTeamsAndTeamScores({

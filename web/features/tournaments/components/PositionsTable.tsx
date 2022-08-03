@@ -1,22 +1,52 @@
-import { CheckIcon, XIcon } from '@heroicons/react/solid';
 import { TeamScore } from '@models';
 import { AppContext } from 'contexts/app.context';
+import { TournamentContext } from 'contexts/tournament.context';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 
 interface PositionsTableProps {
   isAdmin?: boolean;
-  tournamentId: number;
-  tournamentTeamScore: TeamScore[] | undefined;
 }
 
 export interface PositionsTableItem {
   [key: string]: number | string | boolean;
 }
 
-export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournamentId, tournamentTeamScore }) => {
+const getGoalDiff = (teamScore: PositionsTableItem) => {
+  return (teamScore.goalsAhead as number) - (teamScore.goalsAgainst as number);
+};
+
+const mapTeams = (tournamentTeamScore?: TeamScore[]) => {
+  return tournamentTeamScore
+    ?.map((score: TeamScore) => {
+      return {
+        id: score.teamId,
+        name: score.team.name,
+        logo: score.team.logo,
+        matchesPlayed: score.matchesPlayed,
+        matchesWon: score.matchesWon,
+        matchesTied: score.matchesTied,
+        matchesLost: score.matchesLost,
+        goalsAhead: score.goalsAhead,
+        goalsAgainst: score.goalsAgainst,
+        points: score.points,
+      };
+    })
+    .sort((t1: PositionsTableItem, t2: PositionsTableItem) => {
+      if (t2.points === t1.points) {
+        const t2GoalDiff = getGoalDiff(t2);
+        const t1GoalDiff = getGoalDiff(t1);
+        return t2GoalDiff - t1GoalDiff;
+      }
+      return (t2.points as number) - (t1.points as number);
+    });
+};
+
+export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin }) => {
   const router = useRouter();
+  const { tournament } = useContext(TournamentContext);
+  const { tournamentService } = useContext(AppContext);
   const { t } = useTranslation('pages');
   const tableHeaders = [
     'matchesPlayed',
@@ -27,64 +57,26 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournam
     'goalsAgainst',
     'points',
   ];
-  const { tournamentService } = useContext(AppContext);
 
-  const getGoalDiff = (teamScore: PositionsTableItem) => {
-    return (teamScore.goalsAhead as number) - (teamScore.goalsAgainst as number);
-  };
-
-  const mapTeams = () => {
-    return tournamentTeamScore
-      ?.map((score: TeamScore) => {
-        return {
-          id: score.teamId,
-          name: score.team.name,
-          logo: score.team.logo,
-          matchesPlayed: score.matchesPlayed,
-          matchesWon: score.matchesWon,
-          matchesTied: score.matchesTied,
-          matchesLost: score.matchesLost,
-          goalsAhead: score.goalsAhead,
-          goalsAgainst: score.goalsAgainst,
-          points: score.points,
-        };
-      })
-      .sort((t1: PositionsTableItem, t2: PositionsTableItem) => {
-        if (t2.points === t1.points) {
-          const t2GoalDiff = getGoalDiff(t2);
-          const t1GoalDiff = getGoalDiff(t1);
-          return t2GoalDiff - t1GoalDiff;
-        }
-        return (t2.points as number) - (t1.points as number);
-      });
-  };
-
-  const editRow = async (row: PositionsTableItem) => {
-    console.log(row);
-  };
-
-  const [teams, setTeams] = useState<PositionsTableItem[] | undefined>(mapTeams);
-
-  const handleEdit = (id: number, editable: boolean) => {
-    setTeams((currentTeams) => {
-      return currentTeams?.map((team: PositionsTableItem) => {
-        if (team.id === id) {
-          return { ...team, editable };
-        }
-        return team;
-      });
-    });
-  };
+  const [teams, setTeams] = useState<PositionsTableItem[] | undefined>(mapTeams(tournament?.tournamentTeamScore));
 
   const goToEditTournament = () => {
     router.push({
-      pathname: `/tournaments/edit/${tournamentId}`,
+      pathname: `/tournaments/edit/${tournament?.id}`,
     });
   };
 
+  const getTeamScore = async () => {
+    if (tournament?.id) {
+      const dbTournament = await tournamentService.getTournament(tournament.id);
+      setTeams(mapTeams(dbTournament?.tournamentTeamScore));
+    }
+  };
+
   useEffect(() => {
+    getTeamScore();
     setTeams(mapTeams());
-  }, [tournamentTeamScore]);
+  }, [tournament?.tournamentFixture, tournament?.tournamentTeamScore]);
 
   return (
     <div className="w-full">
@@ -123,11 +115,7 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournam
                         {t(`tournament.positions.${header}`)}
                       </th>
                     ))}
-                    {isAdmin && (
-                      <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                        <span className="sr-only">{t('tournament.positions.edit')}</span>
-                      </th>
-                    )}
+                    <th className="px-4"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
@@ -148,43 +136,12 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin, tournam
                       {tableHeaders.map((header: string) => (
                         <td
                           key={`${(team?.name as string)?.toLocaleLowerCase()}-${header?.toLowerCase()}`}
-                          className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500"
+                          className="whitespace-nowrap px-6 text-center py-4 text-sm text-gray-500"
                         >
-                          {!team.editable ? (
-                            <span>{team[header]}</span>
-                          ) : (
-                            <input
-                              className="w-1/4 text-end border border-gray-300 rounded-md shadow-sm px-2 py-1"
-                              defaultValue={team[header] as string}
-                            />
-                          )}
+                          <span>{team[header]}</span>
                         </td>
                       ))}
-                      {isAdmin && (
-                        <td className="flex flex-row justify-end items-center relative whitespace-nowrap py-4 text-right text-sm font-medium sm:pr-6">
-                          {!team.editable ? (
-                            <div
-                              className="w-fit px-2 py-1 text-sky-600 hover:cursor-pointer hover:ring-2 rounded-md hover:ring-sky-600"
-                              onClick={() => handleEdit(team.id as number, true)}
-                            >
-                              {t('tournament.positions.edit')}
-                              <span className="sr-only">Edit</span>
-                            </div>
-                          ) : (
-                            <div className="flex flex-row justify-end items-center">
-                              <button
-                                onClick={() => handleEdit(team.id as number, false)}
-                                className="mr-4 p-0.5 rounded-full hover:ring-2 hover:ring-red-500"
-                              >
-                                <XIcon className="h-6 w-6 text-red-400" />
-                              </button>
-                              <button className=" p-0.5 rounded-full hover:ring-2 hover:ring-green-500">
-                                <CheckIcon className="h-6 w-6 text-green-500" />
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                      )}
+                      <td className="px-4"></td>
                     </tr>
                   ))}
                 </tbody>

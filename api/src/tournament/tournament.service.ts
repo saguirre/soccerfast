@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import {
   Tournament,
@@ -6,14 +6,95 @@ import {
   Team,
   TournamentTeamScore,
   TournamentFixture,
+  MatchDateBracketTeam,
+  MatchDateBracket,
 } from '@prisma/client';
 
 export type TournamentWithTeamScores = Prisma.TournamentGetPayload<{
   include: { teams: true; tournamentTeamScore: { include: { team: true } } };
 }>;
+
+export type MatchDateBracketWithTeams = Prisma.MatchDateBracketGetPayload<{
+  include: {
+    firstTeam: {
+      include: {
+        scorers: {
+          include: { scorer: true; tournamentTopScore: true };
+        };
+      };
+    };
+    secondTeam: {
+      include: {
+        scorers: {
+          include: { scorer: true; tournamentTopScore: true };
+        };
+      };
+    };
+  };
+}>;
 @Injectable()
 export class TournamentService {
+  private logger: Logger = new Logger(TournamentService.name);
   constructor(private prisma: PrismaService) {}
+
+  private getMatchesWon(
+    firstTeam: MatchDateBracketTeam,
+    secondTeam: MatchDateBracketTeam,
+    previousScores: TournamentTeamScore,
+  ) {
+    return firstTeam.goals > secondTeam.goals
+      ? previousScores.matchesWon + 1
+      : previousScores.matchesWon;
+  }
+
+  private getMatchesLost(
+    firstTeam: MatchDateBracketTeam,
+    secondTeam: MatchDateBracketTeam,
+    previousScores: TournamentTeamScore,
+  ) {
+    return firstTeam.goals < secondTeam.goals
+      ? previousScores.matchesLost + 1
+      : previousScores.matchesLost;
+  }
+
+  private getMatchesTied(
+    firstTeam: MatchDateBracketTeam,
+    secondTeam: MatchDateBracketTeam,
+    previousScores: TournamentTeamScore,
+  ) {
+    return firstTeam.goals === secondTeam.goals
+      ? previousScores.matchesTied + 1
+      : previousScores.matchesTied;
+  }
+
+  private getPoints(
+    firstTeam: MatchDateBracketTeam,
+    secondTeam: MatchDateBracketTeam,
+    previousScores: TournamentTeamScore,
+  ) {
+    return firstTeam.goals > secondTeam.goals
+      ? previousScores.points + 3
+      : firstTeam.goals === secondTeam.goals
+      ? previousScores.points + 1
+      : previousScores.points;
+  }
+
+  private getNewTeamScore(
+    firstTeam: MatchDateBracketTeam,
+    secondTeam: MatchDateBracketTeam,
+    previousScores: TournamentTeamScore,
+  ) {
+    return {
+      ...previousScores,
+      matchesPlayed: previousScores.matchesPlayed + 1,
+      matchesWon: this.getMatchesWon(firstTeam, secondTeam, previousScores),
+      matchesTied: this.getMatchesTied(firstTeam, secondTeam, previousScores),
+      matchesLost: this.getMatchesLost(firstTeam, secondTeam, previousScores),
+      goalsAhead: previousScores.goalsAhead + firstTeam.goals,
+      goalsAgainst: previousScores.goalsAgainst + secondTeam.goals,
+      points: this.getPoints(firstTeam, secondTeam, previousScores),
+    };
+  }
 
   async tournament(
     tournamentWhereUniqueInput: Prisma.TournamentWhereUniqueInput,
@@ -81,7 +162,6 @@ export class TournamentService {
         matchDates: true,
       },
     });
-    console.log('End add: ', newMatchDate);
     return newMatchDate;
   }
 
@@ -89,11 +169,32 @@ export class TournamentService {
     matchDateId: number,
     data: Prisma.MatchDateBracketCreateInput,
   ): Promise<any> {
+    this.logger.debug(JSON.stringify(data));
+    this.prisma.$transaction([])
     const newBracket = await this.prisma.matchDateBracket.create({
       data,
+      include: {
+        firstTeam: {
+          include: {
+            team: true,
+            scorers: {
+              include: { scorer: true, tournamentTopScore: true },
+            },
+          },
+        },
+        secondTeam: {
+          include: {
+            team: true,
+            scorers: {
+              include: { scorer: true, tournamentTopScore: true },
+            },
+          },
+        },
+      },
     });
+    this.logger.debug(JSON.stringify(newBracket));
 
-    return this.prisma.matchDate.update({
+    const matchDate = await this.prisma.matchDate.update({
       where: { id: Number(matchDateId) },
       data: { teamBrackets: { connect: { id: Number(newBracket.id) } } },
       include: {
@@ -119,6 +220,47 @@ export class TournamentService {
         },
       },
     });
+
+    if (newBracket.matchAlreadyHappened) {
+      const firstTeamTournamentScore =
+        await this.prisma.tournamentTeamScore.findFirst({
+          where: {
+            teamId: Number(data.firstTeam.connectOrCreate.where.id),
+          },
+        });
+
+      const firstTeamNewScore = this.getNewTeamScore(
+        newBracket.firstTeam,
+        newBracket.secondTeam,
+        firstTeamTournamentScore,
+      );
+
+      const secondTeamTournamentScore =
+        await this.prisma.tournamentTeamScore.findFirst({
+          where: {
+            teamId: Number(data.secondTeam.connectOrCreate.where.id),
+          },
+        });
+
+      const secondTeamNewScore = this.getNewTeamScore(
+        newBracket.secondTeam,
+        newBracket.firstTeam,
+        secondTeamTournamentScore,
+      );
+
+      await this.prisma.$transaction([
+        this.prisma.tournamentTeamScore.update({
+          where: { id: Number(firstTeamTournamentScore.id) },
+          data: { ...firstTeamNewScore },
+        }),
+        this.prisma.tournamentTeamScore.update({
+          where: { id: Number(secondTeamTournamentScore.id) },
+          data: { ...secondTeamNewScore },
+        }),
+      ]);
+    }
+
+    return matchDate;
   }
 
   async updateTournamentFixture(

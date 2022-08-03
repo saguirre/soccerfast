@@ -12,7 +12,7 @@ import { PostRule, PutRule, Rule } from '@dtos';
 import { RuleService } from './rule.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/auth.decorator';
-import { RoleEnum } from '@enums';
+import { RoleEnum } from '../enums';
 
 @Controller('rule')
 export class RuleController {

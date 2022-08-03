@@ -1,4 +1,4 @@
-import { AnnouncementTypeEnum } from '@enums';
+import { AnnouncementTypeEnum } from '../../enums';
 
 export interface AnnouncementType {
   id: number;

@@ -2,7 +2,7 @@ import { useContext, useRef, useState, useEffect } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
 
 import axios from 'axios';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 
@@ -14,14 +14,17 @@ import {
   NotificationAlert,
   SubmitButton,
   Title,
+  Toggle,
 } from '@components';
 import { AppContext } from '@contexts';
 import { RoleEnum } from '@enums';
 import { useMultiSelect, useNotification } from '@hooks';
 import { Team, Tournament, UpdateTournamentModel } from '@models';
+import { classNames } from '@utils/*';
 
 interface FormValues {
   name: string;
+  active: boolean;
   description?: string;
 }
 
@@ -31,18 +34,22 @@ interface PageProps {
 
 const EditTournamentPage: NextPage<PageProps> = (props) => {
   const { t } = useTranslation('pages');
-  const { teamService, tournamentService } = useContext(AppContext);
+  const { setTournaments, teamService, tournamentService } = useContext(AppContext);
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingAddRequest, setLoadingAddRequest] = useState<boolean>(false);
+  const [enabled, setEnabled] = useState(false);
   const notificationHandler = useNotification();
   const selectRef = useRef<HTMLDivElement>(null);
   const {
+    control,
     register,
     handleSubmit,
+    watch,
+    setValue,
     reset,
     formState: { errors },
-  } = useForm<FormValues>({ mode: 'all' });
+  } = useForm<FormValues>({ mode: 'all', defaultValues: { active: tournament?.active } });
 
   const select = useMultiSelect(teamService.getFilteredTeams);
 
@@ -50,13 +57,14 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
     setLoadingAddRequest(true);
     const body: UpdateTournamentModel = {
       name: data.name,
+      active: data.active,
       description: data.description,
       teamIds: select.selectedItems.map((team: Team) => team.id),
     };
 
-    const addTournamentResult = await tournamentService.updateTournament(props.tournamentId, body);
+    const updateTournamentResult = await tournamentService.updateTournament(props.tournamentId, body);
     setLoadingAddRequest(false);
-    if (!addTournamentResult) {
+    if (!updateTournamentResult) {
       notificationHandler.createNotification({
         title: t('common:notification.updateErrorTitle'),
         message: t('common:notification.updateErrorMessage', { entity: body.name }),
@@ -64,6 +72,14 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
       });
       return;
     }
+    setTournaments((current) => {
+      if (current)
+        return current.map((tournament: Tournament) => {
+          if (tournament.id === updateTournamentResult.id) {
+            return updateTournamentResult;
+          } else return tournament;
+        });
+    });
     notificationHandler.createNotification({
       title: t('common:notification.updateSuccessTitle', { entity: t('common:entity.tournament') }),
       message: t('common:notification.updateSuccessMessage', { entity: body.name }),
@@ -81,6 +97,7 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
 
   const getTournament = async (id: number) => {
     const tournament = await tournamentService.getTournament(id);
+    setValue('active', tournament?.active || false);
     setTournament(await tournamentService.getTournament(id));
   };
 
@@ -114,7 +131,7 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
                   </div>
                   <div className="grid grid-cols-3 gap-6">
                     <div className="flex flex-row items-center justify-between col-span-3">
-                      <div className="w-1/2">
+                      <div className="w-full">
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                           {t('editTournament.form.name')}
                         </label>
@@ -136,6 +153,23 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
                             className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                           />
                         </div>
+                      </div>
+                      <div className="flex flex-row items-center justify-start gap-3 mt-6 ml-8 mr-2">
+                        <Controller
+                          control={control}
+                          name="active"
+                          render={({ field: { ref, ...field } }) => <Toggle {...field} />}
+                        />
+                        <span
+                          className={classNames(
+                            tournament?.active || watch('active') ? 'text-black' : 'text-gray-400',
+                            'text-sm w-14'
+                          )}
+                        >
+                          {tournament?.active || watch('active')
+                            ? t('editTournament.form.active')
+                            : t('editTournament.form.inactive')}
+                        </span>
                       </div>
                     </div>
                     <div className="col-span-3">

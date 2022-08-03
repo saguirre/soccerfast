@@ -1,82 +1,47 @@
-import { CheckIcon, XIcon } from '@heroicons/react/solid';
-import { TeamScore } from '@models';
-import { AppContext } from 'contexts/app.context';
-import { useTranslation } from 'next-i18next';
-import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 
-interface GoalKeepersProps {
-  isAdmin?: boolean;
-  tournamentId: number;
-  tournamentTeamScore: TeamScore[] | undefined;
-}
+import { useTranslation } from 'next-i18next';
+
+import { TeamScore } from '@models';
+import { TournamentContext } from 'contexts/tournament.context';
+
+interface GoalKeepersProps {}
 
 export interface GoalKeepersItem {
   [key: string]: number | string | boolean;
 }
 
-export const GoalKeepersTable: React.FC<GoalKeepersProps> = ({ isAdmin, tournamentId, tournamentTeamScore }) => {
-  const router = useRouter();
+const mapTeams = (tournamentTeamScore: TeamScore[] | undefined) => {
+  return tournamentTeamScore
+    ?.map((score: TeamScore) => {
+      return {
+        id: score.teamId,
+        name: score.team.name,
+        logo: score.team.logo,
+        matchesPlayed: score.matchesPlayed,
+        matchesWon: score.matchesWon,
+        matchesTied: score.matchesTied,
+        matchesLost: score.matchesLost,
+        goalsAhead: score.goalsAhead,
+        goalsAgainst: score.goalsAgainst,
+        points: score.points,
+      };
+    })
+    .sort((t1: GoalKeepersItem, t2: GoalKeepersItem) => {
+      return (t1.goalsAgainst as number) - (t2.goalsAgainst as number);
+    });
+};
+
+export const GoalKeepersTable: React.FC<GoalKeepersProps> = () => {
   const { t } = useTranslation('pages');
+  const { tournament } = useContext(TournamentContext);
   const tableHeaders = ['goalsAgainst'];
-  const { tournamentService } = useContext(AppContext);
-
-  const getGoalDiff = (teamScore: GoalKeepersItem) => {
-    return (teamScore.goalsAhead as number) - (teamScore.goalsAgainst as number);
-  };
-
-  const mapTeams = () => {
-    return tournamentTeamScore
-      ?.map((score: TeamScore) => {
-        return {
-          id: score.teamId,
-          name: score.team.name,
-          logo: score.team.logo,
-          matchesPlayed: score.matchesPlayed,
-          matchesWon: score.matchesWon,
-          matchesTied: score.matchesTied,
-          matchesLost: score.matchesLost,
-          goalsAhead: score.goalsAhead,
-          goalsAgainst: score.goalsAgainst,
-          points: score.points,
-        };
-      })
-      .sort((t1: GoalKeepersItem, t2: GoalKeepersItem) => {
-        if (t2.points === t1.points) {
-          const t2GoalDiff = getGoalDiff(t2);
-          const t1GoalDiff = getGoalDiff(t1);
-          return t2GoalDiff - t1GoalDiff;
-        }
-        return (t2.points as number) - (t1.points as number);
-      });
-  };
-
-  const editRow = async (row: GoalKeepersItem) => {
-    console.log(row);
-  };
-
-  const [teams, setTeams] = useState<GoalKeepersItem[] | undefined>(mapTeams);
-
-  const handleEdit = (id: number, editable: boolean) => {
-    setTeams((currentTeams) => {
-      return currentTeams?.map((team: GoalKeepersItem) => {
-        if (team.id === id) {
-          return { ...team, editable };
-        }
-        return team;
-      });
-    });
-  };
-
-  const goToEditTournament = () => {
-    router.push({
-      pathname: `/tournaments/edit/${tournamentId}`,
-    });
-  };
+  const mappedTeams = mapTeams(tournament?.tournamentTeamScore);
+  const [teams, setTeams] = useState<GoalKeepersItem[] | undefined>(mappedTeams);
 
   useEffect(() => {
-    setTeams(mapTeams());
-  }, [tournamentTeamScore]);
+    setTeams(mapTeams(tournament?.tournamentTeamScore));
+  }, [tournament?.tournamentTeamScore]);
 
   return (
     <div className="w-full">
@@ -106,11 +71,6 @@ export const GoalKeepersTable: React.FC<GoalKeepersProps> = ({ isAdmin, tourname
                         {t(`tournament.goalKeepers.${header}`)}
                       </th>
                     ))}
-                    {isAdmin && (
-                      <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                        <span className="sr-only">{t('tournament.positions.edit')}</span>
-                      </th>
-                    )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
@@ -133,41 +93,9 @@ export const GoalKeepersTable: React.FC<GoalKeepersProps> = ({ isAdmin, tourname
                           key={`${(team?.name as string)?.toLocaleLowerCase()}-${header?.toLowerCase()}`}
                           className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500"
                         >
-                          {!team.editable ? (
-                            <span>{team[header]}</span>
-                          ) : (
-                            <input
-                              className="w-1/4 text-end border border-gray-300 rounded-md shadow-sm px-2 py-1"
-                              defaultValue={team[header] as string}
-                            />
-                          )}
+                          <span>{team[header]}</span>
                         </td>
                       ))}
-                      {isAdmin && (
-                        <td className="flex flex-row justify-end items-center relative whitespace-nowrap py-4 text-right text-sm font-medium sm:pr-6">
-                          {!team.editable ? (
-                            <div
-                              className="w-fit px-2 py-1 text-sky-600 hover:cursor-pointer hover:ring-2 rounded-md hover:ring-sky-600"
-                              onClick={() => handleEdit(team.id as number, true)}
-                            >
-                              {t('tournament.positions.edit')}
-                              <span className="sr-only">Edit</span>
-                            </div>
-                          ) : (
-                            <div className="flex flex-row justify-end items-center">
-                              <button
-                                onClick={() => handleEdit(team.id as number, false)}
-                                className="mr-4 p-0.5 rounded-full hover:ring-2 hover:ring-red-500"
-                              >
-                                <XIcon className="h-6 w-6 text-red-400" />
-                              </button>
-                              <button className=" p-0.5 rounded-full hover:ring-2 hover:ring-green-500">
-                                <CheckIcon className="h-6 w-6 text-green-500" />
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                      )}
                     </tr>
                   ))}
                 </tbody>

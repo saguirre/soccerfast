@@ -1,32 +1,29 @@
-import { CheckIcon, XIcon } from '@heroicons/react/solid';
-import { TeamScore } from '@models';
-import { AppContext } from 'contexts/app.context';
-import { useTranslation } from 'next-i18next';
-import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
+
+import { useTranslation } from 'next-i18next';
+
+import { TournamentContext } from '@contexts';
+import { TeamScore } from '@models';
 
 interface TopScorersProps {
   isAdmin?: boolean;
-  tournamentId: number;
-  tournamentTeamScore: TeamScore[] | undefined;
 }
 
 export interface TopScorersItem {
   [key: string]: number | string | boolean;
 }
 
-export const TopScorersTable: React.FC<TopScorersProps> = ({ isAdmin, tournamentId, tournamentTeamScore }) => {
-  const router = useRouter();
+export const TopScorersTable: React.FC<TopScorersProps> = () => {
   const { t } = useTranslation('pages');
+  const { tournament } = useContext(TournamentContext);
   const tableHeaders = ['player', 'goals'];
-  const { tournamentService } = useContext(AppContext);
 
   const getGoalDiff = (teamScore: TopScorersItem) => {
     return (teamScore.goalsAhead as number) - (teamScore.goalsAgainst as number);
   };
 
   const mapTeams = () => {
-    return tournamentTeamScore
+    return tournament?.tournamentTeamScore
       ?.map((score: TeamScore) => {
         return {
           id: score.teamId,
@@ -51,26 +48,11 @@ export const TopScorersTable: React.FC<TopScorersProps> = ({ isAdmin, tournament
       });
   };
 
-  const editRow = async (row: TopScorersItem) => {
-    console.log(row);
-  };
-
   const [teams, setTeams] = useState<TopScorersItem[] | undefined>(mapTeams);
-
-  const handleEdit = (id: number, editable: boolean) => {
-    setTeams((currentTeams) => {
-      return currentTeams?.map((team: TopScorersItem) => {
-        if (team.id === id) {
-          return { ...team, editable };
-        }
-        return team;
-      });
-    });
-  };
 
   useEffect(() => {
     setTeams(mapTeams());
-  }, [tournamentTeamScore]);
+  }, [tournament?.tournamentTeamScore]);
 
   return (
     <div className="w-full">
@@ -100,11 +82,7 @@ export const TopScorersTable: React.FC<TopScorersProps> = ({ isAdmin, tournament
                         {t(`tournament.topScorers.${header}`)}
                       </th>
                     ))}
-                    {isAdmin && (
-                      <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                        <span className="sr-only">{t('tournament.positions.edit')}</span>
-                      </th>
-                    )}
+                    <th className="px-4"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
@@ -127,41 +105,10 @@ export const TopScorersTable: React.FC<TopScorersProps> = ({ isAdmin, tournament
                           key={`${(team?.name as string)?.toLocaleLowerCase()}-${header?.toLowerCase()}`}
                           className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500"
                         >
-                          {!team.editable ? (
-                            <span>{team[header]}</span>
-                          ) : (
-                            <input
-                              className="w-1/4 text-end border border-gray-300 rounded-md shadow-sm px-2 py-1"
-                              defaultValue={team[header] as string}
-                            />
-                          )}
+                          <span>{team[header]}</span>
                         </td>
                       ))}
-                      {isAdmin && (
-                        <td className="flex flex-row justify-end items-center relative whitespace-nowrap py-4 text-right text-sm font-medium sm:pr-6">
-                          {!team.editable ? (
-                            <div
-                              className="w-fit px-2 py-1 text-sky-600 hover:cursor-pointer hover:ring-2 rounded-md hover:ring-sky-600"
-                              onClick={() => handleEdit(team.id as number, true)}
-                            >
-                              {t('tournament.positions.edit')}
-                              <span className="sr-only">Edit</span>
-                            </div>
-                          ) : (
-                            <div className="flex flex-row justify-end items-center">
-                              <button
-                                onClick={() => handleEdit(team.id as number, false)}
-                                className="mr-4 p-0.5 rounded-full hover:ring-2 hover:ring-red-500"
-                              >
-                                <XIcon className="h-6 w-6 text-red-400" />
-                              </button>
-                              <button className=" p-0.5 rounded-full hover:ring-2 hover:ring-green-500">
-                                <CheckIcon className="h-6 w-6 text-green-500" />
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                      )}
+                      <td className="px-4"></td>
                     </tr>
                   ))}
                 </tbody>

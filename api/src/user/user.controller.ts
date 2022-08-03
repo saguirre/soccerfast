@@ -46,7 +46,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('filtered-users/:searchString')
-  async getFilteredPosts(
+  async getFilteredUsers(
     @Param('searchString') searchString: string,
   ): Promise<User[]> {
     return this.userService.users({
@@ -60,6 +60,48 @@ export class UserController {
           },
           {
             phone: { contains: searchString },
+          },
+        ],
+      },
+    });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('users-by-team/:teamId')
+  async getUsersByTeam(@Param('teamId') teamId: number): Promise<User[]> {
+    return this.userService.users({
+      where: {
+        AND: [
+          {
+            playingTeams: { some: { id: Number(teamId) } },
+          },
+        ],
+      },
+    });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('filtered-users-by-team/:teamId/:searchString')
+  async getFilteredUsersByTeam(
+    @Param('teamId') teamId: number,
+    @Param('searchString') searchString: string,
+  ): Promise<User[]> {
+    return this.userService.users({
+      where: {
+        OR: [
+          {
+            name: { contains: searchString },
+          },
+          {
+            email: { contains: searchString },
+          },
+          {
+            phone: { contains: searchString },
+          },
+        ],
+        AND: [
+          {
+            playingTeams: { some: { id: Number(teamId) } },
           },
         ],
       },

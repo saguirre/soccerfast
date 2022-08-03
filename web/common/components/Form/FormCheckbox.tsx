@@ -1,13 +1,13 @@
 interface CheckboxProps {
   id: string;
   label: string;
-  checked: boolean;
+  value?: boolean;
   name: string;
-  setChecked: (checked: boolean) => void;
+  onChange: () => void;
   description?: string;
 }
 
-export const FormCheckbox: React.FC<CheckboxProps> = ({ id, label, name, checked, setChecked, description }) => {
+export const FormCheckbox: React.FC<CheckboxProps> = ({ id, label, name, value, onChange, description }) => {
   return (
     <fieldset className="space-y-5">
       <legend className="sr-only">Checkbox</legend>
@@ -17,8 +17,8 @@ export const FormCheckbox: React.FC<CheckboxProps> = ({ id, label, name, checked
             id={id}
             aria-describedby="offers-description"
             name={name}
-            checked={checked}
-            onChange={(e) => setChecked(e.target.checked)}
+            checked={value}
+            onChange={onChange}
             type="checkbox"
             className="focus:ring-sky-500 h-4 w-4 text-sky-600 border-gray-300 rounded"
           />

@@ -10,6 +10,8 @@ import { NotificationAlert, SocialNetworkSignIn, Title } from '@components';
 import { AuthContext } from '@contexts';
 import { SignInForm } from '@features';
 import { useNotification } from '@hooks';
+import { User } from 'models/user';
+import { AxiosError, AxiosResponse } from 'axios';
 
 interface FormValues {
   email: string;
@@ -25,24 +27,33 @@ const SignInPage: NextPage = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {
     setLoadingRequest(true);
-    const user = await authService.login(data);
+    const userResponse = await authService.login(data);
     setLoadingRequest(false);
-    if (!user) {
+    if (!userResponse) {
       notificationHandler.createNotification({
         title: t('common:notification.signInErrorTitle'),
         message: t('common:notification.signInErrorMessage'),
         isError: true,
       });
       return;
+    } else if (userResponse?.status === 403 || userResponse.response?.status === 403) {
+      notificationHandler.createNotification({
+        title: t('common:notification.signInErrorTitle'),
+        message: t('common:notification.accountNotActivatedErrorMessage'),
+        isError: true,
+      });
+    } else {
+      notificationHandler.createNotification({
+        title: t('common:notification.signInSuccessTitle'),
+        message: t('common:notification.signInSuccessMessage'),
+      });
+      localStorage.setItem('access_token', userResponse.data.token);
+
+      setTimeout(() => {
+        setUserToken(userResponse.data.token);
+        router.push({ pathname: '/' });
+      }, 2000);
     }
-    notificationHandler.createNotification({
-      title: t('common:notification.signInSuccessTitle'),
-      message: t('common:notification.signInSuccessMessage'),
-    });
-    setTimeout(() => {
-      setUserToken(user.token);
-      router.push({ pathname: '/' });
-    }, 2000);
   };
 
   return (

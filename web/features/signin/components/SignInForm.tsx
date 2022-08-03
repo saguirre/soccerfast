@@ -70,7 +70,7 @@ export const SignInForm: React.FC<Props> = ({ submit, loadingSubmit }) => {
 
       <div className="flex items-center justify-start">
         <div className="text-sm">
-          <a href="#" className="font-medium text-sky-600 hover:text-sky-500">
+          <a href="/forgot-password" className="font-medium text-sky-600 hover:text-sky-500">
             {t('pages:signin.form.forgotPassword')}
           </a>
         </div>

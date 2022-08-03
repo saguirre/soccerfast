@@ -28,3 +28,4 @@ export * from './MenuPopover';
 export * from './UserDropdown';
 export * from './LanguageDropdown';
 export * from './SocialNetworkSignIn';
+export * from './Toggle';

@@ -26,7 +26,7 @@ interface FormValues {
 
 const AddTournamentPage: NextPage = () => {
   const { t } = useTranslation(['common', 'pages']);
-  const { teamService, tournamentService } = useContext(AppContext);
+  const { setTournaments, teamService, tournamentService } = useContext(AppContext);
   const [teams, setTeams] = useState<Team[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingAddRequest, setLoadingAddRequest] = useState<boolean>(false);
@@ -63,6 +63,11 @@ const AddTournamentPage: NextPage = () => {
       });
       return;
     }
+
+    setTournaments((current) => {
+      if (current) return [...current, addTournamentResult];
+    });
+
     resetFormAndValues();
     notificationHandler.createNotification({
       title: t('common:notification.addSuccessTitle', { entity: t('common:entity.tournament') }),
@@ -161,7 +166,7 @@ const AddTournamentPage: NextPage = () => {
                     <SubmitButton
                       text={t('pages:addTournament.form.submit')}
                       loading={loadingAddRequest}
-                      errors={errors}
+                      readonly={!errors}
                     />
                   </div>
                 </div>

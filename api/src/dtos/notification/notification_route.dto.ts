@@ -1,4 +1,4 @@
-import { NotificationRouteEnum } from '@enums';
+import { NotificationRouteEnum } from '../../enums';
 
 export interface NotificationRoute {
   id: number;

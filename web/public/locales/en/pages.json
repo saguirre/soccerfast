@@ -45,6 +45,24 @@
       "continueWith": "Or continue with"
     }
   },
+  "forgot-password": {
+    "title": "Recover Password",
+    "subtitle": "Enter your email in order to recover your password",
+    "changeTitle": "Change Password",
+    "changeSubtitle": "Please enter your new password",
+    "form": {
+      "email": "Email",
+      "emailPlaceholder": "pablo.bengoechea@gmail.com",
+      "notice": "If your email exists, you'll be sent a password recovery email",
+      "submit": "Send"
+    }
+  },
+  "activate-account": {
+    "title": "Account activated!",
+    "subtitle": "Your account has been successfully confirmed and activated",
+    "redirect": "If you're not automatically redirected to the sign in page, please click Sign In.",
+    "signin": "Sign In"
+  },
   "contact": {
     "title": "Contact",
     "subtitle": "Send us a message with any questions you have and we'll get back to you shortly!",
@@ -208,6 +226,8 @@
       "title": "Edit Tournament",
       "subtitle": "In order to update the information, press Save",
       "name": "Name",
+      "active": "Active",
+      "inactive": "Inactive",
       "namePlaceholder": "Tournament name",
       "photo": "Photo",
       "teams": "Teams",

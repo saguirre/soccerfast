@@ -1,0 +1,120 @@
+---
+title: 'Confirma tu dirección de correo'
+preheader: 'Por favor confirma tu dirección de correo para activar tu cuenta'
+bodyClass: bg-slate-50
+---
+
+<extends src="src/layouts/main.html">
+  <block name="template">
+    <table class="w-full font-sans">
+      <tr>
+        <td align="center" class="bg-slate-50">
+          <table class="w-150 sm:w-full">
+            <tr>
+              <td class="p-12 sm:py-8 sm:px-6 text-center"></td>
+            </tr>
+            <tr>
+              <td align="center" class="sm:px-6">
+                <table class="w-full">
+                  <tr>
+                    <td
+                      class="p-12 sm:px-6 bg-white text-slate-700 text-base text-left leading-6 rounded shadow-sm"
+                    >
+                      <p>Hola, @{{name}}</p>
+                      <p
+                        class="text-2xl sm:leading-8 text-black font-semibold m-0 mb-6"
+                      >
+                        Es a tí que estamos buscando?
+                      </p>
+                      <p class="m-0 mb-6">
+                        Por favor confirma tu dirección de correo haciendo click
+                        en el botón de abajo:
+                      </p>
+                      <div class="leading-full">
+                        <a
+                          href="@{{url}}"
+                          class="inline-block py-3.5 px-4 rounded text-base font-semibold text-center [text-decoration:none] text-white bg-sky-500 hover:bg-sky-600"
+                        >
+                          <outlook>
+                            <i
+                              class="tracking-6 -mso-font-width-full mso-text-raise-7.5"
+                              >&#8202;</i
+                            >
+                          </outlook>
+                          <span class="mso-text-raise-4"
+                            >Confirmar dirección de correo &rarr;</span
+                          >
+                          <outlook>
+                            <i class="tracking-6 -mso-font-width-full"
+                              >&#8202;</i
+                            >
+                          </outlook>
+                        </a>
+                      </div>
+                      <table class="w-full">
+                        <tr>
+                          <td class="py-8">
+                            <div class="bg-slate-200 h-px leading-px">
+                              &zwnj;
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
+                      <p class="m-0 mb-4">
+                        Si no te registraste en
+                        <span class="text-sky-500 font-semibold"
+                          >SoccerFast</span
+                        >, puedes ignorar este correo.
+                      </p>
+                      <p class="m-0 mb-4">
+                        Gracias, <br />El equipo de
+                        <span class="text-sky-500 font-semibold"
+                          >SoccerFast</span
+                        >
+                      </p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="h-12"></td>
+                  </tr>
+                  <tr>
+                    <td class="text-center text-slate-600 text-xs px-6 pb-6">
+                      <p class="m-0 mb-3 uppercase">SoccerFast</p>
+                      <p class="m-0 italic">
+                        Tu lugar para jugar al fútbol en Miami
+                      </p>
+                      <p class="cursor-default">
+                        <a
+                          href="https://localhost:3000/"
+                          class="text-sky-500 [text-decoration:none] hover:[text-decoration:underline]"
+                          >Sitio</a
+                        >
+                        &bull;
+                        <a
+                          href="#"
+                          class="text-sky-500 [text-decoration:none] hover:[text-decoration:underline]"
+                          >Instagram</a
+                        >
+                        &bull;
+                        <a
+                          href="#"
+                          class="text-sky-500 [text-decoration:none] hover:[text-decoration:underline]"
+                          >Facebook</a
+                        >
+                        &bull;<a
+                          href="#"
+                          class="text-sky-500 [text-decoration:none] hover:[text-decoration:underline]"
+                          >Twitter</a
+                        >
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </block>
+</extends>

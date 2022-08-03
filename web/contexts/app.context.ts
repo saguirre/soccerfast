@@ -8,8 +8,8 @@ import {
   ITournamentService,
   IRuleService,
 } from '@services';
-import { Team } from '@models';
-import { createContext } from 'react';
+import { Team, Tournament } from '@models';
+import { createContext, Dispatch, SetStateAction } from 'react';
 
 export interface IAppContext {
   contactInfoService: IContactInfoService;
@@ -17,6 +17,9 @@ export interface IAppContext {
   tournamentService: ITournamentService;
   ruleService: IRuleService;
   teams?: Team[];
+  setTeams: Dispatch<SetStateAction<Team[] | undefined>>;
+  tournaments?: Tournament[];
+  setTournaments: Dispatch<SetStateAction<Tournament[] | undefined>>;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -25,4 +28,7 @@ export const AppContext = createContext<IAppContext>({
   tournamentService: new TournamentService(),
   ruleService: new RuleService(),
   teams: undefined,
+  setTeams: () => {},
+  tournaments: undefined,
+  setTournaments: () => {},
 });

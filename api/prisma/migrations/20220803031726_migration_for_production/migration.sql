@@ -1,82 +1,43 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE `User` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `email` VARCHAR(191) NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `phone` VARCHAR(191) NULL,
+    `avatar` VARCHAR(191) NULL,
+    `type` VARCHAR(191) NOT NULL,
+    `active` BOOLEAN NULL DEFAULT true,
+    `activated` BOOLEAN NULL DEFAULT false,
+    `activationToken` VARCHAR(300) NULL,
+    `passwordRecoveryToken` VARCHAR(300) NULL,
+    `locked` BOOLEAN NULL DEFAULT false,
+    `birthday` DATETIME(3) NULL,
+    `preferredLanguage` VARCHAR(191) NULL DEFAULT 'en',
 
-  - You are about to drop the `Announcement_Type` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Contact_Email` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Contact_Info` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Contact_Phone` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Contact_Social_Media` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Notification_Route` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Notification_Type` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Team_Picture` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Tournament_Team_Score` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `_TournamentToTournament_Team_Score` table. If the table is not empty, all the data it contains will be lost.
+    UNIQUE INDEX `User_email_key`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-*/
--- DropForeignKey
-ALTER TABLE `Announcement` DROP FOREIGN KEY `Announcement_announcementTypeId_fkey`;
+-- CreateTable
+CREATE TABLE `Role` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `role` VARCHAR(191) NOT NULL,
+    `userId` INTEGER NULL,
 
--- DropForeignKey
-ALTER TABLE `Contact_Email` DROP FOREIGN KEY `Contact_Email_contactInfoId_fkey`;
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- DropForeignKey
-ALTER TABLE `Contact_Phone` DROP FOREIGN KEY `Contact_Phone_contactInfoId_fkey`;
+-- CreateTable
+CREATE TABLE `Team` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `description` VARCHAR(191) NULL,
+    `logo` VARCHAR(191) NULL,
+    `active` BOOLEAN NULL DEFAULT true,
 
--- DropForeignKey
-ALTER TABLE `Contact_Social_Media` DROP FOREIGN KEY `Contact_Social_Media_contactInfoId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Notification` DROP FOREIGN KEY `Notification_notificationRouteId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Notification` DROP FOREIGN KEY `Notification_notificationTypeId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Team_Picture` DROP FOREIGN KEY `Team_Picture_teamId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Tournament_Team_Score` DROP FOREIGN KEY `Tournament_Team_Score_teamId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `_TournamentToTournament_Team_Score` DROP FOREIGN KEY `_TournamentToTournament_Team_Score_A_fkey`;
-
--- DropForeignKey
-ALTER TABLE `_TournamentToTournament_Team_Score` DROP FOREIGN KEY `_TournamentToTournament_Team_Score_B_fkey`;
-
--- AlterTable
-ALTER TABLE `Tournament` ADD COLUMN `tournamentFixtureId` INTEGER NULL,
-    ADD COLUMN `tournamentTopGoalkeepersId` INTEGER NULL,
-    ADD COLUMN `tournamentTopScoreId` INTEGER NULL;
-
--- DropTable
-DROP TABLE `Announcement_Type`;
-
--- DropTable
-DROP TABLE `Contact_Email`;
-
--- DropTable
-DROP TABLE `Contact_Info`;
-
--- DropTable
-DROP TABLE `Contact_Phone`;
-
--- DropTable
-DROP TABLE `Contact_Social_Media`;
-
--- DropTable
-DROP TABLE `Notification_Route`;
-
--- DropTable
-DROP TABLE `Notification_Type`;
-
--- DropTable
-DROP TABLE `Team_Picture`;
-
--- DropTable
-DROP TABLE `Tournament_Team_Score`;
-
--- DropTable
-DROP TABLE `_TournamentToTournament_Team_Score`;
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `TeamPicture` (
@@ -84,6 +45,20 @@ CREATE TABLE `TeamPicture` (
     `url` VARCHAR(191) NULL,
     `base64Image` VARCHAR(191) NOT NULL,
     `teamId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Tournament` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `description` VARCHAR(191) NULL,
+    `logo` VARCHAR(191) NULL,
+    `active` BOOLEAN NULL DEFAULT false,
+    `tournamentFixtureId` INTEGER NULL,
+    `tournamentTopScoreId` INTEGER NULL,
+    `tournamentTopGoalkeepersId` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -130,37 +105,67 @@ CREATE TABLE `TournamentTeamScore` (
 -- CreateTable
 CREATE TABLE `TournamentFixture` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `title` VARCHAR(191) NULL,
-    `date` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `TeamBracket` (
+CREATE TABLE `MatchDate` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `time` VARCHAR(191) NULL,
-    `leftTeamBracketItemId` INTEGER NOT NULL,
-    `rightTeamBracketItemId` INTEGER NOT NULL,
+    `title` VARCHAR(191) NULL,
+    `date` VARCHAR(191) NULL,
     `tournamentFixtureId` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `TeamBracketItem` (
+CREATE TABLE `MatchDateBracket` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `time` VARCHAR(191) NULL,
+    `matchAlreadyHappened` BOOLEAN NULL DEFAULT false,
+    `firstTeamId` INTEGER NOT NULL,
+    `secondTeamId` INTEGER NOT NULL,
+    `matchDateId` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `TeamBracketScorer` (
+CREATE TABLE `MatchDateBracketTeam` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `goals` INTEGER NOT NULL DEFAULT 0,
-    `teamBracketItemId` INTEGER NULL,
-    `userId` INTEGER NOT NULL,
+    `goals` INTEGER NULL DEFAULT 0,
+    `teamId` INTEGER NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `BracketTeamScorer` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `goals` INTEGER NULL DEFAULT 0,
+    `matchDateBracketTeamId` INTEGER NULL,
+    `userId` INTEGER NULL,
     `tournamentTopScoreId` INTEGER NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Rule` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `articleNumber` INTEGER NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Clause` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `title` VARCHAR(191) NOT NULL,
+    `additionalInfo` VARCHAR(191) NULL,
+    `ruleId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -207,9 +212,28 @@ CREATE TABLE `ContactEmail` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `Announcement` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `message` VARCHAR(191) NOT NULL,
+    `announcementTypeId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `AnnouncementType` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `type` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Notification` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `message` VARCHAR(191) NOT NULL,
+    `notificationTypeId` INTEGER NOT NULL,
+    `notificationRouteId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -231,6 +255,33 @@ CREATE TABLE `NotificationRoute` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `_owners` (
+    `A` INTEGER NOT NULL,
+    `B` INTEGER NOT NULL,
+
+    UNIQUE INDEX `_owners_AB_unique`(`A`, `B`),
+    INDEX `_owners_B_index`(`B`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `_players` (
+    `A` INTEGER NOT NULL,
+    `B` INTEGER NOT NULL,
+
+    UNIQUE INDEX `_players_AB_unique`(`A`, `B`),
+    INDEX `_players_B_index`(`B`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `_TeamToTournament` (
+    `A` INTEGER NOT NULL,
+    `B` INTEGER NOT NULL,
+
+    UNIQUE INDEX `_TeamToTournament_AB_unique`(`A`, `B`),
+    INDEX `_TeamToTournament_B_index`(`B`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `_TournamentToTournamentTeamScore` (
     `A` INTEGER NOT NULL,
     `B` INTEGER NOT NULL,
@@ -238,6 +289,9 @@ CREATE TABLE `_TournamentToTournamentTeamScore` (
     UNIQUE INDEX `_TournamentToTournamentTeamScore_AB_unique`(`A`, `B`),
     INDEX `_TournamentToTournamentTeamScore_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `Role` ADD CONSTRAINT `Role_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `TeamPicture` ADD CONSTRAINT `TeamPicture_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `Team`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -261,22 +315,31 @@ ALTER TABLE `TournamentGoalkeepers` ADD CONSTRAINT `TournamentGoalkeepers_tourna
 ALTER TABLE `TournamentTeamScore` ADD CONSTRAINT `TournamentTeamScore_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `Team`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `TeamBracket` ADD CONSTRAINT `TeamBracket_leftTeamBracketItemId_fkey` FOREIGN KEY (`leftTeamBracketItemId`) REFERENCES `TeamBracketItem`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `MatchDate` ADD CONSTRAINT `MatchDate_tournamentFixtureId_fkey` FOREIGN KEY (`tournamentFixtureId`) REFERENCES `TournamentFixture`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `TeamBracket` ADD CONSTRAINT `TeamBracket_rightTeamBracketItemId_fkey` FOREIGN KEY (`rightTeamBracketItemId`) REFERENCES `TeamBracketItem`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `MatchDateBracket` ADD CONSTRAINT `MatchDateBracket_firstTeamId_fkey` FOREIGN KEY (`firstTeamId`) REFERENCES `MatchDateBracketTeam`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `TeamBracket` ADD CONSTRAINT `TeamBracket_tournamentFixtureId_fkey` FOREIGN KEY (`tournamentFixtureId`) REFERENCES `TournamentFixture`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `MatchDateBracket` ADD CONSTRAINT `MatchDateBracket_secondTeamId_fkey` FOREIGN KEY (`secondTeamId`) REFERENCES `MatchDateBracketTeam`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `TeamBracketScorer` ADD CONSTRAINT `TeamBracketScorer_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `MatchDateBracket` ADD CONSTRAINT `MatchDateBracket_matchDateId_fkey` FOREIGN KEY (`matchDateId`) REFERENCES `MatchDate`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `TeamBracketScorer` ADD CONSTRAINT `TeamBracketScorer_teamBracketItemId_fkey` FOREIGN KEY (`teamBracketItemId`) REFERENCES `TeamBracketItem`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `MatchDateBracketTeam` ADD CONSTRAINT `MatchDateBracketTeam_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `Team`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `TeamBracketScorer` ADD CONSTRAINT `TeamBracketScorer_tournamentTopScoreId_fkey` FOREIGN KEY (`tournamentTopScoreId`) REFERENCES `TournamentTopScore`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `BracketTeamScorer` ADD CONSTRAINT `BracketTeamScorer_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `BracketTeamScorer` ADD CONSTRAINT `BracketTeamScorer_matchDateBracketTeamId_fkey` FOREIGN KEY (`matchDateBracketTeamId`) REFERENCES `MatchDateBracketTeam`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `BracketTeamScorer` ADD CONSTRAINT `BracketTeamScorer_tournamentTopScoreId_fkey` FOREIGN KEY (`tournamentTopScoreId`) REFERENCES `TournamentTopScore`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Clause` ADD CONSTRAINT `Clause_ruleId_fkey` FOREIGN KEY (`ruleId`) REFERENCES `Rule`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ContactSocialMedia` ADD CONSTRAINT `ContactSocialMedia_contactInfoId_fkey` FOREIGN KEY (`contactInfoId`) REFERENCES `ContactInfo`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -295,6 +358,24 @@ ALTER TABLE `Notification` ADD CONSTRAINT `Notification_notificationTypeId_fkey`
 
 -- AddForeignKey
 ALTER TABLE `Notification` ADD CONSTRAINT `Notification_notificationRouteId_fkey` FOREIGN KEY (`notificationRouteId`) REFERENCES `NotificationRoute`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_owners` ADD CONSTRAINT `_owners_A_fkey` FOREIGN KEY (`A`) REFERENCES `Team`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_owners` ADD CONSTRAINT `_owners_B_fkey` FOREIGN KEY (`B`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_players` ADD CONSTRAINT `_players_A_fkey` FOREIGN KEY (`A`) REFERENCES `Team`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_players` ADD CONSTRAINT `_players_B_fkey` FOREIGN KEY (`B`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_TeamToTournament` ADD CONSTRAINT `_TeamToTournament_A_fkey` FOREIGN KEY (`A`) REFERENCES `Team`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_TeamToTournament` ADD CONSTRAINT `_TeamToTournament_B_fkey` FOREIGN KEY (`B`) REFERENCES `Tournament`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_TournamentToTournamentTeamScore` ADD CONSTRAINT `_TournamentToTournamentTeamScore_A_fkey` FOREIGN KEY (`A`) REFERENCES `Tournament`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

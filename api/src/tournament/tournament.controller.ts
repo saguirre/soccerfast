@@ -7,6 +7,7 @@ import {
   Put,
   Delete,
   UseGuards,
+  Logger,
 } from '@nestjs/common';
 import {
   PostMatchDateBracket,
@@ -19,12 +20,13 @@ import {
   TournamentWithTeamScores,
 } from './tournament.service';
 import { Roles } from 'src/auth/auth.decorator';
-import { RoleEnum } from '@enums';
+import { RoleEnum } from '../enums';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Prisma, Team } from '@prisma/client';
 
 @Controller('tournament')
 export class TournamentController {
+  private logger: Logger = new Logger(TournamentController.name);
   constructor(private readonly tournamentService: TournamentService) {}
 
   @Get('/:id')
@@ -69,33 +71,35 @@ export class TournamentController {
     @Param('matchDateId') matchDateId: number,
     @Body() match: PostMatchDateBracket,
   ) {
-    const createFirstTeam: any = {
-      team: { connect: { id: Number(match.firstTeam.team.id) } },
+    this.logger.debug(JSON.stringify(match));
+
+    const connectOrCreateFirstTeam: Prisma.MatchDateBracketTeamCreateOrConnectWithoutSecondMatchDateBracketInput =
+      {
+        where: { id: Number(match.firstTeam.team.id) },
+        create: {
+          team: { connect: { id: Number(match.firstTeam.team.id) } },
+          goals: Number(match.firstTeam.goals),
+        },
+      };
+
+    this.logger.warn(JSON.stringify(connectOrCreateFirstTeam));
+    const connectOrCreateSecondTeam = {
+      where: { id: Number(match.secondTeam.team.id) },
+      create: {
+        team: { connect: { id: Number(match.secondTeam.team.id) } },
+        goals: Number(match.secondTeam.goals),
+      },
     };
-
-    if (match.firstTeam.goals)
-      createFirstTeam.goals = Number(match.firstTeam.goals);
-    if (match.firstTeam.scorers?.length)
-      createFirstTeam.scorers = { create: { ...match.firstTeam.scorers } };
-
-    const createSecondTeam: any = {
-      team: { connect: { id: Number(match.secondTeam.team.id) } },
-    };
-
-    if (match.secondTeam.goals)
-      createSecondTeam.goals = Number(match.secondTeam.goals);
-    if (match.secondTeam.scorers?.length)
-      createSecondTeam.scorers = { create: { ...match.secondTeam.scorers } };
 
     const data: Prisma.MatchDateBracketCreateInput = {
       time: match.time,
       matchAlreadyHappened: match.matchAlreadyHappened,
       matchDate: { connect: { id: Number(matchDateId) } },
       firstTeam: {
-        create: createFirstTeam,
+        connectOrCreate: connectOrCreateFirstTeam,
       },
       secondTeam: {
-        create: createSecondTeam,
+        connectOrCreate: connectOrCreateSecondTeam,
       },
     };
 

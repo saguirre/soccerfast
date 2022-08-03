@@ -5,7 +5,7 @@ import { RoleEnum } from 'common/enums';
 
 export interface IAuthService {
   signUp(user: AddUserModel): Promise<User | null>;
-  login(user: UserLoginModel): Promise<AxiosResponse<User> | AxiosError<User>>;
+  login(user: UserLoginModel): Promise<any>;
   userHasRole(role: RoleEnum): boolean | undefined;
   recoverPassword(body: PasswordRecoveryModel, locale: string): void;
   validateUserToken(): Promise<boolean>;
@@ -106,7 +106,7 @@ export class AuthService extends HttpService implements IAuthService {
     }
   };
 
-  login = async (user: UserLoginModel): Promise<AxiosResponse<User> | AxiosError<User>> => {
+  login = async (user: UserLoginModel): Promise<any> => {
     try {
       return await axios.post(this.getServiceUrl(`${this.endpointPrefix}/login`), user);
     } catch (error: any) {

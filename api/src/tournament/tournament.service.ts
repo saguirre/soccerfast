@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import {
   Tournament,
@@ -34,6 +34,7 @@ export type MatchDateBracketWithTeams = Prisma.MatchDateBracketGetPayload<{
 }>;
 @Injectable()
 export class TournamentService {
+  private logger: Logger = new Logger(TournamentService.name);
   constructor(private prisma: PrismaService) {}
 
   private getMatchesWon(
@@ -168,13 +169,30 @@ export class TournamentService {
     matchDateId: number,
     data: Prisma.MatchDateBracketCreateInput,
   ): Promise<any> {
+    this.logger.debug(JSON.stringify(data));
+    this.prisma.$transaction([])
     const newBracket = await this.prisma.matchDateBracket.create({
       data,
       include: {
-        firstTeam: true,
-        secondTeam: true,
+        firstTeam: {
+          include: {
+            team: true,
+            scorers: {
+              include: { scorer: true, tournamentTopScore: true },
+            },
+          },
+        },
+        secondTeam: {
+          include: {
+            team: true,
+            scorers: {
+              include: { scorer: true, tournamentTopScore: true },
+            },
+          },
+        },
       },
     });
+    this.logger.debug(JSON.stringify(newBracket));
 
     const matchDate = await this.prisma.matchDate.update({
       where: { id: Number(matchDateId) },
@@ -207,7 +225,7 @@ export class TournamentService {
       const firstTeamTournamentScore =
         await this.prisma.tournamentTeamScore.findFirst({
           where: {
-            teamId: Number(data.firstTeam.create.team.connect.id),
+            teamId: Number(data.firstTeam.connectOrCreate.where.id),
           },
         });
 
@@ -220,7 +238,7 @@ export class TournamentService {
       const secondTeamTournamentScore =
         await this.prisma.tournamentTeamScore.findFirst({
           where: {
-            teamId: Number(data.secondTeam.create.team.connect.id),
+            teamId: Number(data.secondTeam.connectOrCreate.where.id),
           },
         });
 

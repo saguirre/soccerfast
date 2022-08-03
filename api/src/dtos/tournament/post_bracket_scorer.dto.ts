@@ -1,4 +1,6 @@
+import { UserModel } from "../user";
+
 export interface AddBracketScorer {
   goals?: number;
-  userId?: number;
+  scorer?: UserModel;
 }

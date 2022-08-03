@@ -1,6 +1,6 @@
 import { DecodedUserToken, User } from '@models';
 import { HttpService } from './http-abstract.service';
-import jwtDecode, { JwtPayload } from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import axios from 'axios';
 
 export interface IUserService {
@@ -8,6 +8,8 @@ export interface IUserService {
   getUser(): Promise<User | null>;
   uploadAvatar(avatar: File): Promise<string | null>;
   getFilteredUsers(searchString: string): Promise<User[] | null>;
+  getFilteredUsersByTeamId(searchString: string, teamId: number): Promise<User[] | null>;
+  getUsersByTeam(teamId: number): Promise<User[] | null>;
 }
 
 export class UserService extends HttpService implements IUserService {
@@ -30,6 +32,35 @@ export class UserService extends HttpService implements IUserService {
       if (!searchString.length) return null;
       const axiosResponse = await axios.get(
         this.getServiceUrl(`${this.endpointPrefix}/filtered-users/${searchString}`),
+        {
+          headers: this.getAuthHeaders(),
+        }
+      );
+      return axiosResponse.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  getUsersByTeam = async (teamId: number): Promise<User[] | null> => {
+    try {
+      if (!teamId) return null;
+      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}/users-by-team/${teamId}`), {
+        headers: this.getAuthHeaders(),
+      });
+      return axiosResponse.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  getFilteredUsersByTeamId = async (searchString: string, teamId: number): Promise<User[] | null> => {
+    try {
+      if (!teamId) return null;
+      const axiosResponse = await axios.get(
+        this.getServiceUrl(`${this.endpointPrefix}/filtered-users-by-team/${teamId}/${searchString}`),
         {
           headers: this.getAuthHeaders(),
         }

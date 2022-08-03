@@ -1,3 +1,5 @@
+import { Team } from "..";
+
 export interface User {
   id: number;
   email: string;
@@ -9,4 +11,6 @@ export interface User {
   birthday?: Date;
   preferredLanguage: string;
   token: string;
+  ownedTeams?: Team[];
+  playingTeams?: Team[];
 }

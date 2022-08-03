@@ -43,6 +43,27 @@ export class UserService {
     });
   }
 
+  async usersWithTeams(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.UserWhereUniqueInput;
+    where?: Prisma.UserWhereInput;
+    orderBy?: Prisma.UserOrderByWithRelationInput;
+  }): Promise<User[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.user.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+      include: {
+        ownedTeams: true,
+        playingTeams: true,
+      },
+    });
+  }
+
   async createUser(
     data: Prisma.UserCreateInput,
     locale: string = 'es',

@@ -11,7 +11,7 @@ import {
 import { PostContactInfo, PutContactInfo, ContactInfo } from '@dtos';
 import { ContactInfoService } from './contact.service';
 import { Roles } from 'src/auth/auth.decorator';
-import { RoleEnum } from '@enums';
+import { RoleEnum } from '../enums';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('contact')

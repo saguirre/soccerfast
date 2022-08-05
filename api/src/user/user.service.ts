@@ -6,7 +6,9 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 
-export type UserWithRoles = Prisma.UserGetPayload<{ include: { roles: true } }>;
+export type UserWithRoles = Prisma.UserGetPayload<{
+  include: { userRoles: true };
+}>;
 
 @Injectable()
 export class UserService {
@@ -22,7 +24,7 @@ export class UserService {
   ): Promise<UserWithRoles | null> {
     return this.prisma.user.findUnique({
       where: userWhereUniqueInput,
-      include: { roles: true },
+      include: { userRoles: true },
     });
   }
 
@@ -58,8 +60,7 @@ export class UserService {
       where,
       orderBy,
       include: {
-        ownedTeams: true,
-        playingTeams: true,
+        userTeams: true,
       },
     });
   }
@@ -96,6 +97,10 @@ export class UserService {
         email: user.email,
         url: `http://localhost:3000/activate-account?token=${activationToken}`,
         locale,
+      });
+
+      await this.prisma.userRole.create({
+        data: { userId: Number(user.id), roleId: 2 },
       });
       return user;
     }

@@ -73,7 +73,7 @@ export class UserController {
       where: {
         AND: [
           {
-            playingTeams: { some: { id: Number(teamId) } },
+            userTeams: { some: { userId: Number(teamId) } },
           },
         ],
       },
@@ -101,7 +101,7 @@ export class UserController {
         ],
         AND: [
           {
-            playingTeams: { some: { id: Number(teamId) } },
+            userTeams: { some: { userId: Number(teamId) } },
           },
         ],
       },
@@ -112,11 +112,6 @@ export class UserController {
   async signupUser(@Body() userData: PostUser): Promise<User> {
     return this.userService.createUser({
       ...userData,
-      roles: {
-        connect: userData.roles.map((role: number) => {
-          return { id: role };
-        }),
-      },
     });
   }
 

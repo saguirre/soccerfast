@@ -1,0 +1,249 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+}
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    Int                 @id @default(autoincrement())
+  email                 String              @unique
+  password              String
+  name                  String
+  phone                 String?
+  avatar                String?
+  roles                 Role[]
+  type                  String
+  active                Boolean?            @default(true)
+  activated             Boolean?            @default(false)
+  activationToken       String?             @db.VarChar(300)
+  passwordRecoveryToken String?             @db.VarChar(300)
+  locked                Boolean?            @default(false)
+  birthday              DateTime?
+  preferredLanguage     String?             @default("en")
+  ownedTeams            Team[]              @relation(name: "owners")
+  playingTeams          Team[]              @relation(name: "players")
+  teamBracketScorers    BracketTeamScorer[]
+}
+
+model Role {
+  id     Int    @id @default(autoincrement())
+  role   String
+  user   User?  @relation(fields: [userId], references: [id])
+  userId Int?
+}
+
+model Team {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  description           String?
+  logo                  String?
+  active                Boolean?                @default(true)
+  owners                User[]                  @relation(name: "owners")
+  players               User[]                  @relation(name: "players")
+  tournamentTeamScore   TournamentTeamScore[]
+  tournaments           Tournament[]
+  teamPicture           TeamPicture[]
+  tournamentGoalkeepers TournamentGoalkeepers[]
+  MatchDateBracketTeam  MatchDateBracketTeam[]
+}
+
+model TeamPicture {
+  id          Int     @id @default(autoincrement())
+  url         String?
+  base64Image String
+  team        Team    @relation(fields: [teamId], references: [id])
+  teamId      Int
+}
+
+model Tournament {
+  id                         Int                       @id @default(autoincrement())
+  name                       String
+  description                String?
+  logo                       String?
+  active                     Boolean?                  @default(false)
+  teams                      Team[]
+  tournamentTeamScore        TournamentTeamScore[]
+  tournamentFixture          TournamentFixture?        @relation(fields: [tournamentFixtureId], references: [id])
+  tournamentFixtureId        Int?
+  tournamentTopScorers       TournamentTopScore?       @relation(fields: [tournamentTopScoreId], references: [id])
+  tournamentTopScoreId       Int?
+  tournamentTopGoalkeepers   TournamentTopGoalkeepers? @relation(fields: [tournamentTopGoalkeepersId], references: [id])
+  tournamentTopGoalkeepersId Int?
+}
+
+model TournamentTopScore {
+  id         Int                 @id @default(autoincrement())
+  scorers    BracketTeamScorer[]
+  tournament Tournament[]
+}
+
+model TournamentTopGoalkeepers {
+  id                    Int                     @id @default(autoincrement())
+  tournamentGoalKeepers TournamentGoalkeepers[]
+  tournament            Tournament[]
+}
+
+model TournamentGoalkeepers {
+  id                         Int                       @id @default(autoincrement())
+  team                       Team?                     @relation(fields: [teamId], references: [id])
+  goalsAgainst               Int                       @default(0)
+  teamId                     Int?
+  tournamentTopGoalkeepers   TournamentTopGoalkeepers? @relation(fields: [tournamentTopGoalkeepersId], references: [id])
+  tournamentTopGoalkeepersId Int?
+}
+
+model TournamentTeamScore {
+  id            Int          @id @default(autoincrement())
+  team          Team         @relation(fields: [teamId], references: [id])
+  teamId        Int
+  tournaments   Tournament[]
+  matchesPlayed Int          @default(0)
+  matchesWon    Int          @default(0)
+  matchesTied   Int          @default(0)
+  matchesLost   Int          @default(0)
+  goalsAhead    Int          @default(0)
+  goalsAgainst  Int          @default(0)
+  points        Int          @default(0)
+}
+
+model TournamentFixture {
+  id         Int          @id @default(autoincrement())
+  matchDates MatchDate[]
+  tournament Tournament[]
+}
+
+model MatchDate {
+  id                  Int                @id @default(autoincrement())
+  title               String?
+  date                String?
+  teamBrackets        MatchDateBracket[]
+  tournamentFixture   TournamentFixture? @relation(fields: [tournamentFixtureId], references: [id])
+  tournamentFixtureId Int?
+}
+
+model MatchDateBracket {
+  time                 String?
+  matchAlreadyHappened Boolean?             @default(false)
+  firstTeam            MatchDateBracketTeam @relation(fields: [firstTeamId], references: [id], name: "firstTeam")
+  secondTeam           MatchDateBracketTeam @relation(fields: [secondTeamId], references: [id], name: "secondTeam")
+  firstTeamId          Int
+  secondTeamId         Int
+  matchDate            MatchDate?           @relation(fields: [matchDateId], references: [id])
+  matchDateId          Int?
+
+  @@id([firstTeamId, secondTeamId])
+}
+
+model MatchDateBracketTeam {
+  id                     Int                 @id @default(autoincrement())
+  team                   Team?               @relation(fields: [teamId], references: [id])
+  goals                  Int?                @default(0)
+  scorers                BracketTeamScorer[]
+  firstMatchDateBracket  MatchDateBracket[]  @relation(name: "firstTeam")
+  secondMatchDateBracket MatchDateBracket[]  @relation(name: "secondTeam")
+  teamId                 Int?
+}
+
+model BracketTeamScorer {
+  id                     Int                   @id @default(autoincrement())
+  scorer                 User?                 @relation(fields: [userId], references: [id])
+  goals                  Int?                  @default(0)
+  matchDateBracketTeam   MatchDateBracketTeam? @relation(fields: [matchDateBracketTeamId], references: [id])
+  matchDateBracketTeamId Int?
+  userId                 Int?
+  tournamentTopScore     TournamentTopScore?   @relation(fields: [tournamentTopScoreId], references: [id])
+  tournamentTopScoreId   Int?
+}
+
+model Rule {
+  id            Int      @id @default(autoincrement())
+  articleNumber Int
+  name          String
+  clauses       Clause[]
+}
+
+model Clause {
+  id             Int     @id @default(autoincrement())
+  title          String
+  additionalInfo String?
+  rule           Rule    @relation(fields: [ruleId], references: [id])
+  ruleId         Int
+}
+
+model ContactInfo {
+  id             Int                  @id @default(autoincrement())
+  companyName    String
+  companyPhrase  String
+  companyLogo    String
+  copyright      String               @default("")
+  companyLogoUrl String?
+  phones         ContactPhone[]
+  emails         ContactEmail[]
+  socialMedias   ContactSocialMedia[]
+}
+
+model ContactSocialMedia {
+  id            Int          @id @default(autoincrement())
+  logo          String
+  name          String
+  url           String
+  contactInfo   ContactInfo? @relation(fields: [contactInfoId], references: [id])
+  contactInfoId Int?
+}
+
+model ContactPhone {
+  id            Int         @id @default(autoincrement())
+  number        String
+  contactInfo   ContactInfo @relation(fields: [contactInfoId], references: [id])
+  contactInfoId Int
+}
+
+model ContactEmail {
+  id            Int         @id @default(autoincrement())
+  email         String
+  contactInfo   ContactInfo @relation(fields: [contactInfoId], references: [id])
+  contactInfoId Int
+}
+
+model Announcement {
+  id                 Int              @id @default(autoincrement())
+  message            String
+  announcementType   AnnouncementType @relation(fields: [announcementTypeId], references: [id])
+  announcementTypeId Int
+}
+
+model AnnouncementType {
+  id           Int            @id @default(autoincrement())
+  type         String
+  announcement Announcement[]
+}
+
+model Notification {
+  id                  Int               @id @default(autoincrement())
+  message             String
+  notificationType    NotificationType  @relation(fields: [notificationTypeId], references: [id])
+  notificationRoute   NotificationRoute @relation(fields: [notificationRouteId], references: [id])
+  notificationTypeId  Int
+  notificationRouteId Int
+}
+
+model NotificationType {
+  id           Int            @id @default(autoincrement())
+  type         String
+  notification Notification[]
+}
+
+model NotificationRoute {
+  id           Int            @id @default(autoincrement())
+  route        String
+  notification Notification[]
+}

@@ -1,8 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
 }
 
 datasource db {
@@ -11,153 +12,186 @@ datasource db {
 }
 
 model User {
-  id                    Int                 @id @default(autoincrement())
-  email                 String              @unique
+  id                    Int                  @id @default(autoincrement())
+  email                 String               @unique
   password              String
   name                  String
   phone                 String?
   avatar                String?
-  roles                 Role[]
   type                  String
-  active                Boolean?            @default(true)
-  activated             Boolean?            @default(false)
-  activationToken       String?             @db.VarChar(300)
-  passwordRecoveryToken String?             @db.VarChar(300)
-  locked                Boolean?            @default(false)
+  active                Boolean?             @default(true)
+  activated             Boolean?             @default(false)
+  activationToken       String?              @db.VarChar(300)
+  passwordRecoveryToken String?              @db.VarChar(300)
+  locked                Boolean?             @default(false)
   birthday              DateTime?
-  preferredLanguage     String?             @default("en")
-  ownedTeams            Team[]              @relation(name: "owners")
-  playingTeams          Team[]              @relation(name: "players")
-  teamBracketScorers    BracketTeamScorer[]
+  preferredLanguage     String?              @default("en")
+  userRoles             UserRole[]
+  topScorers            TopScorer[]
+  userTeams             UserTeam[]
+  matchBracketScorers   MatchBracketScorer[]
+}
+
+model UserRole {
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+  role   Role @relation(fields: [roleId], references: [id])
+  roleId Int
+
+  @@id([userId, roleId])
 }
 
 model Role {
-  id     Int    @id @default(autoincrement())
-  role   String
-  user   User?  @relation(fields: [userId], references: [id])
-  userId Int?
+  id        Int        @id @default(autoincrement())
+  role      String
+  userRoles UserRole[]
 }
 
 model Team {
-  id                    Int                     @id @default(autoincrement())
-  name                  String
-  description           String?
-  logo                  String?
-  active                Boolean?                @default(true)
-  owners                User[]                  @relation(name: "owners")
-  players               User[]                  @relation(name: "players")
-  tournamentTeamScore   TournamentTeamScore[]
-  tournaments           Tournament[]
-  teamPicture           TeamPicture[]
-  tournamentGoalkeepers TournamentGoalkeepers[]
-  MatchDateBracketTeam  MatchDateBracketTeam[]
-}
-
-model TeamPicture {
-  id          Int     @id @default(autoincrement())
-  url         String?
-  base64Image String
-  team        Team    @relation(fields: [teamId], references: [id])
-  teamId      Int
+  id                   Int                   @id @default(autoincrement())
+  name                 String
+  description          String?
+  logo                 String?
+  active               Boolean?              @default(true)
+  tournamentTeams      TournamentTeam[]
+  topScorers           TopScorer[]
+  userTeams            UserTeam[]
+  matchBracketTeams    MatchBracketTeam[]
+  tournamentTeamScores TournamentTeamScore[]
 }
 
 model Tournament {
-  id                         Int                       @id @default(autoincrement())
-  name                       String
-  description                String?
-  logo                       String?
-  active                     Boolean?                  @default(false)
-  teams                      Team[]
-  tournamentTeamScore        TournamentTeamScore[]
-  tournamentFixture          TournamentFixture?        @relation(fields: [tournamentFixtureId], references: [id])
-  tournamentFixtureId        Int?
-  tournamentTopScorers       TournamentTopScore?       @relation(fields: [tournamentTopScoreId], references: [id])
-  tournamentTopScoreId       Int?
-  tournamentTopGoalkeepers   TournamentTopGoalkeepers? @relation(fields: [tournamentTopGoalkeepersId], references: [id])
-  tournamentTopGoalkeepersId Int?
+  id                   Int                   @id @default(autoincrement())
+  name                 String
+  description          String?
+  logo                 String?
+  active               Boolean?              @default(false)
+  tournamentTeams      TournamentTeam[]
+  tournamentTeamScores TournamentTeamScore[]
+  tournamentMatchDates TournamentMatchDate[]
+  tournamentTopScorers TournamentTopScorer[]
 }
 
-model TournamentTopScore {
-  id         Int                 @id @default(autoincrement())
-  scorers    BracketTeamScorer[]
-  tournament Tournament[]
+model TournamentTeam {
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId Int
+  team         Team       @relation(fields: [teamId], references: [id])
+  teamId       Int
+
+  @@id([tournamentId, teamId])
 }
 
-model TournamentTopGoalkeepers {
-  id                    Int                     @id @default(autoincrement())
-  tournamentGoalKeepers TournamentGoalkeepers[]
-  tournament            Tournament[]
+model UserTeam {
+  user           User         @relation(fields: [userId], references: [id])
+  userId         Int
+  team           Team         @relation(fields: [teamId], references: [id])
+  teamId         Int
+  userTeamRole   UserTeamRole @relation(fields: [userTeamRoleId], references: [id])
+  userTeamRoleId Int
+
+  @@id([userId, teamId])
 }
 
-model TournamentGoalkeepers {
-  id                         Int                       @id @default(autoincrement())
-  team                       Team?                     @relation(fields: [teamId], references: [id])
-  goalsAgainst               Int                       @default(0)
-  teamId                     Int?
-  tournamentTopGoalkeepers   TournamentTopGoalkeepers? @relation(fields: [tournamentTopGoalkeepersId], references: [id])
-  tournamentTopGoalkeepersId Int?
+model UserTeamRole {
+  id        Int        @id @default(autoincrement())
+  role      String
+  userTeams UserTeam[]
+}
+
+model TournamentMatchDate {
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId Int
+  matchDate    MatchDate  @relation(fields: [matchDateId], references: [id])
+  matchDateId  Int
+
+  @@id([tournamentId, matchDateId])
 }
 
 model TournamentTeamScore {
-  id            Int          @id @default(autoincrement())
-  team          Team         @relation(fields: [teamId], references: [id])
+  tournament    Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId  Int
+  team          Team       @relation(fields: [teamId], references: [id])
   teamId        Int
-  tournaments   Tournament[]
-  matchesPlayed Int          @default(0)
-  matchesWon    Int          @default(0)
-  matchesTied   Int          @default(0)
-  matchesLost   Int          @default(0)
-  goalsAhead    Int          @default(0)
-  goalsAgainst  Int          @default(0)
-  points        Int          @default(0)
-}
+  matchesPlayed Int        @default(0)
+  matchesWon    Int        @default(0)
+  matchesTied   Int        @default(0)
+  matchesLost   Int        @default(0)
+  goalsAhead    Int        @default(0)
+  goalsAgainst  Int        @default(0)
+  points        Int        @default(0)
 
-model TournamentFixture {
-  id         Int          @id @default(autoincrement())
-  matchDates MatchDate[]
-  tournament Tournament[]
+  @@id([tournamentId, teamId])
 }
 
 model MatchDate {
-  id                  Int                @id @default(autoincrement())
-  title               String?
-  date                String?
-  teamBrackets        MatchDateBracket[]
-  tournamentFixture   TournamentFixture? @relation(fields: [tournamentFixtureId], references: [id])
-  tournamentFixtureId Int?
+  id                   Int                   @id @default(autoincrement())
+  title                String?
+  date                 String?
+  matchBrackets        MatchDateBracket[]
+  tournamentMatchDates TournamentMatchDate[]
 }
 
 model MatchDateBracket {
-  id                   Int                  @id @default(autoincrement())
-  time                 String?
-  matchAlreadyHappened Boolean?             @default(false)
-  firstTeam            MatchDateBracketTeam @relation(fields: [firstTeamId], references: [id], name: "firstTeam")
-  secondTeam           MatchDateBracketTeam @relation(fields: [secondTeamId], references: [id], name: "secondTeam")
-  firstTeamId          Int
-  secondTeamId         Int
-  matchDate            MatchDate?           @relation(fields: [matchDateId], references: [id])
-  matchDateId          Int?
+  id                             Int                             @id @default(autoincrement())
+  time                           String?
+  matchAlreadyHappened           Boolean?                        @default(false)
+  matchDate                      MatchDate?                      @relation(fields: [matchDateId], references: [id])
+  matchDateId                    Int?
+  matchDateBracketToBracketTeams MatchDateBracketToBracketTeam[]
 }
 
-model MatchDateBracketTeam {
-  id                     Int                 @id @default(autoincrement())
-  team                   Team?               @relation(fields: [teamId], references: [id])
-  goals                  Int?                @default(0)
-  scorers                BracketTeamScorer[]
-  firstMatchDateBracket  MatchDateBracket[]  @relation(name: "firstTeam")
-  secondMatchDateBracket MatchDateBracket[]  @relation(name: "secondTeam")
-  teamId                 Int?
+model MatchDateBracketToBracketTeam {
+  matchDateBracket   MatchDateBracket @relation(fields: [matchDateBracketId], references: [id])
+  matchDateBracketId Int
+  matchBracketTeam   MatchBracketTeam @relation(fields: [matchBracketTeamId], references: [id])
+  matchBracketTeamId Int
+
+  @@id([matchDateBracketId, matchBracketTeamId])
 }
 
-model BracketTeamScorer {
-  id                     Int                   @id @default(autoincrement())
-  scorer                 User?                 @relation(fields: [userId], references: [id])
-  goals                  Int?                  @default(0)
-  matchDateBracketTeam   MatchDateBracketTeam? @relation(fields: [matchDateBracketTeamId], references: [id])
-  matchDateBracketTeamId Int?
-  userId                 Int?
-  tournamentTopScore     TournamentTopScore?   @relation(fields: [tournamentTopScoreId], references: [id])
-  tournamentTopScoreId   Int?
+model MatchBracketTeam {
+  id                             Int                             @id @default(autoincrement())
+  goals                          Int?                            @default(0)
+  team                           Team                            @relation(fields: [teamId], references: [id])
+  teamId                         Int
+  matchBracketTeamScorers        MatchBracketTeamScorer[]
+  matchDateBracketToBracketTeams MatchDateBracketToBracketTeam[]
+}
+
+model MatchBracketTeamScorer {
+  matchBracketTeam     MatchBracketTeam   @relation(fields: [matchBracketTeamId], references: [id])
+  matchBracketTeamId   Int
+  matchBracketScorer   MatchBracketScorer @relation(fields: [matchBracketScorerId], references: [id])
+  matchBracketScorerId Int
+
+  @@id([matchBracketTeamId, matchBracketScorerId])
+}
+
+model TournamentTopScorer {
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId Int
+  topScorer    TopScorer  @relation(fields: [topScorerId], references: [id])
+  topScorerId  Int
+
+  @@id([tournamentId, topScorerId])
+}
+
+model TopScorer {
+  id                   Int                   @id @default(autoincrement())
+  user                 User?                 @relation(fields: [userId], references: [id])
+  userId               Int?
+  team                 Team?                 @relation(fields: [teamId], references: [id])
+  teamId               Int?
+  goals                Int?                  @default(0)
+  tournamentTopScorers TournamentTopScorer[]
+}
+
+model MatchBracketScorer {
+  id                      Int                      @id @default(autoincrement())
+  goals                   Int?                     @default(0)
+  user                    User                     @relation(fields: [userId], references: [id])
+  userId                  Int
+  matchBracketTeamScorers MatchBracketTeamScorer[]
 }
 
 model Rule {

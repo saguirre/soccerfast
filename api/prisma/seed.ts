@@ -26,8 +26,11 @@ const main = async () => {
       email: 'saguirrews@gmail.com',
       password: await bcrypt.hash('3oam4j12', await bcrypt.genSalt()),
       type: 'Email',
-      roles: { connect: [{ id: 1 }] },
     },
+  });
+
+  await prisma.userRole.create({
+    data: { userId: 1, roleId: 1 },
   });
 
   // Create Contact Info

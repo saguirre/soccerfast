@@ -3,98 +3,128 @@ import { PrismaService } from '../prisma.service';
 import {
   Tournament,
   Prisma,
-  Team,
   TournamentTeamScore,
-  TournamentFixture,
-  MatchDateBracketTeam,
-  MatchDateBracket,
+  TournamentTeam,
+  MatchBracketTeam,
+  MatchBracketTeamScorer,
+  MatchBracketScorer,
 } from '@prisma/client';
+import { PostMatchDateBracket, PostTournament, PutTournament } from '@dtos';
 
 export type TournamentWithTeamScores = Prisma.TournamentGetPayload<{
-  include: { teams: true; tournamentTeamScore: { include: { team: true } } };
-}>;
-
-export type MatchDateBracketWithTeams = Prisma.MatchDateBracketGetPayload<{
   include: {
-    firstTeam: {
-      include: {
-        scorers: {
-          include: { scorer: true; tournamentTopScore: true };
-        };
-      };
-    };
-    secondTeam: {
-      include: {
-        scorers: {
-          include: { scorer: true; tournamentTopScore: true };
-        };
-      };
-    };
+    tournamentTeams: true;
+    tournamentTeamScores: { include: { team: true } };
   };
 }>;
+
 @Injectable()
 export class TournamentService {
   private logger: Logger = new Logger(TournamentService.name);
   constructor(private prisma: PrismaService) {}
 
   private getMatchesWon(
-    firstTeam: MatchDateBracketTeam,
-    secondTeam: MatchDateBracketTeam,
+    firstTeamGoals: number,
+    secondTeamGoals: number,
     previousScores: TournamentTeamScore,
   ) {
-    return firstTeam.goals > secondTeam.goals
+    return firstTeamGoals > secondTeamGoals
       ? previousScores.matchesWon + 1
       : previousScores.matchesWon;
   }
 
   private getMatchesLost(
-    firstTeam: MatchDateBracketTeam,
-    secondTeam: MatchDateBracketTeam,
+    firstTeamGoals: number,
+    secondTeamGoals: number,
     previousScores: TournamentTeamScore,
   ) {
-    return firstTeam.goals < secondTeam.goals
+    return firstTeamGoals < secondTeamGoals
       ? previousScores.matchesLost + 1
       : previousScores.matchesLost;
   }
 
   private getMatchesTied(
-    firstTeam: MatchDateBracketTeam,
-    secondTeam: MatchDateBracketTeam,
+    firstTeamGoals: number,
+    secondTeamGoals: number,
     previousScores: TournamentTeamScore,
   ) {
-    return firstTeam.goals === secondTeam.goals
+    return firstTeamGoals === secondTeamGoals
       ? previousScores.matchesTied + 1
       : previousScores.matchesTied;
   }
 
   private getPoints(
-    firstTeam: MatchDateBracketTeam,
-    secondTeam: MatchDateBracketTeam,
+    firstTeamGoals: number,
+    secondTeamGoals: number,
     previousScores: TournamentTeamScore,
   ) {
-    return firstTeam.goals > secondTeam.goals
+    return firstTeamGoals > secondTeamGoals
       ? previousScores.points + 3
-      : firstTeam.goals === secondTeam.goals
+      : firstTeamGoals === secondTeamGoals
       ? previousScores.points + 1
       : previousScores.points;
   }
 
   private getNewTeamScore(
-    firstTeam: MatchDateBracketTeam,
-    secondTeam: MatchDateBracketTeam,
+    firstTeamGoals: number,
+    secondTeamGoals: number,
     previousScores: TournamentTeamScore,
   ) {
     return {
       ...previousScores,
       matchesPlayed: previousScores.matchesPlayed + 1,
-      matchesWon: this.getMatchesWon(firstTeam, secondTeam, previousScores),
-      matchesTied: this.getMatchesTied(firstTeam, secondTeam, previousScores),
-      matchesLost: this.getMatchesLost(firstTeam, secondTeam, previousScores),
-      goalsAhead: previousScores.goalsAhead + firstTeam.goals,
-      goalsAgainst: previousScores.goalsAgainst + secondTeam.goals,
-      points: this.getPoints(firstTeam, secondTeam, previousScores),
+      matchesWon: this.getMatchesWon(
+        firstTeamGoals,
+        secondTeamGoals,
+        previousScores,
+      ),
+      matchesTied: this.getMatchesTied(
+        firstTeamGoals,
+        secondTeamGoals,
+        previousScores,
+      ),
+      matchesLost: this.getMatchesLost(
+        firstTeamGoals,
+        secondTeamGoals,
+        previousScores,
+      ),
+      goalsAhead: previousScores.goalsAhead + firstTeamGoals,
+      goalsAgainst: previousScores.goalsAgainst + secondTeamGoals,
+      points: this.getPoints(firstTeamGoals, secondTeamGoals, previousScores),
     };
   }
+
+  private updateTeamScore = async (
+    tournamentId: number,
+    firstTeam,
+    secondTeam,
+  ) => {
+    const previousFirstTeamScore =
+      await this.prisma.tournamentTeamScore.findUnique({
+        where: {
+          tournamentId_teamId: {
+            tournamentId: Number(tournamentId),
+            teamId: Number(firstTeam.team.id),
+          },
+        },
+      });
+
+    await this.prisma.tournamentTeamScore.update({
+      where: {
+        tournamentId_teamId: {
+          tournamentId: Number(tournamentId),
+          teamId: Number(firstTeam.team.id),
+        },
+      },
+      data: {
+        ...this.getNewTeamScore(
+          firstTeam.goals,
+          secondTeam.goals,
+          previousFirstTeamScore,
+        ),
+      },
+    });
+  };
 
   async tournament(
     tournamentWhereUniqueInput: Prisma.TournamentWhereUniqueInput,
@@ -102,38 +132,10 @@ export class TournamentService {
     return this.prisma.tournament.findUnique({
       where: tournamentWhereUniqueInput,
       include: {
-        teams: true,
-        tournamentTeamScore: {
+        tournamentTeams: true,
+        tournamentTeamScores: {
           include: {
             team: true,
-          },
-        },
-        tournamentFixture: {
-          include: {
-            matchDates: {
-              include: {
-                teamBrackets: {
-                  include: {
-                    firstTeam: {
-                      include: {
-                        team: true,
-                        scorers: {
-                          include: { scorer: true, tournamentTopScore: true },
-                        },
-                      },
-                    },
-                    secondTeam: {
-                      include: {
-                        team: true,
-                        scorers: {
-                          include: { scorer: true, tournamentTopScore: true },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
           },
         },
       },
@@ -141,140 +143,142 @@ export class TournamentService {
   }
 
   async addMatchDate(
-    fixtureId: number,
+    tournamentId: number,
     data: Prisma.MatchDateCreateInput,
   ): Promise<any> {
-    const tournamentFixture = await this.prisma.tournamentFixture.findUnique({
-      where: { id: Number(fixtureId) },
-    });
     const newMatchDate = await this.prisma.matchDate.create({
       data: {
         title: data.title,
         date: data.date,
-        tournamentFixture: { connect: { id: Number(tournamentFixture.id) } },
       },
     });
 
-    await this.prisma.tournamentFixture.update({
-      where: { id: Number(fixtureId) },
-      data: { matchDates: { connect: { id: Number(newMatchDate.id) } } },
-      include: {
-        matchDates: true,
+    await this.prisma.tournamentMatchDate.create({
+      data: {
+        matchDateId: newMatchDate.id,
+        tournamentId: Number(tournamentId),
       },
     });
     return newMatchDate;
   }
 
+  private addScorers = async (
+    tournamentId: number,
+    teamScorers: { goals: number; userId: number }[],
+    teamBracket: MatchBracketTeam,
+  ) => {
+    const secondTeamScorerIds = [];
+    for (const data of teamScorers) {
+      const newScorer = await this.prisma.matchBracketScorer.create({
+        data,
+      });
+      const existingTopScorer = await this.prisma.topScorer.findFirst({
+        where: {
+          userId: Number(newScorer.userId),
+          AND: { teamId: Number(teamBracket.teamId) },
+        },
+      });
+      if (!existingTopScorer) {
+        const newTopScorerEntry = await this.prisma.topScorer.create({
+          data: {
+            goals: Number(newScorer.goals),
+            userId: Number(newScorer.goals),
+          },
+        });
+        await this.prisma.tournamentTopScorer.create({
+          data: {
+            tournamentId: Number(tournamentId),
+            topScorerId: Number(newTopScorerEntry.id),
+          },
+        });
+      } else {
+        await this.prisma.topScorer.update({
+          where: { id: Number(existingTopScorer.id) },
+          data: {
+            goals: Number(existingTopScorer.goals) + Number(data.goals),
+          },
+        });
+      }
+      secondTeamScorerIds.push(newScorer.id);
+    }
+    const secondBracketTeamScorerData = secondTeamScorerIds.map(
+      (matchBracketScorerId) => ({
+        matchBracketTeamId: teamBracket.id,
+        matchBracketScorerId,
+      }),
+    );
+    this.prisma.matchBracketTeamScorer.createMany({
+      data: secondBracketTeamScorerData,
+    });
+  };
+
+  private addMatchDateBracketAndTeams = async (matchDateId: number, match) => {
+    const matchDateBracket = await this.prisma.matchDateBracket.create({
+      data: {
+        time: match.time,
+        matchAlreadyHappened: match.matchAlreadyHappened,
+        matchDateId: Number(matchDateId),
+      },
+    });
+
+    const firstBracketTeam = await this.prisma.matchBracketTeam.create({
+      data: {
+        teamId: Number(match.firstTeam.team.id),
+        goals: Number(match.firstTeam.goals),
+      },
+    });
+
+    const secondBracketTeam = await this.prisma.matchBracketTeam.create({
+      data: {
+        teamId: Number(match.secondTeam.team.id),
+        goals: Number(match.secondTeam.goals),
+      },
+    });
+
+    // Add to relationship table
+    await this.prisma.matchDateBracketToBracketTeam.create({
+      data: {
+        matchBracketTeamId: Number(firstBracketTeam.id),
+        matchDateBracketId: Number(matchDateBracket.id),
+      },
+    });
+
+    await this.prisma.matchDateBracketToBracketTeam.create({
+      data: {
+        matchBracketTeamId: Number(secondBracketTeam.id),
+        matchDateBracketId: Number(matchDateBracket.id),
+      },
+    });
+
+    return { matchDateBracket, firstBracketTeam, secondBracketTeam };
+  };
+
   async addBracketToMatchDate(
+    tournamentId: number,
     matchDateId: number,
-    data: Prisma.MatchDateBracketCreateInput,
+    match: PostMatchDateBracket,
   ): Promise<any> {
-    this.logger.debug(JSON.stringify(data));
-    this.prisma.$transaction([])
-    const newBracket = await this.prisma.matchDateBracket.create({
-      data,
-      include: {
-        firstTeam: {
-          include: {
-            team: true,
-            scorers: {
-              include: { scorer: true, tournamentTopScore: true },
-            },
-          },
-        },
-        secondTeam: {
-          include: {
-            team: true,
-            scorers: {
-              include: { scorer: true, tournamentTopScore: true },
-            },
-          },
-        },
-      },
-    });
-    this.logger.debug(JSON.stringify(newBracket));
+    this.logger.debug(JSON.stringify(match));
 
-    const matchDate = await this.prisma.matchDate.update({
-      where: { id: Number(matchDateId) },
-      data: { teamBrackets: { connect: { id: Number(newBracket.id) } } },
-      include: {
-        teamBrackets: {
-          include: {
-            firstTeam: {
-              include: {
-                team: true,
-                scorers: {
-                  include: { scorer: true, tournamentTopScore: true },
-                },
-              },
-            },
-            secondTeam: {
-              include: {
-                team: true,
-                scorers: {
-                  include: { scorer: true, tournamentTopScore: true },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
+    const { matchDateBracket, firstBracketTeam, secondBracketTeam } =
+      await this.addMatchDateBracketAndTeams(matchDateId, match);
 
-    if (newBracket.matchAlreadyHappened) {
-      const firstTeamTournamentScore =
-        await this.prisma.tournamentTeamScore.findFirst({
-          where: {
-            teamId: Number(data.firstTeam.connectOrCreate.where.id),
-          },
-        });
+    await this.updateTeamScore(tournamentId, match.firstTeam, match.secondTeam);
+    await this.updateTeamScore(tournamentId, match.secondTeam, match.firstTeam);
 
-      const firstTeamNewScore = this.getNewTeamScore(
-        newBracket.firstTeam,
-        newBracket.secondTeam,
-        firstTeamTournamentScore,
+    if (match.firstTeam.scorers?.length) {
+      const firstTeamScorers = match.firstTeam.scorers.map(
+        ({ goals, scorer }) => ({ goals, userId: Number(scorer.id) }),
+      );
+      const secondTeamScorers = match.secondTeam.scorers.map(
+        ({ goals, scorer }) => ({ goals, userId: Number(scorer.id) }),
       );
 
-      const secondTeamTournamentScore =
-        await this.prisma.tournamentTeamScore.findFirst({
-          where: {
-            teamId: Number(data.secondTeam.connectOrCreate.where.id),
-          },
-        });
-
-      const secondTeamNewScore = this.getNewTeamScore(
-        newBracket.secondTeam,
-        newBracket.firstTeam,
-        secondTeamTournamentScore,
-      );
-
-      await this.prisma.$transaction([
-        this.prisma.tournamentTeamScore.update({
-          where: { id: Number(firstTeamTournamentScore.id) },
-          data: { ...firstTeamNewScore },
-        }),
-        this.prisma.tournamentTeamScore.update({
-          where: { id: Number(secondTeamTournamentScore.id) },
-          data: { ...secondTeamNewScore },
-        }),
-      ]);
+      await this.addScorers(tournamentId, firstTeamScorers, firstBracketTeam);
+      await this.addScorers(tournamentId, secondTeamScorers, secondBracketTeam);
     }
 
-    return matchDate;
-  }
-
-  async updateTournamentFixture(
-    tournamentId: number,
-    fixture: Prisma.TournamentFixtureUpdateInput,
-  ): Promise<TournamentFixture> {
-    const tournament = await this.prisma.tournament.findFirst({
-      where: { id: tournamentId },
-    });
-
-    return this.prisma.tournamentFixture.update({
-      where: { id: tournament.tournamentFixtureId },
-      data: { ...fixture },
-    });
+    return matchDateBracket;
   }
 
   async tournamentTeamScores(): Promise<TournamentTeamScore[]> {
@@ -285,17 +289,20 @@ export class TournamentService {
 
   async tournamentTeamsAndTeamScores(
     tournamentWhereUniqueInput: Prisma.TournamentWhereUniqueInput,
-  ): Promise<{ teams: Team[] | null; teamsScores: TournamentTeamScore[] }> {
+  ): Promise<{
+    teams: TournamentTeam[] | null;
+    teamsScores: TournamentTeamScore[];
+  }> {
     const tournamentWithTeams = await this.prisma.tournament.findUnique({
       where: tournamentWhereUniqueInput,
       include: {
-        teams: true,
-        tournamentTeamScore: true,
+        tournamentTeams: true,
+        tournamentTeamScores: true,
       },
     });
     return {
-      teams: tournamentWithTeams.teams,
-      teamsScores: tournamentWithTeams.tournamentTeamScore,
+      teams: tournamentWithTeams.tournamentTeams,
+      teamsScores: tournamentWithTeams.tournamentTeamScores,
     };
   }
 
@@ -316,24 +323,72 @@ export class TournamentService {
     });
   }
 
-  async createTournament(
-    data: Prisma.TournamentCreateInput,
-  ): Promise<Tournament> {
-    return this.prisma.tournament.create({
+  async createTournament(data: PostTournament): Promise<Tournament> {
+    const newTournament = await this.prisma.tournament.create({
       data: {
-        ...data,
-        tournamentFixture: { create: { matchDates: { create: [] } } },
+        name: data.name,
+        logo: data.logo,
+        description: data.description,
       },
     });
+
+    for (const teamId of data.teamIds) {
+      await this.prisma.tournamentTeamScore.create({
+        data: {
+          tournamentId: (await newTournament).id,
+          teamId: Number(teamId),
+        },
+      });
+      await this.prisma.tournamentTeam.create({
+        data: { tournamentId: newTournament.id, teamId: Number(teamId) },
+      });
+    }
+
+    return newTournament;
   }
 
   async updateTournament(params: {
     where: Prisma.TournamentWhereUniqueInput;
-    data: Prisma.TournamentUpdateInput;
+    data: PutTournament;
   }): Promise<Tournament> {
     const { where, data } = params;
+    const { teamIds, ...tournamentData } = data;
+
+    const tournamentTeams = await this.prisma.tournamentTeam.findMany({
+      where: { tournamentId: Number(where.id) },
+    });
+
+    const teamsToAdd = teamIds.filter((teamId: number) => {
+      return !tournamentTeams.some(
+        (tournamentTeam) => tournamentTeam.teamId === teamId,
+      );
+    });
+
+    for (const teamId of teamsToAdd) {
+      await this.prisma.tournamentTeam.create({
+        data: { tournamentId: where.id, teamId: Number(teamId) },
+      });
+    }
+
+    const teamsToDelete = tournamentTeams.filter((tournamentTeam) => {
+      return !teamIds.some(
+        (teamId: number) => tournamentTeam.teamId === teamId,
+      );
+    });
+
+    for (const teamId of teamsToDelete) {
+      await this.prisma.tournamentTeam.delete({
+        where: {
+          tournamentId_teamId: {
+            tournamentId: where.id,
+            teamId: Number(teamId),
+          },
+        },
+      });
+    }
+
     return this.prisma.tournament.update({
-      data,
+      data: tournamentData,
       where,
     });
   }

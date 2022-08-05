@@ -20,10 +20,17 @@ CREATE TABLE `User` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `UserRole` (
+    `userId` INTEGER NOT NULL,
+    `roleId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`userId`, `roleId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Role` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `role` VARCHAR(191) NOT NULL,
-    `userId` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -40,57 +47,51 @@ CREATE TABLE `Team` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `TeamPicture` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `url` VARCHAR(191) NULL,
-    `base64Image` VARCHAR(191) NOT NULL,
-    `teamId` INTEGER NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `Tournament` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NULL,
     `logo` VARCHAR(191) NULL,
     `active` BOOLEAN NULL DEFAULT false,
-    `tournamentFixtureId` INTEGER NULL,
-    `tournamentTopScoreId` INTEGER NULL,
-    `tournamentTopGoalkeepersId` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `TournamentTopScore` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+CREATE TABLE `TournamentTeam` (
+    `tournamentId` INTEGER NOT NULL,
+    `teamId` INTEGER NOT NULL,
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`tournamentId`, `teamId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `TournamentTopGoalkeepers` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+CREATE TABLE `UserTeam` (
+    `userId` INTEGER NOT NULL,
+    `teamId` INTEGER NOT NULL,
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`userId`, `teamId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `TournamentGoalkeepers` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `goalsAgainst` INTEGER NOT NULL DEFAULT 0,
-    `teamId` INTEGER NULL,
-    `tournamentTopGoalkeepersId` INTEGER NULL,
+CREATE TABLE `TournamentMatchDate` (
+    `tournamentId` INTEGER NOT NULL,
+    `matchDateId` INTEGER NOT NULL,
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`tournamentId`, `matchDateId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `TournamentTeamScore` (
+    `tournamentId` INTEGER NOT NULL,
+    `teamScoreId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`tournamentId`, `teamScoreId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `TeamScore` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `teamId` INTEGER NOT NULL,
     `matchesPlayed` INTEGER NOT NULL DEFAULT 0,
     `matchesWon` INTEGER NOT NULL DEFAULT 0,
     `matchesTied` INTEGER NOT NULL DEFAULT 0,
@@ -103,50 +104,63 @@ CREATE TABLE `TournamentTeamScore` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `TournamentFixture` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `MatchDate` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(191) NULL,
     `date` VARCHAR(191) NULL,
-    `tournamentFixtureId` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `MatchDateBracket` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `time` VARCHAR(191) NULL,
     `matchAlreadyHappened` BOOLEAN NULL DEFAULT false,
     `firstTeamId` INTEGER NOT NULL,
     `secondTeamId` INTEGER NOT NULL,
     `matchDateId` INTEGER NULL,
 
+    PRIMARY KEY (`firstTeamId`, `secondTeamId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `MatchBracketTeam` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `goals` INTEGER NULL DEFAULT 0,
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `MatchDateBracketTeam` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `goals` INTEGER NULL DEFAULT 0,
-    `teamId` INTEGER NULL,
+CREATE TABLE `MatchBracketTeamScorer` (
+    `matchBracketTeamId` INTEGER NOT NULL,
+    `matchBracketScorerId` INTEGER NOT NULL,
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`matchBracketTeamId`, `matchBracketScorerId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `BracketTeamScorer` (
+CREATE TABLE `TournamentTopScorer` (
+    `tournamentId` INTEGER NOT NULL,
+    `topScorerId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`tournamentId`, `topScorerId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `TopScorer` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `goals` INTEGER NULL DEFAULT 0,
-    `matchDateBracketTeamId` INTEGER NULL,
     `userId` INTEGER NULL,
-    `tournamentTopScoreId` INTEGER NULL,
+    `teamId` INTEGER NULL,
+    `goals` INTEGER NULL DEFAULT 0,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `MatchBracketScorer` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `goals` INTEGER NULL DEFAULT 0,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -254,89 +268,62 @@ CREATE TABLE `NotificationRoute` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
-CREATE TABLE `_owners` (
-    `A` INTEGER NOT NULL,
-    `B` INTEGER NOT NULL,
-
-    UNIQUE INDEX `_owners_AB_unique`(`A`, `B`),
-    INDEX `_owners_B_index`(`B`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `_players` (
-    `A` INTEGER NOT NULL,
-    `B` INTEGER NOT NULL,
-
-    UNIQUE INDEX `_players_AB_unique`(`A`, `B`),
-    INDEX `_players_B_index`(`B`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `_TeamToTournament` (
-    `A` INTEGER NOT NULL,
-    `B` INTEGER NOT NULL,
-
-    UNIQUE INDEX `_TeamToTournament_AB_unique`(`A`, `B`),
-    INDEX `_TeamToTournament_B_index`(`B`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `_TournamentToTournamentTeamScore` (
-    `A` INTEGER NOT NULL,
-    `B` INTEGER NOT NULL,
-
-    UNIQUE INDEX `_TournamentToTournamentTeamScore_AB_unique`(`A`, `B`),
-    INDEX `_TournamentToTournamentTeamScore_B_index`(`B`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- AddForeignKey
+ALTER TABLE `UserRole` ADD CONSTRAINT `UserRole_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Role` ADD CONSTRAINT `Role_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `UserRole` ADD CONSTRAINT `UserRole_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `Role`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `TeamPicture` ADD CONSTRAINT `TeamPicture_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `Team`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `TournamentTeam` ADD CONSTRAINT `TournamentTeam_tournamentId_fkey` FOREIGN KEY (`tournamentId`) REFERENCES `Tournament`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Tournament` ADD CONSTRAINT `Tournament_tournamentFixtureId_fkey` FOREIGN KEY (`tournamentFixtureId`) REFERENCES `TournamentFixture`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `TournamentTeam` ADD CONSTRAINT `TournamentTeam_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `Team`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Tournament` ADD CONSTRAINT `Tournament_tournamentTopScoreId_fkey` FOREIGN KEY (`tournamentTopScoreId`) REFERENCES `TournamentTopScore`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `UserTeam` ADD CONSTRAINT `UserTeam_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Tournament` ADD CONSTRAINT `Tournament_tournamentTopGoalkeepersId_fkey` FOREIGN KEY (`tournamentTopGoalkeepersId`) REFERENCES `TournamentTopGoalkeepers`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `UserTeam` ADD CONSTRAINT `UserTeam_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `Team`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `TournamentGoalkeepers` ADD CONSTRAINT `TournamentGoalkeepers_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `Team`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `TournamentMatchDate` ADD CONSTRAINT `TournamentMatchDate_tournamentId_fkey` FOREIGN KEY (`tournamentId`) REFERENCES `Tournament`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `TournamentGoalkeepers` ADD CONSTRAINT `TournamentGoalkeepers_tournamentTopGoalkeepersId_fkey` FOREIGN KEY (`tournamentTopGoalkeepersId`) REFERENCES `TournamentTopGoalkeepers`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `TournamentMatchDate` ADD CONSTRAINT `TournamentMatchDate_matchDateId_fkey` FOREIGN KEY (`matchDateId`) REFERENCES `MatchDate`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `TournamentTeamScore` ADD CONSTRAINT `TournamentTeamScore_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `Team`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `TournamentTeamScore` ADD CONSTRAINT `TournamentTeamScore_tournamentId_fkey` FOREIGN KEY (`tournamentId`) REFERENCES `Tournament`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `MatchDate` ADD CONSTRAINT `MatchDate_tournamentFixtureId_fkey` FOREIGN KEY (`tournamentFixtureId`) REFERENCES `TournamentFixture`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `TournamentTeamScore` ADD CONSTRAINT `TournamentTeamScore_teamScoreId_fkey` FOREIGN KEY (`teamScoreId`) REFERENCES `TeamScore`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `MatchDateBracket` ADD CONSTRAINT `MatchDateBracket_firstTeamId_fkey` FOREIGN KEY (`firstTeamId`) REFERENCES `MatchDateBracketTeam`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `MatchDateBracket` ADD CONSTRAINT `MatchDateBracket_firstTeamId_fkey` FOREIGN KEY (`firstTeamId`) REFERENCES `MatchBracketTeam`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `MatchDateBracket` ADD CONSTRAINT `MatchDateBracket_secondTeamId_fkey` FOREIGN KEY (`secondTeamId`) REFERENCES `MatchDateBracketTeam`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `MatchDateBracket` ADD CONSTRAINT `MatchDateBracket_secondTeamId_fkey` FOREIGN KEY (`secondTeamId`) REFERENCES `MatchBracketTeam`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `MatchDateBracket` ADD CONSTRAINT `MatchDateBracket_matchDateId_fkey` FOREIGN KEY (`matchDateId`) REFERENCES `MatchDate`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `MatchDateBracketTeam` ADD CONSTRAINT `MatchDateBracketTeam_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `Team`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `MatchBracketTeamScorer` ADD CONSTRAINT `MatchBracketTeamScorer_matchBracketTeamId_fkey` FOREIGN KEY (`matchBracketTeamId`) REFERENCES `MatchBracketTeam`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `BracketTeamScorer` ADD CONSTRAINT `BracketTeamScorer_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `MatchBracketTeamScorer` ADD CONSTRAINT `MatchBracketTeamScorer_matchBracketScorerId_fkey` FOREIGN KEY (`matchBracketScorerId`) REFERENCES `MatchBracketScorer`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `BracketTeamScorer` ADD CONSTRAINT `BracketTeamScorer_matchDateBracketTeamId_fkey` FOREIGN KEY (`matchDateBracketTeamId`) REFERENCES `MatchDateBracketTeam`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `TournamentTopScorer` ADD CONSTRAINT `TournamentTopScorer_tournamentId_fkey` FOREIGN KEY (`tournamentId`) REFERENCES `Tournament`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `BracketTeamScorer` ADD CONSTRAINT `BracketTeamScorer_tournamentTopScoreId_fkey` FOREIGN KEY (`tournamentTopScoreId`) REFERENCES `TournamentTopScore`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `TournamentTopScorer` ADD CONSTRAINT `TournamentTopScorer_topScorerId_fkey` FOREIGN KEY (`topScorerId`) REFERENCES `TopScorer`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `TopScorer` ADD CONSTRAINT `TopScorer_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `TopScorer` ADD CONSTRAINT `TopScorer_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `Team`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Clause` ADD CONSTRAINT `Clause_ruleId_fkey` FOREIGN KEY (`ruleId`) REFERENCES `Rule`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -358,27 +345,3 @@ ALTER TABLE `Notification` ADD CONSTRAINT `Notification_notificationTypeId_fkey`
 
 -- AddForeignKey
 ALTER TABLE `Notification` ADD CONSTRAINT `Notification_notificationRouteId_fkey` FOREIGN KEY (`notificationRouteId`) REFERENCES `NotificationRoute`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_owners` ADD CONSTRAINT `_owners_A_fkey` FOREIGN KEY (`A`) REFERENCES `Team`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_owners` ADD CONSTRAINT `_owners_B_fkey` FOREIGN KEY (`B`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_players` ADD CONSTRAINT `_players_A_fkey` FOREIGN KEY (`A`) REFERENCES `Team`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_players` ADD CONSTRAINT `_players_B_fkey` FOREIGN KEY (`B`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_TeamToTournament` ADD CONSTRAINT `_TeamToTournament_A_fkey` FOREIGN KEY (`A`) REFERENCES `Team`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_TeamToTournament` ADD CONSTRAINT `_TeamToTournament_B_fkey` FOREIGN KEY (`B`) REFERENCES `Tournament`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_TournamentToTournamentTeamScore` ADD CONSTRAINT `_TournamentToTournamentTeamScore_A_fkey` FOREIGN KEY (`A`) REFERENCES `Tournament`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_TournamentToTournamentTeamScore` ADD CONSTRAINT `_TournamentToTournamentTeamScore_B_fkey` FOREIGN KEY (`B`) REFERENCES `TournamentTeamScore`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

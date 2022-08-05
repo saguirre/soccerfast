@@ -67,28 +67,7 @@ export class TeamController {
   async createTeam(
     @Body() teamData: PostTeam,
   ): Promise<TeamWithOwnersAndPlayers> {
-    const owners = await this.userService.users({
-      where: { OR: teamData.ownerIds?.map((id) => ({ id })) },
-    });
-    const players = await this.userService.users({
-      where: { OR: teamData.playerIds?.map((id) => ({ id })) },
-    });
-    const { ownerIds, playerIds, ...data } = teamData;
-    return this.teamService.createTeam({
-      ...data,
-      owners: {
-        connectOrCreate: owners.map((owner) => ({
-          where: { id: owner.id },
-          create: { ...owner },
-        })),
-      },
-      players: {
-        connectOrCreate: players.map((player) => ({
-          where: { id: player.id },
-          create: { ...player },
-        })),
-      },
-    });
+    return this.teamService.createTeam(teamData);
   }
 
   @UseGuards(JwtAuthGuard)

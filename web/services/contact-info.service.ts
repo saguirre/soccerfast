@@ -1,10 +1,11 @@
 import axios from 'axios';
 
-import { ContactInfo } from '@models';
+import { ContactInfo, ContactQuestionModel } from '@models';
 import { HttpService } from './http-abstract.service';
 
 export interface IContactInfoService {
   getContactInfo(): Promise<ContactInfo | null>;
+  addContactQuestion(data: ContactQuestionModel): Promise<void>;
 }
 
 export class ContactInfoService extends HttpService implements IContactInfoService {
@@ -20,5 +21,14 @@ export class ContactInfoService extends HttpService implements IContactInfoServi
       console.error(error);
       return null;
     }
+  };
+
+  addContactQuestion = async (data: ContactQuestionModel): Promise<void> => {
+    try {
+      const axiosResponse = await axios.post(this.getServiceUrl(`${this.endpointPrefix}/question`), data, {
+        headers: this.getAuthHeaders(),
+      });
+      return axiosResponse.data;
+    } catch (error) {}
   };
 }

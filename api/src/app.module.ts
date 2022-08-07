@@ -18,6 +18,7 @@ import { ForgotPasswordModule } from './forgot-password/forgot-password.module';
 import { ActivateAccountModule } from './activate-account/activate-account.module';
 import { BullModule } from '@nestjs/bull';
 import { EmailModule } from './email/email.module';
+import { ContactQuestionModule } from './contact-question/contact-question.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { EmailModule } from './email/email.module';
     ForgotPasswordModule,
     ActivateAccountModule,
     EmailModule,
+    ContactQuestionModule,
   ],
   controllers: [AppController],
   providers: [

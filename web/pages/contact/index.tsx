@@ -18,8 +18,9 @@ const ContactPage: NextPage = () => {
     setContactInfo(await contactInfoService.getContactInfo());
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     console.log(data);
+    await contactInfoService.addContactQuestion(data);
   };
 
   useEffect(() => {

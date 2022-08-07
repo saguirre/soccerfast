@@ -8,15 +8,26 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { PostContactInfo, PutContactInfo, ContactInfo } from '@dtos';
+import {
+  PostContactInfo,
+  PutContactInfo,
+  ContactInfo,
+  PostContactQuestion,
+} from '@dtos';
 import { ContactInfoService } from './contact.service';
 import { Roles } from 'src/auth/auth.decorator';
 import { RoleEnum } from '../enums';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
 
 @Controller('contact')
 export class ContactInfoController {
-  constructor(private readonly contactInfoService: ContactInfoService) {}
+  constructor(
+    private readonly contactInfoService: ContactInfoService,
+    @InjectQueue('contact-question')
+    private readonly contactQuestionQueue: Queue,
+  ) {}
 
   @Get()
   async getContactInfoById(): Promise<ContactInfo> {
@@ -30,6 +41,21 @@ export class ContactInfoController {
     @Body() contactInfoData: PostContactInfo,
   ): Promise<ContactInfo> {
     return this.contactInfoService.createContactInfo(contactInfoData);
+  }
+
+  @Post('question')
+  async createContactQuestion(
+    @Body() contactQuestion: PostContactQuestion,
+  ): Promise<void> {
+    await this.contactInfoService.createContactQuestion(contactQuestion);
+    this.contactQuestionQueue.add('contact-question', {
+      name: contactQuestion.name,
+      lastName: contactQuestion.lastName,
+      email: contactQuestion.email,
+      subject: contactQuestion.subject,
+      message: contactQuestion.message,
+      phone: contactQuestion?.phone,
+    });
   }
 
   @UseGuards(JwtAuthGuard)

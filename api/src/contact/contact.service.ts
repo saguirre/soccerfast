@@ -1,21 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { ContactInfo, Prisma } from '@prisma/client';
+import { ContactInfo, ContactQuestion, Prisma } from '@prisma/client';
+import { PostContactQuestion } from '@dtos';
 
 @Injectable()
 export class ContactInfoService {
   constructor(private prisma: PrismaService) {}
 
   async contactInfo(
-    contact_InfoWhereUniqueInput: Prisma.ContactInfoWhereUniqueInput,
+    contactInfoWhereUniqueInput: Prisma.ContactInfoWhereUniqueInput,
   ): Promise<ContactInfo | null> {
     return this.prisma.contactInfo.findFirst({
-      where: contact_InfoWhereUniqueInput,
+      where: contactInfoWhereUniqueInput,
       include: {
-        emails: { where: { contactInfoId: contact_InfoWhereUniqueInput.id } },
-        phones: { where: { contactInfoId: contact_InfoWhereUniqueInput.id } },
+        emails: { where: { contactInfoId: contactInfoWhereUniqueInput.id } },
+        phones: { where: { contactInfoId: contactInfoWhereUniqueInput.id } },
         socialMedias: {
-          where: { contactInfoId: contact_InfoWhereUniqueInput.id },
+          where: { contactInfoId: contactInfoWhereUniqueInput.id },
         },
       },
     });
@@ -27,6 +28,16 @@ export class ContactInfoService {
     return this.prisma.contactInfo.create({
       data,
     });
+  }
+
+  async createContactQuestion(
+    data: PostContactQuestion,
+  ): Promise<ContactQuestion> {
+    const contactQuestion = await this.prisma.contactQuestion.create({
+      data,
+    });
+
+    return contactQuestion;
   }
 
   async updateContactInfo(params: {

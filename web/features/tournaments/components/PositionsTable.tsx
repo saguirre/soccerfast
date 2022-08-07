@@ -58,7 +58,7 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin }) => {
     'points',
   ];
 
-  const [teams, setTeams] = useState<PositionsTableItem[] | undefined>(mapTeams(tournament?.tournamentTeamScore));
+  const [teams, setTeams] = useState<PositionsTableItem[] | undefined>(mapTeams(tournament?.tournamentTeamScores));
 
   const goToEditTournament = () => {
     router.push({
@@ -69,14 +69,14 @@ export const PositionsTable: React.FC<PositionsTableProps> = ({ isAdmin }) => {
   const getTeamScore = async () => {
     if (tournament?.id) {
       const dbTournament = await tournamentService.getTournament(tournament.id);
-      setTeams(mapTeams(dbTournament?.tournamentTeamScore));
+      setTeams(mapTeams(dbTournament?.tournamentTeamScores));
     }
   };
 
   useEffect(() => {
     getTeamScore();
     setTeams(mapTeams());
-  }, [tournament?.tournamentFixture, tournament?.tournamentTeamScore]);
+  }, [tournament?.tournamentTeamScores]);
 
   return (
     <div className="w-full">

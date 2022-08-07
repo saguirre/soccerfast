@@ -14,7 +14,7 @@ interface FormValues {
 }
 
 interface AddMatchDateModalProps extends ModalWrapperProps {
-  fixtureId?: number;
+  tournamentId?: number;
   onSuccess: (newMatchDate: MatchDate) => void;
   onError: (notification: Notification) => void;
 }
@@ -22,7 +22,7 @@ interface AddMatchDateModalProps extends ModalWrapperProps {
 export const AddMatchDateModal: React.FC<AddMatchDateModalProps> = ({
   open,
   setOpen,
-  fixtureId,
+  tournamentId,
   onSuccess,
   onError,
 }) => {
@@ -47,7 +47,7 @@ export const AddMatchDateModal: React.FC<AddMatchDateModalProps> = ({
         date: data.date,
       };
 
-      if (!fixtureId) {
+      if (!tournamentId) {
         onError({
           title: t('common:notification.addErrorTitle'),
           message: t('common:notification.addErrorMessage', { entity: t('common:entity.matchDate') }),
@@ -57,7 +57,7 @@ export const AddMatchDateModal: React.FC<AddMatchDateModalProps> = ({
         return;
       }
 
-      const addResponse = await tournamentService.addMatchDate(fixtureId, body);
+      const addResponse = await tournamentService.addMatchDate(tournamentId, body);
       if (!addResponse) {
         onError({
           title: t('common:notification.addErrorTitle'),

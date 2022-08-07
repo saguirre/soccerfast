@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 
-import { LoadingWrapper, NotificationAlert, SubmitButton, Title } from '@components';
+import { AddButton, LoadingWrapper, NotificationAlert, SubmitButton, Title } from '@components';
 import { AuthContext } from '@contexts';
 import { useNotification } from '@hooks';
 
@@ -87,7 +87,7 @@ const ActivateAccountPage: React.FC<PageProps> = (props) => {
                 <div className="text-medium font-regular text-slate-600 py-3">
                   {t('pages:activate-account.redirect')}
                 </div>
-                <SubmitButton onClick={goToSignIn} text={t('pages:activate-account.signin')} />
+                <AddButton className="w-1/4" onClick={goToSignIn} text={t('pages:activate-account.signin')} />
               </div>
             </div>
           </div>

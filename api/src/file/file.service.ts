@@ -19,10 +19,10 @@ const s3Client = new S3Client({
 export class FileService {
   uploadObject = async (
     file: any,
-    previousFileName: string | null,
     fileInfo: Express.Multer.File,
     byteLength: number,
     folder: SpacesFolderEnum,
+    previousFileName?: string,
   ) => {
     try {
       const params = {

@@ -53,7 +53,9 @@ export const MatchScorerMultiSelect = forwardRef<HTMLDivElement, MatchScorerMult
 
     const getUsersByTeam = async () => {
       const usersByTeam = await userService.getUsersByTeam(teamId);
+      console.log(usersByTeam);
       const mappedUsers = usersByTeam?.map((user) => ({ scorer: user, goals: 0, id: user.id }));
+      console.log(mappedUsers);
       setItems(mappedUsers);
       setFilteredItems(mappedUsers);
     };

@@ -132,7 +132,7 @@ export const FormMultiSelect = forwardRef<HTMLDivElement, FormMultiSelectProps>(
                     >
                       <div
                         className={classNames(
-                          selectedItems.some((selectedItem: SelectItem) => item.id === selectedItem.id)
+                          selectedItems?.some((selectedItem: SelectItem) => item.id === selectedItem.id)
                             ? 'border-l-4 border-sky-500'
                             : '',
                           'flex w-full items-center p-2 pl-2 border-transparent relative'

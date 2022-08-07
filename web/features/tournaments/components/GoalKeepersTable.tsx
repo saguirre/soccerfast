@@ -36,12 +36,12 @@ export const GoalKeepersTable: React.FC<GoalKeepersProps> = () => {
   const { t } = useTranslation('pages');
   const { tournament } = useContext(TournamentContext);
   const tableHeaders = ['goalsAgainst'];
-  const mappedTeams = mapTeams(tournament?.tournamentTeamScore);
+  const mappedTeams = mapTeams(tournament?.tournamentTeamScores);
   const [teams, setTeams] = useState<GoalKeepersItem[] | undefined>(mappedTeams);
 
   useEffect(() => {
-    setTeams(mapTeams(tournament?.tournamentTeamScore));
-  }, [tournament?.tournamentTeamScore]);
+    setTeams(mapTeams(tournament?.tournamentTeamScores));
+  }, [tournament?.tournamentTeamScores]);
 
   return (
     <div className="w-full">

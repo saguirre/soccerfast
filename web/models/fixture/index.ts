@@ -6,3 +6,4 @@ export * from './match-date-bracket.model';
 export * from './tournament-fixture.model';
 export * from './match-date.model';
 export * from './bracket-team-scorer.model';
+export * from './match-bracket-team.model';

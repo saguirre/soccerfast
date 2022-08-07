@@ -1,12 +1,12 @@
-import { ModalBackgroundTint } from "@components";
-import { XCircleIcon } from "@heroicons/react/outline";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/solid";
-import { classNames } from "@utils/*";
+import { ModalBackgroundTint } from '@components';
+import { XCircleIcon } from '@heroicons/react/outline';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid';
+import { classNames } from '@utils/*';
 
 interface ImageViewerProps {
   image: string;
   open: boolean;
-  isLast: boolean;
+  isLast?: boolean;
   isFirst: boolean;
   handleClose: () => void;
   moveToNext: () => void;
@@ -23,7 +23,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
   moveToPrevious,
 }) => {
   return (
-    <div className={`relative z-10 ${!open && "hidden"}`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div className={`relative z-10 ${!open && 'hidden'}`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
       {/* Background Tint */}
       <ModalBackgroundTint zIndex={10} />
       {/* Modal */}
@@ -32,8 +32,8 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
           <div className="flex items-center flex-grow justify-center h-screen w-lg text-center">
             <div
               className={classNames(
-                !isFirst ? "hover:cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-white " : "",
-                "mr-4 rounded-full flex items-center justify-center"
+                !isFirst ? 'hover:cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-white ' : '',
+                'mr-4 rounded-full flex items-center justify-center'
               )}
               onClick={moveToPrevious}
             >
@@ -54,8 +54,8 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
             </div>
             <div
               className={classNames(
-                !isLast ? "hover:cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-white " : "",
-                "mr-4 rounded-full flex items-center justify-center"
+                !isLast ? 'hover:cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-white ' : '',
+                'mr-4 rounded-full flex items-center justify-center'
               )}
               onClick={moveToNext}
             >
@@ -67,8 +67,8 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
             </div>
           </div>
           <div className="flex flex-col flex-shrink justify-start items-end w-fill h-fill pt-6 pr-6">
-            <button onClick={handleClose}>
-              <XCircleIcon className="h-16 w-16 text-slate-300 hover:text-white" />
+            <button onClick={handleClose} className="rounded-full  hover:ring-1 hover:ring-white">
+              <XCircleIcon className="h-14 w-14 text-slate-200 hover:text-white" />
             </button>
           </div>
         </div>

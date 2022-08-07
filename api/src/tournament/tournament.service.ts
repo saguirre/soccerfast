@@ -6,15 +6,35 @@ import {
   TournamentTeamScore,
   TournamentTeam,
   MatchBracketTeam,
-  MatchBracketTeamScorer,
-  MatchBracketScorer,
 } from '@prisma/client';
 import { PostMatchDateBracket, PostTournament, PutTournament } from '@dtos';
 
 export type TournamentWithTeamScores = Prisma.TournamentGetPayload<{
   include: {
-    tournamentTeams: true;
-    tournamentTeamScores: { include: { team: true } };
+    tournamentTeams: { select: { team: true } };
+    tournamentMatchDates: {
+      include: {
+        matchDate: {
+          include: {
+            matchBrackets: {
+              include: {
+                matchDateBracketToBracketTeams: {
+                  include: {
+                    matchBracketTeam: true;
+                    matchDateBracket: true;
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+    tournamentTeamScores: {
+      include: {
+        team: true;
+      };
+    };
   };
 }>;
 
@@ -132,7 +152,31 @@ export class TournamentService {
     return this.prisma.tournament.findUnique({
       where: tournamentWhereUniqueInput,
       include: {
-        tournamentTeams: true,
+        tournamentTeams: { select: { team: true } },
+        tournamentTopScorers: {
+          include: { topScorer: { include: { team: true, user: true } } },
+        },
+        tournamentMatchDates: {
+          include: {
+            matchDate: {
+              include: {
+                matchBrackets: {
+                  include: {
+                    matchDateBracketToBracketTeams: {
+                      include: {
+                        matchBracketTeam: {
+                          include: {
+                            team: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
         tournamentTeamScores: {
           include: {
             team: true,
@@ -181,8 +225,9 @@ export class TournamentService {
       if (!existingTopScorer) {
         const newTopScorerEntry = await this.prisma.topScorer.create({
           data: {
-            goals: Number(newScorer.goals),
-            userId: Number(newScorer.goals),
+            goals: Number(data.goals),
+            teamId: Number(teamBracket.teamId),
+            userId: Number(data.userId),
           },
         });
         await this.prisma.tournamentTopScorer.create({
@@ -258,24 +303,36 @@ export class TournamentService {
     matchDateId: number,
     match: PostMatchDateBracket,
   ): Promise<any> {
-    this.logger.debug(JSON.stringify(match));
-
     const { matchDateBracket, firstBracketTeam, secondBracketTeam } =
       await this.addMatchDateBracketAndTeams(matchDateId, match);
 
-    await this.updateTeamScore(tournamentId, match.firstTeam, match.secondTeam);
-    await this.updateTeamScore(tournamentId, match.secondTeam, match.firstTeam);
-
-    if (match.firstTeam.scorers?.length) {
-      const firstTeamScorers = match.firstTeam.scorers.map(
-        ({ goals, scorer }) => ({ goals, userId: Number(scorer.id) }),
+    if (match.matchAlreadyHappened) {
+      await this.updateTeamScore(
+        tournamentId,
+        match.firstTeam,
+        match.secondTeam,
       );
-      const secondTeamScorers = match.secondTeam.scorers.map(
-        ({ goals, scorer }) => ({ goals, userId: Number(scorer.id) }),
+      await this.updateTeamScore(
+        tournamentId,
+        match.secondTeam,
+        match.firstTeam,
       );
 
-      await this.addScorers(tournamentId, firstTeamScorers, firstBracketTeam);
-      await this.addScorers(tournamentId, secondTeamScorers, secondBracketTeam);
+      if (match.firstTeam.scorers?.length) {
+        const firstTeamScorers = match.firstTeam.scorers.map(
+          ({ goals, scorer }) => ({ goals, userId: Number(scorer.id) }),
+        );
+        const secondTeamScorers = match.secondTeam.scorers.map(
+          ({ goals, scorer }) => ({ goals, userId: Number(scorer.id) }),
+        );
+
+        await this.addScorers(tournamentId, firstTeamScorers, firstBracketTeam);
+        await this.addScorers(
+          tournamentId,
+          secondTeamScorers,
+          secondBracketTeam,
+        );
+      }
     }
 
     return matchDateBracket;
@@ -353,7 +410,6 @@ export class TournamentService {
   }): Promise<Tournament> {
     const { where, data } = params;
     const { teamIds, ...tournamentData } = data;
-
     const tournamentTeams = await this.prisma.tournamentTeam.findMany({
       where: { tournamentId: Number(where.id) },
     });
@@ -365,8 +421,14 @@ export class TournamentService {
     });
 
     for (const teamId of teamsToAdd) {
-      await this.prisma.tournamentTeam.create({
+      const newTournamentTeam = await this.prisma.tournamentTeam.create({
         data: { tournamentId: where.id, teamId: Number(teamId) },
+      });
+      await this.prisma.tournamentTeamScore.create({
+        data: {
+          tournamentId: Number(where.id),
+          teamId: Number(teamId),
+        },
       });
     }
 
@@ -376,11 +438,19 @@ export class TournamentService {
       );
     });
 
-    for (const teamId of teamsToDelete) {
+    for (const { teamId } of teamsToDelete) {
       await this.prisma.tournamentTeam.delete({
         where: {
           tournamentId_teamId: {
             tournamentId: where.id,
+            teamId: Number(teamId),
+          },
+        },
+      });
+      await this.prisma.tournamentTeamScore.delete({
+        where: {
+          tournamentId_teamId: {
+            tournamentId: Number(where.id),
             teamId: Number(teamId),
           },
         },

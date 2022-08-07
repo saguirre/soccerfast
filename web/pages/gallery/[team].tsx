@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 
@@ -6,12 +6,13 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import { TeamImageGallery } from '@features';
-import { Title } from '@components';
+import { AddButton, ConfirmButton, Title } from '@components';
 import { AppContext } from 'contexts/app.context';
 import { useState } from 'react';
 import { Team } from '@models/*';
+import { useFileUpload } from 'hooks/useFileUpload.hook';
 
-const images = [
+const defaultImages = [
   '/escudo-furiosos.png',
   '/escudo-monterrey.png',
   '/escudo-racing.png',
@@ -27,6 +28,9 @@ const ImageGalleryPage: NextPage = () => {
   const { teamService } = useContext(AppContext);
   const { t } = useTranslation('pages');
   const [team, setTeam] = useState<Team | null>(null);
+  const [images, setImages] = useState<string[] | undefined>(defaultImages);
+  const inputFileRef = useRef<HTMLInputElement>(null);
+  const imageUpload = useFileUpload(teamService.uploadImage, inputFileRef, Number(teamId));
   const getTeam = async () => {
     setTeam(await teamService.getTeam(Number(teamId)));
   };
@@ -37,13 +41,37 @@ const ImageGalleryPage: NextPage = () => {
     }
   }, [teamId]);
 
+  const getTeamImages = async () => {
+    setImages(await teamService.getTeamImages(Number(teamId)));
+  };
+
+  useEffect(() => {
+    getTeamImages();
+  }, [imageUpload.uploadedImage]);
+
   return (
     <div className="h-full bg-white py-8">
       <div className="flex flex-col items-center justify-center">
         <Title title={t('teamPhotos.title')} subtitle={t('teamPhotos.subtitle', { team: team?.name })} />
       </div>
+      <div className="flex flex-row justify-end items-center">
+        <AddButton
+          text={t('teamPhotos.add')}
+          className="w-1/6 px-8 py-3 mr-12"
+          loading={imageUpload.loadingImageUpload}
+          onClick={imageUpload.openFileExplorer}
+        />
+        <input
+          ref={inputFileRef}
+          className="hidden"
+          type="file"
+          name="image"
+          id="file"
+          onChange={(e) => imageUpload.handleSetImage(e)}
+        />
+      </div>
       <div className="p-8">
-        <TeamImageGallery images={images} />;
+        <TeamImageGallery images={images} />
       </div>
     </div>
   );

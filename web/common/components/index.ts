@@ -5,6 +5,7 @@ export * from './Calendar';
 export * from './Header';
 export * from './LoadingWrapper';
 export * from './Title';
+export * from './Buttons/AddButton';
 export * from './Buttons/CancelButton';
 export * from './Buttons/ConfirmButton';
 export * from './Buttons/SubmitButton';

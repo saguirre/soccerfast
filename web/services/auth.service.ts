@@ -35,7 +35,7 @@ export class AuthService extends HttpService implements IAuthService {
 
   userHasRole = (role: RoleEnum) => {
     const decodedToken = this.getDecodedToken();
-    return decodedToken?.roles.some((userRole: Role) => userRole.role === role);
+    return decodedToken?.roles.some((userRole: Role) => userRole.roleId === role);
   };
 
   validateUserToken = async () => {

@@ -243,7 +243,9 @@
   },
   "teamPhotos": {
     "title": "Photos",
-    "subtitle": "Here are all {{team}} photos"
+    "subtitle": "Here are all {{team}} photos",
+    "add": "Add Photos",
+    "placeholder": "No photos have been added yet. Press Add Photos to add some!"
   },
   "rules": {
     "title": "Official SoccerFast rules",

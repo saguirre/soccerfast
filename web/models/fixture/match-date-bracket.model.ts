@@ -1,14 +1,9 @@
-import { MatchDate } from './match-date.model';
-import { MatchDateBracketTeam } from './match-date-bracket-team.model';
+import { MatchBracketTeam } from "./match-bracket-team.model";
 
 export interface MatchDateBracket {
   id: number;
   time?: string;
   matchAlreadyHappened?: boolean;
-  firstTeam?: MatchDateBracketTeam;
-  secondTeam?: MatchDateBracketTeam;
-  firstTeamId?: number;
-  secondTeamId?: number;
-  matchDate?: MatchDate;
+  matchDateBracketToBracketTeams?: MatchBracketTeam[];
   matchDateId?: number;
 }

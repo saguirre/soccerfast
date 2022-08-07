@@ -58,6 +58,14 @@ model Team {
   userTeams            UserTeam[]
   matchBracketTeams    MatchBracketTeam[]
   tournamentTeamScores TournamentTeamScore[]
+  teamImages           TeamImage[]
+}
+
+model TeamImage {
+  id     Int     @id @default(autoincrement())
+  url    String?
+  Team   Team?   @relation(fields: [teamId], references: [id])
+  teamId Int?
 }
 
 model Tournament {
@@ -89,7 +97,7 @@ model UserTeam {
   userTeamRole   UserTeamRole @relation(fields: [userTeamRoleId], references: [id])
   userTeamRoleId Int
 
-  @@id([userId, teamId])
+  @@id([userId, teamId, userTeamRoleId])
 }
 
 model UserTeamRole {

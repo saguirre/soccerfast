@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { UserService, UserWithRoles } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserModel } from '@dtos';
@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
+  private logger: Logger = new Logger(AuthService.name);
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
@@ -30,11 +31,11 @@ export class AuthService {
     const payload = {
       id: user.id,
       name: user.name,
-      roles: user.roles,
+      roles: user.userRoles,
       email: user.email,
     };
 
-    delete user.roles;
+    delete user.userRoles;
     user.token = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
     });

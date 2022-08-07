@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 
-export const useFileUpload = (upload: any, inputFileRef: any) => {
+export const useFileUpload = (upload: any, inputFileRef: any, uploadEntityId?: number) => {
   const [loadingImageUpload, setLoadingImageUpload] = useState<boolean>(false);
   const [uploadedImage, setUploadedImage] = useState();
   const openFileExplorer = () => {
@@ -11,7 +11,12 @@ export const useFileUpload = (upload: any, inputFileRef: any) => {
     const { files } = event?.target;
     if (files?.length) {
       setLoadingImageUpload(true);
-      const uploadedImage = await upload(files[0]);
+      let uploadedImage;
+      if (uploadEntityId) {
+        uploadedImage = await upload(uploadEntityId, files[0]);
+      } else {
+        uploadedImage = await upload(files[0]);
+      }
       if (!uploadedImage) {
         return;
       }

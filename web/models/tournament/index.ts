@@ -7,3 +7,6 @@ export * from './team-score.model';
 export * from './match.model';
 export * from './tournament-top-score.model';
 export * from './update-match-date-bracket.model';
+export * from './tournament-match-date.model';
+export * from './tournament-top-scorer.model';
+export * from './top-scorer.model';

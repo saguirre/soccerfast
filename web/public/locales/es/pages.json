@@ -244,7 +244,9 @@
   },
   "teamPhotos": {
     "title": "Fotos",
-    "subtitle": "Aquí puedes ver todas las fotos de {{team}}"
+    "subtitle": "Aquí puedes ver todas las fotos de {{team}}",
+    "add": "Agregar Fotos",
+    "placeholder": "Ninguna foto ha sido agregada todavía. Presiona Agregar Fotos para agregar alguna!"
   },
   "rules": {
     "title": "Reglamento Oficial SoccerFast",

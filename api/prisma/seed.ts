@@ -19,6 +19,13 @@ const main = async () => {
     },
   });
 
+  await prisma.userTeamRole.create({
+    data: { role: 'Owner' },
+  });
+
+  await prisma.userTeamRole.create({
+    data: { role: 'Player' },
+  });
   // Create users
   await prisma.user.create({
     data: {
@@ -26,6 +33,7 @@ const main = async () => {
       email: 'saguirrews@gmail.com',
       password: await bcrypt.hash('3oam4j12', await bcrypt.genSalt()),
       type: 'Email',
+      activated: true
     },
   });
 

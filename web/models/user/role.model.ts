@@ -1,7 +1,4 @@
-import { RoleEnum } from 'common/enums';
-
 export interface Role {
-  id: number;
-  role: RoleEnum;
+  roleId: number;
   userId: number;
 }

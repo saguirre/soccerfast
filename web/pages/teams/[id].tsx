@@ -75,6 +75,7 @@ const TeamPage: NextPage<PageProps> = (props) => {
 
   const getAllUsers = async () => {
     const users = await userService.getUsers();
+    console.log(users);
     if (!users?.length) {
       return;
     }

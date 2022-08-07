@@ -51,6 +51,7 @@ export const Calendar: React.FC<CalendarProps> = ({ onSelectDate }) => {
         <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm shadow ring-1 ring-gray-200">
           {days.map((day, dayIdx) => (
             <CalendarButton
+              key={day + dayIdx.toString()}
               day={day}
               dayIdx={dayIdx}
               days={days}

@@ -34,6 +34,11 @@ export class TeamController {
     private readonly userService: UserService,
   ) {}
 
+  @Get('images/:id')
+  async getTeamImages(@Param('id') id: string): Promise<string[]> {
+    return this.teamService.teamImages(Number(id));
+  }
+
   @Get('/:id')
   async getTeamById(
     @Param('id') id: string,
@@ -64,9 +69,7 @@ export class TeamController {
   @UseGuards(JwtAuthGuard)
   @Roles(RoleEnum.Admin)
   @Post()
-  async createTeam(
-    @Body() teamData: PostTeam,
-  ): Promise<TeamWithOwnersAndPlayers> {
+  async createTeam(@Body() teamData: PostTeam): Promise<Team> {
     return this.teamService.createTeam(teamData);
   }
 
@@ -77,128 +80,9 @@ export class TeamController {
     @Param('id') id: string,
     @Body() updateTeamData: PutTeam,
   ): Promise<TeamWithOwnersAndPlayers> {
-    this.logger.debug(id, 'TeamId');
-    this.logger.debug(JSON.stringify(updateTeamData), 'UpdateTeamData');
-
-    const currentTeamOwners = await this.userService.users({
-      where: { ownedTeams: { some: { id: Number(id) } } },
-    });
-
-    this.logger.debug(
-      JSON.stringify(
-        currentTeamOwners.map((owner) => ({ id: owner.id, name: owner.name })),
-      ),
-      'CurrentTeamOwners',
-    );
-
-    const currentTeamPlayers = await this.userService.users({
-      where: { playingTeams: { some: { id: Number(id) } } },
-    });
-
-    this.logger.debug(
-      JSON.stringify(
-        currentTeamPlayers.map((player) => ({
-          id: player.id,
-          name: player.name,
-        })),
-      ),
-      'CurrentTeamPlayers',
-    );
-
-    const allUsers = await this.userService.users({
-      where: {},
-    });
-
-    const { ownerIds, playerIds, ...data } = updateTeamData;
-
-    const newPlayerIds = playerIds.filter(
-      (playerId) =>
-        !currentTeamPlayers.some((player) => player.id === playerId),
-    );
-
-    this.logger.debug(
-      JSON.stringify(
-        newPlayerIds.map((playerId) => ({
-          id: playerId,
-        })),
-      ),
-      'NewPlayerIds',
-    );
-
-    const newOwnerIds = ownerIds.filter(
-      (ownerId) => !currentTeamOwners.some((owner) => owner.id === ownerId),
-    );
-
-    this.logger.debug(
-      JSON.stringify(
-        newOwnerIds.map((ownerId) => ({
-          id: ownerId,
-        })),
-      ),
-      'NewOwnerIds',
-    );
-
-    const ownersToCreateOrConnect = allUsers.filter((owner) =>
-      newOwnerIds.some((newOwnerId) => owner.id === newOwnerId),
-    );
-
-    this.logger.debug(
-      JSON.stringify(
-        ownersToCreateOrConnect.map((owner) => ({
-          id: owner.id,
-          name: owner.name,
-        })),
-      ),
-      'OwnersToCreateOrConnect',
-    );
-
-    const playersToCreateOrConnect = allUsers.filter((player) =>
-      newPlayerIds.some((newPlayerId) => player.id === newPlayerId),
-    );
-    this.logger.debug(
-      JSON.stringify(
-        playersToCreateOrConnect.map((player) => ({
-          id: player.id,
-          name: player.name,
-        })),
-      ),
-      'PlayersToCreateOrConnect',
-    );
-    const owners = {
-      connectOrCreate: [...currentTeamOwners, ...ownersToCreateOrConnect].map(
-        (owner) => ({
-          where: { id: Number(owner.id) },
-          create: { ...owner },
-        }),
-      ),
-      disconnect: currentTeamOwners
-        .filter((owner) => !ownerIds.some((ownerId) => owner.id === ownerId))
-        .map((owner) => ({ id: Number(owner.id) })),
-    };
-
-    this.logger.debug(JSON.stringify(owners), 'OwnersData');
-    const players = {
-      connectOrCreate: [...currentTeamPlayers, ...playersToCreateOrConnect].map(
-        (player) => ({
-          where: { id: Number(player.id) },
-          create: { ...player },
-        }),
-      ),
-      disconnect: currentTeamPlayers
-        .filter(
-          (player) => !playerIds.some((playerId) => player.id === playerId),
-        )
-        .map((player) => ({ id: Number(player.id) })),
-    };
-    this.logger.debug(JSON.stringify(players), 'PlayersData');
-
     return this.teamService.updateTeam({
       where: { id: Number(id) },
-      data: {
-        ...data,
-        owners,
-        players,
-      },
+      data: updateTeamData,
     });
   }
 
@@ -230,15 +114,54 @@ export class TeamController {
 
     await this.fileService.uploadObject(
       file,
-      null,
       fileInfo,
       file.byteLength,
       SpacesFolderEnum.TeamLogos,
+      null,
     );
     unlinkSync(fileInfo.path);
 
     const avatar = `${process.env.IMAGE_RETURN_ENDPOINT}/${SpacesFolderEnum.TeamLogos}/${fileInfo.filename}`;
     return avatar;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/upload/team-image/:id')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      limits: { fileSize: 10000000 },
+      storage: diskStorage({
+        destination: (req: any, file: any, cb: any) => {
+          const uploadPath = './src/images/temporal';
+          if (!existsSync(uploadPath)) {
+            mkdirSync(uploadPath);
+          }
+          cb(null, uploadPath);
+        },
+        filename: (req: any, file: any, cb: any) => {
+          cb(null, `${randomUUID()}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  async uploadImage(
+    @Param('id') id: string,
+    @UploadedFile()
+    fileInfo: Express.Multer.File,
+  ) {
+    const file = readFileSync(fileInfo.path);
+
+    await this.fileService.uploadObject(
+      file,
+      fileInfo,
+      file.byteLength,
+      SpacesFolderEnum.TeamImages,
+      null,
+    );
+    const image = `${process.env.IMAGE_RETURN_ENDPOINT}/${SpacesFolderEnum.TeamImages}/${fileInfo.filename}`;
+    unlinkSync(fileInfo.path);
+    await this.teamService.addTeamImage(Number(id), image);
+    return image;
   }
 
   @UseGuards(JwtAuthGuard)

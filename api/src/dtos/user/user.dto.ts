@@ -7,7 +7,7 @@ export interface UserModel {
   type: string;
   phone?: string;
   avatar?: string;
-  roles?: RoleModel[];
+  userRoles?: RoleModel[];
   active: boolean;
   birthday?: Date;
   token?: string;

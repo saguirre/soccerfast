@@ -9,7 +9,9 @@ export interface ITeamService {
   updateTeam(id: number, body: UpdateTeamModel): Promise<Team | undefined>;
   getTeam(id: number): Promise<Team | null>;
   uploadLogo(teamLogo: File): Promise<string | null>;
-  getFilteredTeams(searchString: string): Promise<Team[] | null>
+  uploadImage(id: number, image: File): Promise<string | null>;
+  getFilteredTeams(searchString: string): Promise<Team[] | null>;
+  getTeamImages(id: number): Promise<string[] | undefined>;
 }
 
 export class TeamService extends HttpService implements ITeamService {
@@ -72,6 +74,15 @@ export class TeamService extends HttpService implements ITeamService {
     }
   };
 
+  getTeamImages = async (id: number) => {
+    try {
+      const axiosResponse = await axios.get(this.getServiceUrl(`${this.endpointPrefix}/images/${id}`));
+      return axiosResponse.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   uploadLogo = async (teamLogo: File): Promise<string | null> => {
     try {
       let formData = new FormData();
@@ -79,6 +90,24 @@ export class TeamService extends HttpService implements ITeamService {
       const axiosResponse = await axios.post(this.getServiceUrl(`${this.endpointPrefix}/upload/team-logo`), formData, {
         headers: this.getAuthHeaders(),
       });
+      return axiosResponse.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  uploadImage = async (id: number, image: File): Promise<string | null> => {
+    try {
+      let formData = new FormData();
+      formData.append('image', image, image.name);
+      const axiosResponse = await axios.post(
+        this.getServiceUrl(`${this.endpointPrefix}/upload/team-image/${id}`),
+        formData,
+        {
+          headers: this.getAuthHeaders(),
+        }
+      );
       return axiosResponse.data;
     } catch (error) {
       console.error(error);

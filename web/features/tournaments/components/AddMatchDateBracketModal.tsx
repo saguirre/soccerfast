@@ -29,7 +29,7 @@ interface FormValues {
 }
 
 interface AddMatchDateBracketModalProps extends ModalWrapperProps {
-  fixtureId?: number;
+  tournamentId?: number;
   matchDateId?: number;
   onSuccess: (matchDate: MatchDate) => void;
   onError: (notification: Notification) => void;
@@ -38,14 +38,14 @@ interface AddMatchDateBracketModalProps extends ModalWrapperProps {
 export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> = ({
   open,
   setOpen,
-  fixtureId,
+  tournamentId,
   onSuccess,
   onError,
   matchDateId,
 }) => {
   const { teamService, tournamentService } = useContext(AppContext);
   const { tournament } = useContext(TournamentContext);
-  const teams = tournament?.teams;
+  const teams = tournament?.tournamentTeams?.map(({ team }) => ({ ...team }));
   const cancelButtonRef = useRef(null);
   const [loadingAddRequest, setLoadingAddRequest] = useState(false);
   const { t } = useTranslation('pages');
@@ -63,7 +63,7 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
     reset,
     setValue,
     watch,
-    formState: { errors, isValid, isValidating, isDirty, isSubmitting, touchedFields, submitCount },
+    formState: { isValid },
   } = useForm<FormValues>({
     mode: 'all',
     defaultValues: { time: '6PM', matchAlreadyHappened: false, firstTeamGoals: 0, secondTeamGoals: 0 },
@@ -93,7 +93,7 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
         },
       };
 
-      if (!fixtureId || !matchDateId) {
+      if (!tournamentId || !matchDateId) {
         onError({
           title: t('common:notification.addErrorTitle'),
           message: t('common:notification.addErrorMessage', { entity: t('common:entity.teamBracket') }),
@@ -103,7 +103,7 @@ export const AddMatchDateBracketModal: React.FC<AddMatchDateBracketModalProps> =
         return;
       }
 
-      const addResponse = await tournamentService.addBracketToMatchDate(fixtureId, matchDateId, body);
+      const addResponse = await tournamentService.addBracketToMatchDate(tournamentId, matchDateId, body);
       if (!addResponse) {
         onError({
           title: t('common:notification.addErrorTitle'),

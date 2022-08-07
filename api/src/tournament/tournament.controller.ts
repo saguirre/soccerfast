@@ -30,7 +30,7 @@ export class TournamentController {
   constructor(private readonly tournamentService: TournamentService) {}
 
   @Get('/:id')
-  async getUserById(
+  async getTournamentById(
     @Param('id') id: string,
   ): Promise<TournamentWithTeamScores> {
     return this.tournamentService.tournament({ id: Number(id) });
@@ -54,6 +54,13 @@ export class TournamentController {
         ],
       },
     });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleEnum.Admin)
+  @Post('/:tournamentId')
+  async addMatchDate(@Param('tournamentId') tournamentId: number, @Body() bracket) {
+    return this.tournamentService.addMatchDate(tournamentId, bracket);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 
 import { TournamentContext } from '@contexts';
-import { TeamScore } from '@models';
+import { TournamentTopScorer } from '@models';
 
 interface TopScorersProps {
   isAdmin?: boolean;
@@ -17,42 +17,15 @@ export const TopScorersTable: React.FC<TopScorersProps> = () => {
   const { t } = useTranslation('pages');
   const { tournament } = useContext(TournamentContext);
   const tableHeaders = ['player', 'goals'];
-
-  const getGoalDiff = (teamScore: TopScorersItem) => {
-    return (teamScore.goalsAhead as number) - (teamScore.goalsAgainst as number);
+  const [topScorers, setTopScorers] = useState<TournamentTopScorer[] | undefined>();
+  const sortTopScorers = () => {
+    return tournament?.tournamentTopScorers?.sort((t1: TournamentTopScorer, t2: TournamentTopScorer) => {
+      return (t2?.topScorer?.goals as number) - (t1?.topScorer?.goals as number);
+    });
   };
-
-  const mapTeams = () => {
-    return tournament?.tournamentTeamScore
-      ?.map((score: TeamScore) => {
-        return {
-          id: score.teamId,
-          name: score.team.name,
-          logo: score.team.logo,
-          matchesPlayed: score.matchesPlayed,
-          matchesWon: score.matchesWon,
-          matchesTied: score.matchesTied,
-          matchesLost: score.matchesLost,
-          goalsAhead: score.goalsAhead,
-          goalsAgainst: score.goalsAgainst,
-          points: score.points,
-        };
-      })
-      .sort((t1: TopScorersItem, t2: TopScorersItem) => {
-        if (t2.points === t1.points) {
-          const t2GoalDiff = getGoalDiff(t2);
-          const t1GoalDiff = getGoalDiff(t1);
-          return t2GoalDiff - t1GoalDiff;
-        }
-        return (t2.points as number) - (t1.points as number);
-      });
-  };
-
-  const [teams, setTeams] = useState<TopScorersItem[] | undefined>(mapTeams);
-
   useEffect(() => {
-    setTeams(mapTeams());
-  }, [tournament?.tournamentTeamScore]);
+    setTopScorers(sortTopScorers());
+  }, [tournament?.tournamentTopScorers]);
 
   return (
     <div className="w-full">
@@ -86,28 +59,40 @@ export const TopScorersTable: React.FC<TopScorersProps> = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {teams?.map((team, index: number) => (
-                    <tr key={team.name as string}>
+                  {topScorers?.map((topScorerItem, index: number) => (
+                    <tr key={topScorerItem.topScorerId || index.toString()}>
                       <td className="whitespace-nowrap pl-6 py-4 text-sm text-gray-500">{index + 1}</td>
                       <td className="whitespace-nowrap py-4 pr-3 text-sm pl-2">
                         <div className="flex items-center">
                           <div className="w-14 flex justify-center flex-shrink-0">
-                            <img className="h-12 aspect-square rounded-sm" src={team.logo as string} alt="" />
+                            <img
+                              className="h-12 aspect-square rounded-sm"
+                              src={topScorerItem?.topScorer?.team?.logo}
+                              alt=""
+                            />
                           </div>
                           <div className="ml-4">
-                            <div className="font-medium text-base text-gray-900">{team.name}</div>
+                            <div className="font-medium text-base text-gray-900">
+                              {topScorerItem?.topScorer?.team?.name}
+                            </div>
                             {/* <div className="text-gray-500">Alguna descripción...</div> */}
                           </div>
                         </div>
                       </td>
-                      {tableHeaders.map((header: string) => (
-                        <td
-                          key={`${(team?.name as string)?.toLocaleLowerCase()}-${header?.toLowerCase()}`}
-                          className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500"
-                        >
-                          <span>{team[header]}</span>
-                        </td>
-                      ))}
+                      <td
+                        key={`${topScorerItem?.topScorer?.user?.name?.toLocaleLowerCase()}`}
+                        className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500"
+                      >
+                        <span>{topScorerItem?.topScorer?.user?.name}</span>
+                      </td>
+                      <td
+                        key={`${topScorerItem?.topScorer?.user?.name?.toLocaleLowerCase()}-${
+                          topScorerItem?.topScorer?.goals
+                        }`}
+                        className="whitespace-nowrap px-4 text-center py-4 text-sm text-gray-500"
+                      >
+                        <span>{topScorerItem?.topScorer?.goals}</span>
+                      </td>
                       <td className="px-4"></td>
                     </tr>
                   ))}

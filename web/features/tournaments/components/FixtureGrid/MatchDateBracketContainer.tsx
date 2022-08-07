@@ -20,9 +20,9 @@ export const MatchDateBracketContainer: React.FC<Props> = ({ bracketKey, matchDa
         {t('tournament.fixture.addMatch')}
       </button>
       <div key={bracketKey} className="flex flex-col items-center justify-center">
-        {matchDate?.teamBrackets && matchDate?.teamBrackets?.length > 0 ? (
+        {matchDate?.matchBrackets && matchDate?.matchBrackets?.length > 0 ? (
           <div className="grid grid-cols-3 gap-y-6 gap-x-8 w-full mb-6">
-            {matchDate.teamBrackets?.map((bracket, index) => (
+            {matchDate.matchBrackets?.map((bracket, index) => (
               <MatchDateBracketComponent key={index} matchDateBracketKey={index} matchDate={matchDate} bracket={bracket} />
             ))}
           </div>

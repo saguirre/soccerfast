@@ -38,7 +38,6 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingAddRequest, setLoadingAddRequest] = useState<boolean>(false);
-  const [enabled, setEnabled] = useState(false);
   const notificationHandler = useNotification();
   const selectRef = useRef<HTMLDivElement>(null);
   const {
@@ -47,13 +46,15 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
     handleSubmit,
     watch,
     setValue,
-    reset,
     formState: { errors },
-  } = useForm<FormValues>({ mode: 'all', defaultValues: { active: tournament?.active } });
+  } = useForm<FormValues>({
+    defaultValues: { active: tournament?.active, description: tournament?.description, name: tournament?.name },
+  });
 
   const select = useMultiSelect(teamService.getFilteredTeams);
 
   const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {
+    console.log('Data', data);
     setLoadingAddRequest(true);
     const body: UpdateTournamentModel = {
       name: data.name,
@@ -62,6 +63,7 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
       teamIds: select.selectedItems.map((team: Team) => team.id),
     };
 
+    console.log(body);
     const updateTournamentResult = await tournamentService.updateTournament(props.tournamentId, body);
     setLoadingAddRequest(false);
     if (!updateTournamentResult) {
@@ -98,6 +100,8 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
   const getTournament = async (id: number) => {
     const tournament = await tournamentService.getTournament(id);
     setValue('active', tournament?.active || false);
+    setValue('name', tournament?.name || '');
+    setValue('description', tournament?.description || '');
     setTournament(await tournamentService.getTournament(id));
   };
 
@@ -107,10 +111,7 @@ const EditTournamentPage: NextPage<PageProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    const tournamentTeamIds = tournament?.tournamentTeamScore?.map((teamScore) => teamScore.teamId);
-    const tournamentTeams = (select.items as Team[])?.filter((team: Team) =>
-      tournamentTeamIds?.some((tournamentTeam: number) => tournamentTeam === team.id)
-    );
+    const tournamentTeams = tournament?.tournamentTeams?.map(({ team }) => ({ ...team }));
     select.setSelectedItems(tournamentTeams || []);
   }, [tournament, select.items]);
 

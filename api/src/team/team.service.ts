@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Team, Prisma } from '@prisma/client';
 import { PostTeam, PutTeam } from '@dtos';
 
 export type TeamWithOwnersAndPlayers = Prisma.TeamGetPayload<{
-  include: { userTeams: true };
+  include: {
+    userTeams: {
+      include: { user: { select: { id: true; email: true; name: true } } };
+    };
+  };
 }>;
 
 @Injectable()
@@ -14,10 +18,17 @@ export class TeamService {
   async team(
     teamWhereUniqueInput: Prisma.TeamWhereUniqueInput,
   ): Promise<TeamWithOwnersAndPlayers | null> {
-    return this.prisma.team.findUnique({
+    const team = await this.prisma.team.findUnique({
       where: teamWhereUniqueInput,
-      include: { userTeams: true },
+      include: {
+        userTeams: {
+          where: { teamId: Number(teamWhereUniqueInput.id) },
+          include: { user: { select: { id: true, email: true, name: true } } },
+        },
+      },
     });
+    Logger.debug(JSON.stringify(team));
+    return team;
   }
 
   async teams(params: {
@@ -37,11 +48,28 @@ export class TeamService {
     });
   }
 
+  async teamImages(id: number) {
+    return (
+      await this.prisma.teamImage.findMany({ where: { teamId: Number(id) } })
+    )?.map((image) => image.url);
+  }
+
   async createTeam(data: PostTeam): Promise<Team> {
     const { tournamentId, ownerIds, playerIds, ...teamData } = data;
-    return this.prisma.team.create({
+    const newTeam = await this.prisma.team.create({
       data: teamData,
     });
+    for (const userId of playerIds) {
+      await this.prisma.userTeam.create({
+        data: { teamId: newTeam.id, userId: Number(userId), userTeamRoleId: 2 },
+      });
+    }
+    for (const userId of ownerIds) {
+      await this.prisma.userTeam.create({
+        data: { teamId: newTeam.id, userId: Number(userId), userTeamRoleId: 1 },
+      });
+    }
+    return newTeam;
   }
 
   async updateTeam(params: {
@@ -54,7 +82,18 @@ export class TeamService {
       data: tournamentData,
       where,
       include: {
-        userTeams: true,
+        userTeams: {
+          include: { user: { select: { id: true, email: true, name: true } } },
+        },
+      },
+    });
+  }
+
+  async addTeamImage(teamId: number, url: string) {
+    await this.prisma.teamImage.create({
+      data: {
+        teamId,
+        url,
       },
     });
   }

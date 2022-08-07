@@ -9,6 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  Logger,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@prisma/client';
@@ -40,16 +41,27 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllUsers(): Promise<User[]> {
-    return this.userService.users({});
+  async getAllUsers(): Promise<Partial<User>[]> {
+    const dbUsers = await this.userService.users({});
+
+    return dbUsers?.map(
+      ({
+        password,
+        passwordRecoveryToken,
+        locked,
+        activated,
+        activationToken,
+        ...user
+      }) => ({ ...user }),
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('filtered-users/:searchString')
   async getFilteredUsers(
     @Param('searchString') searchString: string,
-  ): Promise<User[]> {
-    return this.userService.users({
+  ): Promise<Partial<User>[]> {
+    const users = await this.userService.users({
       where: {
         OR: [
           {
@@ -64,20 +76,42 @@ export class UserController {
         ],
       },
     });
+    return users?.map(
+      ({
+        password,
+        passwordRecoveryToken,
+        locked,
+        activated,
+        activationToken,
+        ...user
+      }) => ({ ...user }),
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('users-by-team/:teamId')
-  async getUsersByTeam(@Param('teamId') teamId: number): Promise<User[]> {
-    return this.userService.users({
+  async getUsersByTeam(
+    @Param('teamId') teamId: number,
+  ): Promise<Partial<User>[]> {
+    const users = await this.userService.users({
       where: {
         AND: [
           {
-            userTeams: { some: { userId: Number(teamId) } },
+            userTeams: { some: { teamId: Number(teamId) } },
           },
         ],
       },
     });
+    return users?.map(
+      ({
+        password,
+        passwordRecoveryToken,
+        locked,
+        activated,
+        activationToken,
+        ...user
+      }) => ({ ...user }),
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -85,8 +119,8 @@ export class UserController {
   async getFilteredUsersByTeam(
     @Param('teamId') teamId: number,
     @Param('searchString') searchString: string,
-  ): Promise<User[]> {
-    return this.userService.users({
+  ): Promise<Partial<User>[]> {
+    const users = await this.userService.users({
       where: {
         OR: [
           {
@@ -106,6 +140,16 @@ export class UserController {
         ],
       },
     });
+    return users?.map(
+      ({
+        password,
+        passwordRecoveryToken,
+        locked,
+        activated,
+        activationToken,
+        ...user
+      }) => ({ ...user }),
+    );
   }
 
   @Post()
@@ -170,10 +214,10 @@ export class UserController {
 
     await this.fileService.uploadObject(
       file,
-      previousFileName,
       fileInfo,
       file.byteLength,
       SpacesFolderEnum.UserAvatars,
+      previousFileName,
     );
     unlinkSync(fileInfo.path);
 

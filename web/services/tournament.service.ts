@@ -15,8 +15,8 @@ export interface ITournamentService {
   addTournament(body: AddTournamentModel): Promise<Tournament | undefined>;
   updateTournament(id: number, body: UpdateTournamentModel): Promise<Tournament | undefined>;
   getTournament(id: number): Promise<Tournament | null>;
-  addMatchDate(fixtureId: number, body: AddMatchDateModel): Promise<MatchDate>;
-  addBracketToMatchDate(fixtureId: number, matchDateId: number, body: AddMatchDateBracketModel): Promise<MatchModel>;
+  addMatchDate(tournamentId: number, body: AddMatchDateModel): Promise<MatchDate>;
+  addBracketToMatchDate(tournamentId: number, matchDateId: number, body: AddMatchDateBracketModel): Promise<MatchModel>;
 }
 
 export class TournamentService extends HttpService implements ITournamentService {
@@ -54,9 +54,9 @@ export class TournamentService extends HttpService implements ITournamentService
     }
   };
 
-  addMatchDate = async (fixtureId: number, body: AddMatchDateModel) => {
+  addMatchDate = async (tournamentId: number, body: AddMatchDateModel) => {
     try {
-      const axiosResponse = await axios.post(this.getServiceUrl(`${this.endpointPrefix}/${fixtureId}`), body, {
+      const axiosResponse = await axios.post(this.getServiceUrl(`${this.endpointPrefix}/${tournamentId}`), body, {
         headers: this.getAuthHeaders(),
       });
       return axiosResponse.data;
@@ -65,10 +65,10 @@ export class TournamentService extends HttpService implements ITournamentService
     }
   };
 
-  addBracketToMatchDate = async (fixtureId: number, matchDateId: number, body: AddMatchDateBracketModel) => {
+  addBracketToMatchDate = async (tournamentId: number, matchDateId: number, body: AddMatchDateBracketModel) => {
     try {
       const axiosResponse = await axios.post(
-        this.getServiceUrl(`${this.endpointPrefix}/${fixtureId}/${matchDateId}`),
+        this.getServiceUrl(`${this.endpointPrefix}/${tournamentId}/${matchDateId}`),
         body,
         {
           headers: this.getAuthHeaders(),

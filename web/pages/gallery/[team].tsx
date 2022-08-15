@@ -12,23 +12,13 @@ import { useState } from 'react';
 import { Team } from '@models/*';
 import { useFileUpload } from 'hooks/useFileUpload.hook';
 
-const defaultImages = [
-  '/escudo-furiosos.png',
-  '/escudo-monterrey.png',
-  '/escudo-racing.png',
-  '/escudo-rio-de-la-plata.png',
-  '/luis-campeon.jpeg',
-  '/escudo-cerro.png',
-  '/escudo-beach-city.png',
-];
-
 const ImageGalleryPage: NextPage = () => {
   const router = useRouter();
   const teamId = router.query.team as string;
   const { teamService } = useContext(AppContext);
   const { t } = useTranslation('pages');
   const [team, setTeam] = useState<Team | null>(null);
-  const [images, setImages] = useState<string[] | undefined>(defaultImages);
+  const [images, setImages] = useState<string[] | undefined>();
   const inputFileRef = useRef<HTMLInputElement>(null);
   const imageUpload = useFileUpload(teamService.uploadImage, inputFileRef, Number(teamId));
   const getTeam = async () => {
@@ -54,7 +44,7 @@ const ImageGalleryPage: NextPage = () => {
       <div className="flex flex-col items-center justify-center">
         <Title title={t('teamPhotos.title')} subtitle={t('teamPhotos.subtitle', { team: team?.name })} />
       </div>
-      <div className="flex flex-row justify-end items-center">
+      <div className="flex flex-row justify-end items-center w-full">
         <AddButton
           text={t('teamPhotos.add')}
           className="w-1/6 px-8 py-3 mr-12"

@@ -12,7 +12,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
         secure: true,
         auth: {
           user: 'saguirrews@gmail.com',
-          pass: 'kvxyvqvudrnnznba',
+          pass: 'kvxyvqvudrnnznba', // placeholder password, real one would be imported from .env
         },
       },
       defaults: {
